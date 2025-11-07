@@ -74,20 +74,12 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-4">
               {userAddress && (
-                <>
-                  <BalanceSummary
-                    sBtcBalance={sBtcBalance}
-                    stxBalance={stxBalance}
-                    bxlBTC={userBalances?.bxlBTC ?? 0}
-                    blxSTX={userBalances?.blxSTX ?? 0}
-                  />
-                  <div className="hidden lg:block px-4 py-2 rounded-lg bg-card border border-primary/20">
-                    <p className="text-xs text-muted-foreground">Vault Balance</p>
-                    <p className="text-sm font-bold text-primary">
-                      {(vaultBalances?.sBtc ?? 0).toFixed(4)} sBTC
-                    </p>
-                  </div>
-                </>
+                <BalanceSummary
+                  sBtcBalance={sBtcBalance}
+                  stxBalance={stxBalance}
+                  bxlBTC={userBalances?.bxlBTC ?? 0}
+                  blxSTX={userBalances?.blxSTX ?? 0}
+                />
               )}
               <WalletConnect onAddressChange={setUserAddress} />
             </div>
@@ -176,14 +168,43 @@ const Index = () => {
             )}
 
             {/* Info Section */}
-            <div className="gradient-card border border-primary/20 rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-2">About the Vault</h3>
-              <p className="text-muted-foreground">
-                The DAO Brussels Vault enables you to grant access to your sBTC and STX assets to the 
-                community without losing ownership. The community actively uses these assets to generate 
-                yield, which is then allocated by community stewards to build and develop the Commons in 
-                Brussels. Monitor your contributions and the collective yield earned through this dashboard.
-              </p>
+            <div className="gradient-card border border-primary/20 rounded-lg p-6 space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">About the Vault</h3>
+                <p className="text-muted-foreground">
+                  The DAO Brussels Vault enables you to grant access to your sBTC and STX assets to the 
+                  community without losing ownership. The community actively uses these assets to generate 
+                  yield, which is then allocated by community stewards to build and develop the Commons in 
+                  Brussels. Monitor your contributions and the collective yield earned through this dashboard.
+                </p>
+              </div>
+
+              {/* Vault Stats */}
+              <div className="border-t border-border pt-6">
+                <h4 className="text-sm font-semibold mb-4 text-muted-foreground">Vault Statistics</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Bitcoin className="w-4 h-4 text-primary" />
+                      <p className="text-xs text-muted-foreground">Total sBTC Holdings</p>
+                    </div>
+                    <p className="text-2xl font-bold text-primary">
+                      {(vaultBalances?.sBtc ?? 0).toFixed(8)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">sBTC</p>
+                  </div>
+                  <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="w-4 h-4 text-primary" />
+                      <p className="text-xs text-muted-foreground">Yield Earned</p>
+                    </div>
+                    <p className="text-2xl font-bold text-primary">
+                      {earnedYield.toFixed(8)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">sBTC</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}

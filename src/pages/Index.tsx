@@ -64,8 +64,40 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-8">
+        {/* Balance Overview - Always visible */}
+        <div className="animate-fade-in">
+          <h2 className="text-2xl font-bold mb-4">
+            {userAddress ? "Your Balance" : "Vault Balance Overview"}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <BalanceCard
+              title="sBTC Balance"
+              balance={`${sBtcBalance.toFixed(8)} sBTC`}
+              icon={<Bitcoin className="w-5 h-5 text-primary" />}
+            />
+            <BalanceCard
+              title="STX Balance"
+              balance={`${stxBalance.toLocaleString()} STX`}
+              subBalance={`${lockedStx.toLocaleString()} STX`}
+              subLabel="Locked"
+              icon={<Coins className="w-5 h-5 text-secondary" />}
+            />
+            <BalanceCard
+              title="Locked STX"
+              balance={`${lockedStx.toLocaleString()} STX`}
+              icon={<Lock className="w-5 h-5 text-muted-foreground" />}
+            />
+            <BalanceCard
+              title="Earned Yield"
+              balance={`${earnedYield.toFixed(8)} sBTC`}
+              icon={<TrendingUp className="w-5 h-5 text-primary" />}
+              isYield
+            />
+          </div>
+        </div>
+
         {!userAddress ? (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6 animate-fade-in">
+          <div className="flex flex-col items-center justify-center text-center space-y-6 animate-fade-in">
             <div className="relative">
               <div className="absolute inset-0 blur-3xl opacity-30 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
               <img 
@@ -75,7 +107,7 @@ const Index = () => {
               />
             </div>
             <div className="space-y-3">
-              <h2 className="text-3xl font-bold">Welcome to DAO Brussels Vault</h2>
+              <h2 className="text-3xl font-bold">Connect Your Wallet</h2>
               <p className="text-muted-foreground text-lg max-w-md">
                 Connect your Stacks wallet to manage your sBTC and STX deposits, 
                 track your yields, and participate in the vault.
@@ -84,36 +116,6 @@ const Index = () => {
           </div>
         ) : (
           <div className="space-y-8 animate-fade-in">
-            {/* Balance Overview */}
-            <div>
-              <h2 className="text-2xl font-bold mb-4">Balance Overview</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <BalanceCard
-                  title="sBTC Balance"
-                  balance={`${sBtcBalance.toFixed(8)} sBTC`}
-                  icon={<Bitcoin className="w-5 h-5 text-primary" />}
-                />
-                <BalanceCard
-                  title="STX Balance"
-                  balance={`${stxBalance.toLocaleString()} STX`}
-                  subBalance={`${lockedStx.toLocaleString()} STX`}
-                  subLabel="Locked"
-                  icon={<Coins className="w-5 h-5 text-secondary" />}
-                />
-                <BalanceCard
-                  title="Locked STX"
-                  balance={`${lockedStx.toLocaleString()} STX`}
-                  icon={<Lock className="w-5 h-5 text-muted-foreground" />}
-                />
-                <BalanceCard
-                  title="Earned Yield"
-                  balance={`${earnedYield.toFixed(8)} sBTC`}
-                  icon={<TrendingUp className="w-5 h-5 text-primary" />}
-                  isYield
-                />
-              </div>
-            </div>
-
             {/* Deposit/Withdraw Section */}
             <div>
               <h2 className="text-2xl font-bold mb-4">Vault Operations</h2>

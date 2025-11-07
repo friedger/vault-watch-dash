@@ -104,13 +104,26 @@ const Deposit = () => {
               </div>
             </>
           ) : (
-            <div className="animate-fade-in">
+            <div className="animate-fade-in space-y-8">
               <DepositCard 
                 onSBtcDeposit={handleSBtcDeposit}
                 onStxDeposit={handleStxDeposit}
                 sBtcBalance={sBtcBalance}
                 stxBalance={stxBalance}
               />
+
+              {/* About the Vault Section */}
+              <div className="gradient-card border border-primary/20 rounded-lg p-6 space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">About the Vault</h3>
+                  <p className="text-muted-foreground">
+                    The DAO Brussels Vault enables you to grant access to your sBTC and STX assets to the 
+                    community without losing ownership. The community actively uses these assets to generate 
+                    yield, which is then allocated by community stewards to build and develop the Commons in 
+                    Brussels. Monitor your contributions and the collective yield earned through this dashboard.
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </div>

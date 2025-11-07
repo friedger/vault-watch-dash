@@ -8,11 +8,14 @@ interface WalletConnectProps {
 }
 
 export const WalletConnect = ({ onAddressChange }: WalletConnectProps) => {
-  const [address, setAddress] = useState<string | null>(null);
+  const [address, setAddress] = useState<string | null>(() => {
+    return getLocalStorage()?.addresses.stx[0]?.address || null;
+  });
 
   useEffect(() => {
     const stxAddress = getLocalStorage()?.addresses.stx[0]?.address || null;
     if (stxAddress) {      
+      setAddress(stxAddress);
       onAddressChange(stxAddress);
     }
   }, [onAddressChange]);

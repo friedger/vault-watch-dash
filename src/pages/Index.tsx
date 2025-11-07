@@ -85,7 +85,7 @@ const Index = () => {
               {userAddress && (
                 <>
                   <Link to="/dashboard">
-                    <Button variant="outline" className="gap-2">
+                    <Button variant="outline" className="gap-2 h-[68px]">
                       <LayoutDashboard className="w-4 h-4" />
                       Dashboard
                     </Button>
@@ -156,6 +156,18 @@ const Index = () => {
           </div>
         ) : (
           <div className="space-y-8 animate-fade-in">
+            {/* Logo display when connected */}
+            <div className="flex flex-col items-center justify-center text-center space-y-6">
+              <div className="relative">
+                <div className="absolute inset-0 blur-3xl opacity-30 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                <img 
+                  src={daoLogo} 
+                  alt="DAO Brussels" 
+                  className="h-32 w-32 object-contain relative z-10"
+                />
+              </div>
+            </div>
+
             {/* Main Deposit Section */}
             <div className="max-w-xl mx-auto text-center space-y-4">
               <h2 className="text-2xl font-bold">Manage Your Assets</h2>
@@ -199,83 +211,6 @@ const Index = () => {
                 </div>
               </div>
             )}
-
-            {/* Info Section */}
-            <div className="gradient-card border border-primary/20 rounded-lg p-6 space-y-6">
-              <div>
-                <h3 className="text-lg font-semibold mb-2">About the Vault</h3>
-                <p className="text-muted-foreground">
-                  The DAO Brussels Vault enables you to grant access to your sBTC and STX assets to the 
-                  community without losing ownership. The community actively uses these assets to generate 
-                  yield, which is then allocated by community stewards to build and develop the Commons in 
-                  Brussels. Monitor your contributions and the collective yield earned through this dashboard.
-                </p>
-              </div>
-
-              {/* Vault Stats */}
-              <div className="border-t border-border pt-6">
-                <h4 className="text-sm font-semibold mb-4 text-muted-foreground">Vault Statistics</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Bitcoin className="w-5 h-5 text-primary" />
-                      <p className="text-sm font-semibold">sBTC</p>
-                    </div>
-                    <div className="space-y-2">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Vault Balance</p>
-                        <p className="text-2xl font-bold text-primary">
-                          {(vaultBalances?.sBtc ?? 0).toFixed(8)}
-                        </p>
-                      </div>
-                      <div className="pt-2 border-t border-primary/10">
-                        <p className="text-xs text-muted-foreground">bxlBTC Supply</p>
-                        <p className="text-lg font-semibold">
-                          {wrappedBtcSupply.toFixed(8)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/10">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Coins className="w-5 h-5 text-secondary" />
-                      <p className="text-sm font-semibold">STX</p>
-                    </div>
-                    <div className="space-y-2">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Vault Balance</p>
-                        <p className="text-2xl font-bold text-secondary">
-                          {(vaultBalances?.stx ?? 0).toLocaleString()}
-                        </p>
-                      </div>
-                      <div className="pt-2 border-t border-secondary/10">
-                        <p className="text-xs text-muted-foreground">blxSTX Supply</p>
-                        <p className="text-lg font-semibold">
-                          {wrappedStxSupply.toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
-                    <div className="flex items-center gap-2 mb-3">
-                      <TrendingUp className="w-5 h-5 text-primary" />
-                      <p className="text-sm font-semibold">Yield Earned</p>
-                    </div>
-                    <div className="space-y-2">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Total Earned</p>
-                        <p className="text-2xl font-bold text-primary">
-                          {earnedYield.toFixed(8)}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">sBTC</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         )}
 

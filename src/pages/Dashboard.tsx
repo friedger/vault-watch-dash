@@ -5,7 +5,6 @@ import { ArrowUpFromLine } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { WalletConnect } from "@/components/WalletConnect";
-import { BalanceSummary } from "@/components/BalanceSummary";
 import { TransactionHistory } from "@/components/TransactionHistory";
 import { PortfolioChart } from "@/components/PortfolioChart";
 import { Link } from "react-router-dom";
@@ -98,17 +97,13 @@ const Dashboard = () => {
                 <p className="text-sm text-muted-foreground">User Dashboard</p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              {userAddress && (
-                <BalanceSummary
-                  sBtcBalance={userBalances?.sBtc ?? 0}
-                  stxBalance={userBalances?.stx ?? 0}
-                  bxlBTC={userBalances?.bxlBTC ?? 0}
-                  blxSTX={userBalances?.blxSTX ?? 0}
-                />
-              )}
-              <WalletConnect onAddressChange={setUserAddress} />
-            </div>
+            <WalletConnect 
+              onAddressChange={setUserAddress}
+              sBtcBalance={userBalances?.sBtc ?? 0}
+              stxBalance={userBalances?.stx ?? 0}
+              bxlBTC={userBalances?.bxlBTC ?? 0}
+              blxSTX={userBalances?.blxSTX ?? 0}
+            />
           </div>
         </div>
       </header>

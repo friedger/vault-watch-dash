@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { WalletConnect } from "@/components/WalletConnect";
 import { BalanceCard } from "@/components/BalanceCard";
-import { BalanceSummary } from "@/components/BalanceSummary";
 import { DepositCard } from "@/components/DepositCard";
 import { DepositWithdrawCard } from "@/components/DepositWithdrawCard";
 import { Bitcoin, Coins, TrendingUp, LayoutDashboard, Shield, Lock, TrendingDown, ExternalLink } from "lucide-react";
@@ -83,22 +82,20 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-4">
               {userAddress && (
-                <>
-                  <Link to="/dashboard">
-                    <Button variant="outline" className="gap-2 h-[68px]">
-                      <LayoutDashboard className="w-4 h-4" />
-                      Dashboard
-                    </Button>
-                  </Link>
-                  <BalanceSummary
-                    sBtcBalance={sBtcBalance}
-                    stxBalance={stxBalance}
-                    bxlBTC={userBalances?.bxlBTC ?? 0}
-                    blxSTX={userBalances?.blxSTX ?? 0}
-                  />
-                </>
+                <Link to="/dashboard">
+                  <Button variant="outline" className="gap-2 h-[68px]">
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </Button>
+                </Link>
               )}
-              <WalletConnect onAddressChange={setUserAddress} />
+              <WalletConnect 
+                onAddressChange={setUserAddress}
+                sBtcBalance={sBtcBalance}
+                stxBalance={stxBalance}
+                bxlBTC={userBalances?.bxlBTC ?? 0}
+                blxSTX={userBalances?.blxSTX ?? 0}
+              />
             </div>
           </div>
         </div>

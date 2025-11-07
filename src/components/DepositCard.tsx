@@ -56,35 +56,35 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
   };
 
   return (
-    <Card className="gradient-card border-primary/20">
-      <CardHeader className="text-center">
-        <CardTitle className="text-2xl">
-          {activeTab === "sbtc" ? "Deposit sBTC" : "Deposit STX"}
-        </CardTitle>
-        <CardDescription>
-          Contribute to the Commons while maintaining ownership
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="sbtc" className="w-full" onValueChange={setActiveTab}>
-          <div className="flex justify-end mb-3">
-            <TabsList className="h-8 p-1 bg-muted/50">
-              <TabsTrigger 
-                value="sbtc" 
-                className="text-xs h-6 px-3 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
-              >
-                sBTC
-              </TabsTrigger>
-              <TabsTrigger 
-                value="stx" 
-                className="text-xs h-6 px-3 data-[state=active]:bg-secondary/10 data-[state=active]:text-secondary"
-              >
-                STX
-              </TabsTrigger>
-            </TabsList>
-          </div>
-          
-          <TabsContent value="sbtc" className="space-y-4">
+    <Card className="gradient-card border-primary/20 relative">
+      <Tabs defaultValue="sbtc" className="w-full" onValueChange={setActiveTab}>
+        <div className="absolute top-4 right-4 z-10">
+          <TabsList className="h-8 p-1 bg-muted/50">
+            <TabsTrigger 
+              value="sbtc" 
+              className="text-xs h-6 px-3 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+            >
+              sBTC
+            </TabsTrigger>
+            <TabsTrigger 
+              value="stx" 
+              className="text-xs h-6 px-3 data-[state=active]:bg-secondary/10 data-[state=active]:text-secondary"
+            >
+              STX
+            </TabsTrigger>
+          </TabsList>
+        </div>
+        
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">
+            {activeTab === "sbtc" ? "Deposit sBTC" : "Deposit STX"}
+          </CardTitle>
+          <CardDescription>
+            Contribute to the Commons while maintaining ownership
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TabsContent value="sbtc" className="space-y-4 mt-0">
             <div className="space-y-2">
               <Input
                 type="number"
@@ -123,7 +123,7 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
             )}
           </TabsContent>
 
-          <TabsContent value="stx" className="space-y-4">
+          <TabsContent value="stx" className="space-y-4 mt-0">
             <div className="space-y-2">
               <Input
                 type="number"
@@ -161,8 +161,8 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
               </div>
             )}
           </TabsContent>
-        </Tabs>
-      </CardContent>
+        </CardContent>
+      </Tabs>
     </Card>
   );
 };

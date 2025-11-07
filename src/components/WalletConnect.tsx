@@ -1,10 +1,7 @@
-import { useState, useEffect } from "react";
-import { AppConfig, UserSession, showConnect } from "@stacks/connect";
 import { Button } from "@/components/ui/button";
+import { clearLocalStorage, getLocalStorage, request, connect } from "@stacks/connect";
 import { Wallet } from "lucide-react";
-
-const appConfig = new AppConfig(["store_write", "publish_data"]);
-const userSession = new UserSession({ appConfig });
+import { useEffect, useState } from "react";
 
 interface WalletConnectProps {
   onAddressChange: (address: string | null) => void;
@@ -14,33 +11,25 @@ export const WalletConnect = ({ onAddressChange }: WalletConnectProps) => {
   const [address, setAddress] = useState<string | null>(null);
 
   useEffect(() => {
-    if (userSession.isUserSignedIn()) {
-      const userData = userSession.loadUserData();
-      const userAddress = userData.profile.stxAddress.mainnet;
-      setAddress(userAddress);
-      onAddressChange(userAddress);
+    const stxAddress = getLocalStorage()?.addresses.stx[0]?.address || null;
+    if (stxAddress) {      
+      onAddressChange(stxAddress);
     }
   }, [onAddressChange]);
 
-  const connectWallet = () => {
-    showConnect({
-      appDetails: {
-        name: "DAO Brussels Vault",
-        icon: window.location.origin + "/favicon.ico",
-      },
-      redirectTo: "/",
-      onFinish: () => {
-        const userData = userSession.loadUserData();
-        const userAddress = userData.profile.stxAddress.mainnet;
-        setAddress(userAddress);
-        onAddressChange(userAddress);
-      },
-      userSession,
-    });
+  const connectWallet = async () => {
+  const result = await connect();
+  if (result.addresses[0]) {
+    const stxAddress = getLocalStorage()?.addresses.stx[0]?.address || null;
+    if (stxAddress) {      
+      setAddress(stxAddress);
+      onAddressChange(stxAddress);
+    }
+  }
   };
 
   const disconnectWallet = () => {
-    userSession.signUserOut();
+    clearLocalStorage();
     setAddress(null);
     onAddressChange(null);
   };

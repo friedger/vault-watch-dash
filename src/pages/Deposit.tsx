@@ -70,30 +70,39 @@ const Deposit = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-xl mx-auto space-y-6">
-          <Link to="/">
-            <Button variant="ghost" className="gap-2 mb-4">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Home
-            </Button>
-          </Link>
+          <div className="space-y-2">
+            <h1 className="text-4xl font-bold">Deposit Assets</h1>
+            <p className="text-muted-foreground">Deposit sBTC and STX to earn yield through dual stacking</p>
+          </div>
 
           {!userAddress ? (
-            <div className="flex flex-col items-center justify-center text-center space-y-6 animate-fade-in py-12">
-              <div className="relative">
-                <div className="absolute inset-0 blur-3xl opacity-30 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
-                <img 
-                  src={daoLogo} 
-                  alt="DAO Brussels" 
-                  className="h-32 w-32 object-contain relative z-10"
-                />
+            <>
+              <div className="flex flex-col items-center justify-center text-center space-y-6 animate-fade-in py-12">
+                <div className="relative">
+                  <div className="absolute inset-0 blur-3xl opacity-30 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                  <img 
+                    src={daoLogo} 
+                    alt="DAO Brussels" 
+                    className="h-32 w-32 object-contain relative z-10"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <h2 className="text-3xl font-bold">Connect Your Wallet</h2>
+                  <p className="text-muted-foreground text-lg max-w-md">
+                    Connect your wallet to deposit sBTC and STX into the DAO Brussels Vault.
+                  </p>
+                </div>
               </div>
-              <div className="space-y-3">
-                <h2 className="text-3xl font-bold">Connect Your Wallet</h2>
-                <p className="text-muted-foreground text-lg max-w-md">
-                  Connect your wallet to deposit sBTC and STX into the DAO Brussels Vault.
-                </p>
+              <div className="flex gap-3 justify-center">
+                <Link to="/">
+                  <Button variant="outline" className="gap-2">
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Home
+                  </Button>
+                </Link>
+                <WalletConnect onAddressChange={setUserAddress} />
               </div>
-            </div>
+            </>
           ) : (
             <div className="animate-fade-in">
               <DepositCard 

@@ -148,8 +148,10 @@ const Index = () => {
             {/* Main Deposit Section */}
             <div className="max-w-xl mx-auto">
               <DepositCard 
-                onDeposit={handleSBtcDeposit} 
-                userBalance={userBalances?.sBtc ?? 0}
+                onSBtcDeposit={handleSBtcDeposit}
+                onStxDeposit={handleStxDeposit}
+                sBtcBalance={userBalances?.sBtc ?? 0}
+                stxBalance={userBalances?.stx ?? 0}
               />
             </div>
 

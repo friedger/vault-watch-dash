@@ -14,23 +14,33 @@ export const PortfolioChart = ({ sBtc, stx, bxlBTC, blxSTX }: PortfolioChartProp
   const chartData = [
     {
       name: "sBTC",
-      value: sBtc,
-      wrapped: bxlBTC,
+      btc: sBtc,
+      stx: 0,
+    },
+    {
+      name: "bxlBTC",
+      btc: bxlBTC,
+      stx: 0,
     },
     {
       name: "STX",
-      value: stx / 1000, // Scale down for better visualization
-      wrapped: blxSTX / 1000,
+      btc: 0,
+      stx: stx / 1000, // Scale down for better visualization
+    },
+    {
+      name: "blxSTX",
+      btc: 0,
+      stx: blxSTX / 1000,
     },
   ];
 
   const chartConfig = {
-    value: {
-      label: "Balance",
+    btc: {
+      label: "BTC",
       color: "hsl(var(--primary))",
     },
-    wrapped: {
-      label: "Wrapped",
+    stx: {
+      label: "STX",
       color: "hsl(var(--secondary))",
     },
   };
@@ -50,22 +60,22 @@ export const PortfolioChart = ({ sBtc, stx, bxlBTC, blxSTX }: PortfolioChartProp
               </div>
               <p className="text-2xl font-bold text-primary">{sBtc.toFixed(8)}</p>
             </div>
-            <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/10">
+            <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm text-muted-foreground">bxlBTC Wrapped</p>
-                <div className="h-3 w-3 rounded-full bg-secondary"></div>
+                <div className="h-3 w-3 rounded-full bg-primary"></div>
               </div>
-              <p className="text-2xl font-bold text-secondary">{bxlBTC.toFixed(8)}</p>
+              <p className="text-2xl font-bold text-primary">{bxlBTC.toFixed(8)}</p>
             </div>
           </div>
 
           <div className="space-y-4">
-            <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+            <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/10">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm text-muted-foreground">STX Balance</p>
-                <div className="h-3 w-3 rounded-full bg-primary"></div>
+                <div className="h-3 w-3 rounded-full bg-secondary"></div>
               </div>
-              <p className="text-2xl font-bold text-primary">{stx.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-secondary">{stx.toLocaleString()}</p>
             </div>
             <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/10">
               <div className="flex items-center justify-between mb-2">
@@ -92,14 +102,14 @@ export const PortfolioChart = ({ sBtc, stx, bxlBTC, blxSTX }: PortfolioChartProp
             <ChartTooltip content={<ChartTooltipContent />} />
             <Area
               type="monotone"
-              dataKey="value"
+              dataKey="btc"
               stackId="1"
               stroke="hsl(var(--primary))"
               fill="hsl(var(--primary) / 0.3)"
             />
             <Area
               type="monotone"
-              dataKey="wrapped"
+              dataKey="stx"
               stackId="1"
               stroke="hsl(var(--secondary))"
               fill="hsl(var(--secondary) / 0.3)"

@@ -70,7 +70,17 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Vault Dashboard</p>
               </div>
             </div>
-            <WalletConnect onAddressChange={setUserAddress} />
+            <div className="flex items-center gap-4">
+              {userAddress && (
+                <div className="hidden md:block px-4 py-2 rounded-lg bg-card border border-primary/20">
+                  <p className="text-xs text-muted-foreground">Vault Balance</p>
+                  <p className="text-sm font-bold text-primary">
+                    {(vaultBalances?.sBtc ?? 0).toFixed(4)} sBTC
+                  </p>
+                </div>
+              )}
+              <WalletConnect onAddressChange={setUserAddress} />
+            </div>
           </div>
         </div>
       </header>
@@ -86,11 +96,15 @@ const Index = () => {
             <BalanceCard
               title="sBTC Balance"
               balance={`${sBtcBalance.toFixed(8)} sBTC`}
+              subBalance={`${(displayBalances?.bxlBTC ?? 0).toFixed(8)} bxlBTC`}
+              subLabel="Wrapped"
               icon={<Bitcoin className="w-5 h-5 text-primary" />}
             />
             <BalanceCard
               title="STX Balance"
               balance={`${stxBalance.toLocaleString()} STX`}
+              subBalance={`${(displayBalances?.blxSTX ?? 0).toLocaleString()} blxSTX`}
+              subLabel="Wrapped"
               icon={<Coins className="w-5 h-5 text-secondary" />}
             />
             <BalanceCard

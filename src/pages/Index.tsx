@@ -2,41 +2,54 @@ import { useState } from "react";
 import { WalletConnect } from "@/components/WalletConnect";
 import { BalanceCard } from "@/components/BalanceCard";
 import { DepositWithdrawCard } from "@/components/DepositWithdrawCard";
-import { Bitcoin, Coins, Lock, TrendingUp } from "lucide-react";
+import { Bitcoin, Coins, TrendingUp } from "lucide-react";
 import daoLogo from "@/assets/dao-logo.png";
+import { useBalances } from "@/hooks/useBalances";
+import { useTotalSupply } from "@/hooks/useTotalSupply";
+import { VAULT_ADDRESS } from "@/services/blockchain";
 
 const Index = () => {
   const [userAddress, setUserAddress] = useState<string | null>(null);
-  const [sBtcBalance, setSBtcBalance] = useState(0);
-  const [stxBalance, setStxBalance] = useState(0);
-  const [lockedStx, setLockedStx] = useState(0);
-  const [depositedSBtc, setDepositedSBtc] = useState(0);
+  
+  // Fetch vault balances (always)
+  const { data: vaultBalances } = useBalances(VAULT_ADDRESS);
+  
+  // Fetch user balances (when connected)
+  const { data: userBalances } = useBalances(userAddress);
+  
+  // Fetch total supply of wrapped BTC for yield calculation
+  const { data: wrappedBtcSupply = 0 } = useTotalSupply(
+    'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK',
+    'token-wbtc'
+  );
+  
+  // Use vault balances for display, or fallback to 0
+  const displayBalances = userAddress ? userBalances : vaultBalances;
+  const sBtcBalance = displayBalances?.sBtc ?? 0;
+  const stxBalance = displayBalances?.stx ?? 0;
+  
+  // Calculate earned yield: vault sBTC - total supply of wrapped sBTC
+  const earnedYield = Math.max(0, (vaultBalances?.sBtc ?? 0) - wrappedBtcSupply);
 
   const handleSBtcDeposit = (amount: number) => {
-    setSBtcBalance(prev => prev + amount);
-    setDepositedSBtc(prev => prev + amount);
+    // TODO: Implement actual deposit transaction
+    console.log('Deposit sBTC:', amount);
   };
 
   const handleSBtcWithdraw = (amount: number) => {
-    if (amount <= sBtcBalance) {
-      setSBtcBalance(prev => prev - amount);
-      setDepositedSBtc(prev => Math.max(0, prev - amount));
-    }
+    // TODO: Implement actual withdraw transaction
+    console.log('Withdraw sBTC:', amount);
   };
 
   const handleStxDeposit = (amount: number) => {
-    setStxBalance(prev => prev + amount);
+    // TODO: Implement actual deposit transaction
+    console.log('Deposit STX:', amount);
   };
 
   const handleStxWithdraw = (amount: number) => {
-    const availableStx = stxBalance - lockedStx;
-    if (amount <= availableStx) {
-      setStxBalance(prev => prev - amount);
-    }
+    // TODO: Implement actual withdraw transaction
+    console.log('Withdraw STX:', amount);
   };
-
-  // Calculate earned yield (vault sBTC - deposited sBTC)
-  const earnedYield = Math.max(0, sBtcBalance - depositedSBtc);
 
   return (
     <div className="min-h-screen bg-background">
@@ -78,8 +91,6 @@ const Index = () => {
             <BalanceCard
               title="STX Balance"
               balance={`${stxBalance.toLocaleString()} STX`}
-              subBalance={`${lockedStx.toLocaleString()} STX`}
-              subLabel="Locked"
               icon={<Coins className="w-5 h-5 text-secondary" />}
             />
             <BalanceCard

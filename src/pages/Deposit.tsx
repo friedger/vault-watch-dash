@@ -6,6 +6,9 @@ import { DepositCard } from "@/components/DepositCard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, LayoutDashboard } from "lucide-react";
 import { useBalances } from "@/hooks/useBalances";
+import { useTotalSupply } from "@/hooks/useTotalSupply";
+import { BalanceCard } from "@/components/BalanceCard";
+import { Coins, TrendingUp } from "lucide-react";
 import daoLogo from "@/assets/dao-logo.png";
 
 const Deposit = () => {
@@ -14,6 +17,10 @@ const Deposit = () => {
   
   const sBtcBalance = userBalances?.sBtc ?? 0;
   const stxBalance = userBalances?.stx ?? 0;
+
+  // Fetch total vault supplies
+  const { data: totalBxlBTC } = useTotalSupply('SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK', 'token-wbtc');
+  const { data: totalBlxSTX } = useTotalSupply('SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK', 'token-wstx');
 
   const handleSBtcDeposit = (amount: number) => {
     // TODO: Implement actual deposit transaction
@@ -113,7 +120,7 @@ const Deposit = () => {
               />
 
               {/* About the Vault Section */}
-              <div className="gradient-card border border-primary/20 rounded-lg p-6 space-y-4">
+              <div className="gradient-card border border-primary/20 rounded-lg p-6 space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-2">About the Vault</h3>
                   <p className="text-muted-foreground">
@@ -122,6 +129,20 @@ const Deposit = () => {
                     yield, which is then allocated by community stewards to build and develop the Commons in 
                     Brussels. Monitor your contributions and the collective yield earned through this dashboard.
                   </p>
+                </div>
+
+                {/* Vault Balance Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <BalanceCard
+                    title="Total Vault sBTC"
+                    balance={`${totalBxlBTC?.toFixed(8) ?? '0.00000000'} BTC`}
+                    icon={<Coins className="h-5 w-5 text-primary" />}
+                  />
+                  <BalanceCard
+                    title="Total Vault STX"
+                    balance={`${totalBlxSTX?.toFixed(2) ?? '0.00'} STX`}
+                    icon={<TrendingUp className="h-5 w-5 text-primary" />}
+                  />
                 </div>
               </div>
             </div>

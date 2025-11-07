@@ -42,16 +42,18 @@ export const WalletConnect = ({ onAddressChange }: WalletConnectProps) => {
     <div>
       {address ? (
         <div className="flex items-center gap-3">
-          <div className="px-4 py-2 rounded-lg bg-card border border-primary/20">
-            <p className="text-sm text-muted-foreground">Connected</p>
-            <p className="font-mono text-primary">{formatAddress(address)}</p>
+          <div className="px-4 py-2 rounded-lg bg-card border border-primary/20 h-[68px] flex items-center">
+            <div>
+              <p className="text-xs text-muted-foreground">Connected</p>
+              <p className="font-mono text-sm font-bold text-primary">{formatAddress(address)}</p>
+            </div>
           </div>
-          <Button variant="outline" onClick={disconnectWallet}>
+          <Button variant="outline" onClick={disconnectWallet} className="h-[68px]">
             Disconnect
           </Button>
         </div>
       ) : (
-        <Button onClick={connectWallet} className="gap-2">
+        <Button onClick={connectWallet} className="gap-2 h-[68px] px-6">
           <Wallet className="w-4 h-4" />
           Connect Wallet
         </Button>

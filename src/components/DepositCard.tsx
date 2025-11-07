@@ -16,6 +16,7 @@ interface DepositCardProps {
 export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalance }: DepositCardProps) => {
   const [sBtcAmount, setSBtcAmount] = useState("");
   const [stxAmount, setStxAmount] = useState("");
+  const [activeTab, setActiveTab] = useState("sbtc");
   const { toast } = useToast();
 
   const handleSBtcDeposit = () => {
@@ -57,17 +58,29 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
   return (
     <Card className="gradient-card border-primary/20">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Deposit Assets</CardTitle>
+        <CardTitle className="text-2xl">
+          {activeTab === "sbtc" ? "Deposit sBTC" : "Deposit STX"}
+        </CardTitle>
         <CardDescription>
           Contribute to the Commons while maintaining ownership
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="sbtc" className="w-full">
+        <Tabs defaultValue="sbtc" className="w-full" onValueChange={setActiveTab}>
           <div className="flex justify-end mb-3">
-            <TabsList className="h-8 p-1">
-              <TabsTrigger value="sbtc" className="text-xs h-6 px-3">sBTC</TabsTrigger>
-              <TabsTrigger value="stx" className="text-xs h-6 px-3">STX</TabsTrigger>
+            <TabsList className="h-8 p-1 bg-muted/50">
+              <TabsTrigger 
+                value="sbtc" 
+                className="text-xs h-6 px-3 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+              >
+                sBTC
+              </TabsTrigger>
+              <TabsTrigger 
+                value="stx" 
+                className="text-xs h-6 px-3 data-[state=active]:bg-secondary/10 data-[state=active]:text-secondary"
+              >
+                STX
+              </TabsTrigger>
             </TabsList>
           </div>
           
@@ -134,9 +147,17 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
             </Button>
             {stxBalance === 0 && (
               <div className="text-center">
-                <p className="text-sm text-muted-foreground">
-                  Insufficient STX balance
-                </p>
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="gap-2 text-secondary"
+                  asChild
+                >
+                  <a href="https://www.okx.com/web3/dex-swap#inputChain=501&inputCurrency=0xc7bbec68d12a0d1830360f8ec58fa599ba1b0e9b&outputChain=501&outputCurrency=0xes" target="_blank" rel="noopener noreferrer">
+                    Get more STX
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </Button>
               </div>
             )}
           </TabsContent>

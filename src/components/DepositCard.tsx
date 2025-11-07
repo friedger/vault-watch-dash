@@ -64,10 +64,12 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="sbtc" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="sbtc">sBTC</TabsTrigger>
-            <TabsTrigger value="stx">STX</TabsTrigger>
-          </TabsList>
+          <div className="flex justify-end mb-3">
+            <TabsList className="h-8 p-1">
+              <TabsTrigger value="sbtc" className="text-xs h-6 px-3">sBTC</TabsTrigger>
+              <TabsTrigger value="stx" className="text-xs h-6 px-3">STX</TabsTrigger>
+            </TabsList>
+          </div>
           
           <TabsContent value="sbtc" className="space-y-4">
             <div className="space-y-2">

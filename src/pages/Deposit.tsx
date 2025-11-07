@@ -38,6 +38,11 @@ const Deposit = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
+              <Link to="/">
+                <Button variant="ghost" size="icon" className="mr-2">
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+              </Link>
               <img 
                 src={daoLogo} 
                 alt="DAO Brussels" 

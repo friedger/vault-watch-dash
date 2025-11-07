@@ -129,8 +129,9 @@ const Index = () => {
             <div className="space-y-3">
               <h2 className="text-3xl font-bold">Connect Your Wallet</h2>
               <p className="text-muted-foreground text-lg max-w-md">
-                Connect your Stacks wallet to manage your sBTC and STX deposits, 
-                track your yields, and participate in the vault.
+                Contribute to the Commons by granting access to your assets while maintaining ownership. 
+                The DAO Brussels community generates yield from deposited assets, which stewards use to 
+                build and develop the Commons in Brussels.
               </p>
             </div>
           </div>
@@ -157,10 +158,10 @@ const Index = () => {
             <div className="gradient-card border border-primary/20 rounded-lg p-6">
               <h3 className="text-lg font-semibold mb-2">About the Vault</h3>
               <p className="text-muted-foreground">
-                The DAO Brussels Vault allows you to deposit sBTC and STX tokens to earn yield. 
-                Your deposited sBTC generates returns over time, while STX tokens can be locked 
-                for governance participation. Monitor your earnings and manage your positions easily 
-                through this dashboard.
+                The DAO Brussels Vault enables you to grant access to your sBTC and STX assets to the 
+                community without losing ownership. The community actively uses these assets to generate 
+                yield, which is then allocated by community stewards to build and develop the Commons in 
+                Brussels. Monitor your contributions and the collective yield earned through this dashboard.
               </p>
             </div>
           </div>

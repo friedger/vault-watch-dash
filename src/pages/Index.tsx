@@ -69,7 +69,7 @@ const Index = () => {
           <h2 className="text-2xl font-bold mb-4">
             {userAddress ? "Your Balance" : "Vault Balance Overview"}
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <BalanceCard
               title="sBTC Balance"
               balance={`${sBtcBalance.toFixed(8)} sBTC`}
@@ -81,11 +81,6 @@ const Index = () => {
               subBalance={`${lockedStx.toLocaleString()} STX`}
               subLabel="Locked"
               icon={<Coins className="w-5 h-5 text-secondary" />}
-            />
-            <BalanceCard
-              title="Locked STX"
-              balance={`${lockedStx.toLocaleString()} STX`}
-              icon={<Lock className="w-5 h-5 text-muted-foreground" />}
             />
             <BalanceCard
               title="Earned Yield"

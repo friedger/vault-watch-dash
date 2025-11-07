@@ -4,11 +4,13 @@ import { BalanceCard } from "@/components/BalanceCard";
 import { BalanceSummary } from "@/components/BalanceSummary";
 import { DepositCard } from "@/components/DepositCard";
 import { DepositWithdrawCard } from "@/components/DepositWithdrawCard";
-import { Bitcoin, Coins, TrendingUp } from "lucide-react";
+import { Bitcoin, Coins, TrendingUp, LayoutDashboard } from "lucide-react";
+import { Link } from "react-router-dom";
 import daoLogo from "@/assets/dao-logo.png";
 import { useBalances } from "@/hooks/useBalances";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import { VAULT_ADDRESS } from "@/services/blockchain";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [userAddress, setUserAddress] = useState<string | null>(null);
@@ -80,12 +82,20 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-4">
               {userAddress && (
-                <BalanceSummary
-                  sBtcBalance={sBtcBalance}
-                  stxBalance={stxBalance}
-                  bxlBTC={userBalances?.bxlBTC ?? 0}
-                  blxSTX={userBalances?.blxSTX ?? 0}
-                />
+                <>
+                  <Link to="/dashboard">
+                    <Button variant="outline" className="gap-2">
+                      <LayoutDashboard className="w-4 h-4" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <BalanceSummary
+                    sBtcBalance={sBtcBalance}
+                    stxBalance={stxBalance}
+                    bxlBTC={userBalances?.bxlBTC ?? 0}
+                    blxSTX={userBalances?.blxSTX ?? 0}
+                  />
+                </>
               )}
               <WalletConnect onAddressChange={setUserAddress} />
             </div>

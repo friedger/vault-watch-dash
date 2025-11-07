@@ -222,6 +222,43 @@ const Index = () => {
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-left">
                 <div className="flex items-center gap-2">
+                  <Bitcoin className="w-5 h-5 text-primary" />
+                  <span>What is sBTC?</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground space-y-3">
+                <p>
+                  <strong>sBTC (Stacks Bitcoin)</strong> is a decentralized, programmable Bitcoin asset on the Stacks blockchain. 
+                  It's a 1:1 Bitcoin-backed asset that brings Bitcoin's security and value to DeFi applications.
+                </p>
+                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2">
+                  <p className="font-semibold">Key features:</p>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li><strong>1:1 Bitcoin backing:</strong> Each sBTC is fully backed by real Bitcoin</li>
+                    <li><strong>Decentralized:</strong> No centralized custodian holds your Bitcoin</li>
+                    <li><strong>Programmable:</strong> Use Bitcoin in smart contracts and DeFi applications</li>
+                    <li><strong>Redeemable:</strong> Convert back to native Bitcoin at any time</li>
+                  </ul>
+                </div>
+                <p>
+                  By depositing sBTC into the DAO Brussels Vault, you're contributing Bitcoin to earn stacking rewards 
+                  while supporting the development of the Commons in Brussels.
+                </p>
+                <a 
+                  href="https://sbtc.stacks.co/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-primary hover:underline text-sm font-medium"
+                >
+                  Learn more about sBTC
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-2">
+              <AccordionTrigger className="text-left">
+                <div className="flex items-center gap-2">
                   <Shield className="w-5 h-5 text-primary" />
                   <span>What are the risks?</span>
                 </div>
@@ -242,7 +279,7 @@ const Index = () => {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-2">
+            <AccordionItem value="item-3">
               <AccordionTrigger className="text-left">
                 <div className="flex items-center gap-2">
                   <Lock className="w-5 h-5 text-primary" />
@@ -267,7 +304,7 @@ const Index = () => {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-3">
+            <AccordionItem value="item-4">
               <AccordionTrigger className="text-left">
                 <div className="flex items-center gap-2">
                   <TrendingDown className="w-5 h-5 text-primary" />
@@ -290,7 +327,7 @@ const Index = () => {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-4">
+            <AccordionItem value="item-5">
               <AccordionTrigger className="text-left">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-primary" />

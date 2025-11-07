@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { VAULT_ADDRESS } from "@/services/blockchain";
 import { Link } from "react-router-dom";
 import { WalletConnect } from "@/components/WalletConnect";
 import { DepositCard } from "@/components/DepositCard";
@@ -13,6 +14,7 @@ import daoLogo from "@/assets/dao-logo.png";
 const Deposit = () => {
   const [userAddress, setUserAddress] = useState<string | null>(null);
   const { data: userBalances } = useBalances(userAddress);
+  const { data: vaultBalances } = useBalances(VAULT_ADDRESS);
   
   const sBtcBalance = userBalances?.sBtc ?? 0;
   const stxBalance = userBalances?.stx ?? 0;
@@ -20,6 +22,9 @@ const Deposit = () => {
   // Fetch total vault supplies
   const { data: totalBxlBTC } = useTotalSupply('SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK', 'token-wbtc');
   const { data: totalBlxSTX } = useTotalSupply('SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK', 'token-wstx');
+
+  // Calculate earned yield
+  const earnedYield = Math.max(0, (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0));
 
   const handleSBtcDeposit = (amount: number) => {
     // TODO: Implement actual deposit transaction
@@ -122,14 +127,16 @@ const Deposit = () => {
 
               {/* About the Vault Section */}
               <div className="gradient-card border border-primary/20 rounded-lg p-6 space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">About the Vault</h3>
-                  <p className="text-muted-foreground">
-                    The DAO Brussels Vault enables you to grant access to your sBTC and STX assets to the 
-                    community without losing ownership. The community actively uses these assets to generate 
-                    yield, which is then allocated by community stewards to build and develop the Commons in 
-                    Brussels. Monitor your contributions and the collective yield earned through this dashboard.
-                  </p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">About the Vault</h3>
+                    <p className="text-muted-foreground">
+                      The DAO Brussels Vault enables you to grant access to your sBTC and STX assets to the 
+                      community without losing ownership. The community actively uses these assets to generate 
+                      yield, which is then allocated by community stewards to build and develop the Commons in 
+                      Brussels. Monitor your contributions and the collective yield earned through this dashboard.
+                    </p>
+                  </div>
                 </div>
 
                 {/* Vault Balance Cards */}
@@ -140,10 +147,20 @@ const Deposit = () => {
                     icon={<Coins className="h-5 w-5 text-primary" />}
                   />
                   <BalanceCard
-                    title="Total Vault STX"
-                    balance={`${totalBlxSTX?.toFixed(2) ?? '0.00'} STX`}
+                    title="Earned Yield"
+                    balance={`${earnedYield.toFixed(8)} sBTC`}
                     icon={<TrendingUp className="h-5 w-5 text-primary" />}
+                    isYield
                   />
+                </div>
+
+                {/* See Details Button */}
+                <div className="pt-2">
+                  <Link to="/vault-details">
+                    <Button variant="outline" className="w-full">
+                      See Details
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>

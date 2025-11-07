@@ -188,56 +188,63 @@ const Index = () => {
               {/* Vault Stats */}
               <div className="border-t border-border pt-6">
                 <h4 className="text-sm font-semibold mb-4 text-muted-foreground">Vault Statistics</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Bitcoin className="w-4 h-4 text-primary" />
-                      <p className="text-xs text-muted-foreground">Total sBTC</p>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Bitcoin className="w-5 h-5 text-primary" />
+                      <p className="text-sm font-semibold">sBTC</p>
                     </div>
-                    <p className="text-2xl font-bold text-primary">
-                      {(vaultBalances?.sBtc ?? 0).toFixed(8)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">sBTC</p>
-                  </div>
-                  <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
-                    <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="w-4 h-4 text-primary" />
-                      <p className="text-xs text-muted-foreground">Yield Earned</p>
+                    <div className="space-y-2">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Vault Balance</p>
+                        <p className="text-2xl font-bold text-primary">
+                          {(vaultBalances?.sBtc ?? 0).toFixed(8)}
+                        </p>
+                      </div>
+                      <div className="pt-2 border-t border-primary/10">
+                        <p className="text-xs text-muted-foreground">bxlBTC Supply</p>
+                        <p className="text-lg font-semibold">
+                          {wrappedBtcSupply.toFixed(8)}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-2xl font-bold text-primary">
-                      {earnedYield.toFixed(8)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">sBTC</p>
                   </div>
+                  
                   <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/10">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Coins className="w-4 h-4 text-secondary" />
-                      <p className="text-xs text-muted-foreground">Total STX</p>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Coins className="w-5 h-5 text-secondary" />
+                      <p className="text-sm font-semibold">STX</p>
                     </div>
-                    <p className="text-2xl font-bold text-secondary">
-                      {(vaultBalances?.stx ?? 0).toLocaleString()}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">STX</p>
+                    <div className="space-y-2">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Vault Balance</p>
+                        <p className="text-2xl font-bold text-secondary">
+                          {(vaultBalances?.stx ?? 0).toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="pt-2 border-t border-secondary/10">
+                        <p className="text-xs text-muted-foreground">blxSTX Supply</p>
+                        <p className="text-lg font-semibold">
+                          {wrappedStxSupply.toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
                   </div>
+
                   <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Bitcoin className="w-4 h-4 text-primary" />
-                      <p className="text-xs text-muted-foreground">bxlBTC Supply</p>
+                    <div className="flex items-center gap-2 mb-3">
+                      <TrendingUp className="w-5 h-5 text-primary" />
+                      <p className="text-sm font-semibold">Yield Earned</p>
                     </div>
-                    <p className="text-xl font-bold">
-                      {wrappedBtcSupply.toFixed(8)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">Wrapped BTC</p>
-                  </div>
-                  <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/10">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Coins className="w-4 h-4 text-secondary" />
-                      <p className="text-xs text-muted-foreground">blxSTX Supply</p>
+                    <div className="space-y-2">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Total Earned</p>
+                        <p className="text-2xl font-bold text-primary">
+                          {earnedYield.toFixed(8)}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">sBTC</p>
+                      </div>
                     </div>
-                    <p className="text-xl font-bold">
-                      {wrappedStxSupply.toLocaleString()}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">Wrapped STX</p>
                   </div>
                 </div>
               </div>

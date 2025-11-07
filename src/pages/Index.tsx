@@ -96,23 +96,25 @@ const Index = () => {
             <BalanceCard
               title="sBTC Balance"
               balance={`${sBtcBalance.toFixed(8)} sBTC`}
-              subBalance={`${(displayBalances?.bxlBTC ?? 0).toFixed(8)} bxlBTC`}
-              subLabel="Wrapped"
+              subBalance={userAddress ? `${(displayBalances?.bxlBTC ?? 0).toFixed(8)} bxlBTC` : `${wrappedBtcSupply.toFixed(8)} bxlBTC`}
+              subLabel={userAddress ? "Wrapped" : "Total Supply"}
               icon={<Bitcoin className="w-5 h-5 text-primary" />}
             />
             <BalanceCard
               title="STX Balance"
               balance={`${stxBalance.toLocaleString()} STX`}
               subBalance={`${(displayBalances?.blxSTX ?? 0).toLocaleString()} blxSTX`}
-              subLabel="Wrapped"
+              subLabel={userAddress ? "Wrapped" : "Total Supply"}
               icon={<Coins className="w-5 h-5 text-secondary" />}
             />
-            <BalanceCard
-              title="Earned Yield"
-              balance={`${earnedYield.toFixed(8)} sBTC`}
-              icon={<TrendingUp className="w-5 h-5 text-primary" />}
-              isYield
-            />
+            {!userAddress && (
+              <BalanceCard
+                title="Earned Yield"
+                balance={`${earnedYield.toFixed(8)} sBTC`}
+                icon={<TrendingUp className="w-5 h-5 text-primary" />}
+                isYield
+              />
+            )}
           </div>
         </div>
 

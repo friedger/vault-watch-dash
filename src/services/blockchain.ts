@@ -70,7 +70,10 @@ export async function fetchTokenTotalSupply(contractAddress: string, contractNam
     if (data.okay && data.result) {
       const hexValue = data.result.replace('0x', '');
       const supply = parseInt(hexValue, 16);
-      return supply / 100000000; // Assuming 8 decimals for wrapped BTC
+      
+      // Determine decimals based on contract name
+      const decimals = contractName.includes('wstx') ? 1000000 : 100000000;
+      return supply / decimals;
     }
     return 0;
   } catch (error) {

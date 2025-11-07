@@ -25,6 +25,12 @@ const Index = () => {
     'token-wbtc'
   );
   
+  // Fetch total supply of wrapped STX
+  const { data: wrappedStxSupply = 0 } = useTotalSupply(
+    'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK',
+    'token-wstx'
+  );
+  
   // Use vault balances for display, or fallback to 0
   const displayBalances = userAddress ? userBalances : vaultBalances;
   const sBtcBalance = displayBalances?.sBtc ?? 0;
@@ -182,11 +188,11 @@ const Index = () => {
               {/* Vault Stats */}
               <div className="border-t border-border pt-6">
                 <h4 className="text-sm font-semibold mb-4 text-muted-foreground">Vault Statistics</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
                     <div className="flex items-center gap-2 mb-2">
                       <Bitcoin className="w-4 h-4 text-primary" />
-                      <p className="text-xs text-muted-foreground">Total sBTC Holdings</p>
+                      <p className="text-xs text-muted-foreground">Total sBTC</p>
                     </div>
                     <p className="text-2xl font-bold text-primary">
                       {(vaultBalances?.sBtc ?? 0).toFixed(8)}
@@ -202,6 +208,36 @@ const Index = () => {
                       {earnedYield.toFixed(8)}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">sBTC</p>
+                  </div>
+                  <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/10">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Coins className="w-4 h-4 text-secondary" />
+                      <p className="text-xs text-muted-foreground">Total STX</p>
+                    </div>
+                    <p className="text-2xl font-bold text-secondary">
+                      {(vaultBalances?.stx ?? 0).toLocaleString()}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">STX</p>
+                  </div>
+                  <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Bitcoin className="w-4 h-4 text-primary" />
+                      <p className="text-xs text-muted-foreground">bxlBTC Supply</p>
+                    </div>
+                    <p className="text-xl font-bold">
+                      {wrappedBtcSupply.toFixed(8)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">Wrapped BTC</p>
+                  </div>
+                  <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/10">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Coins className="w-4 h-4 text-secondary" />
+                      <p className="text-xs text-muted-foreground">blxSTX Supply</p>
+                    </div>
+                    <p className="text-xl font-bold">
+                      {wrappedStxSupply.toLocaleString()}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">Wrapped STX</p>
                   </div>
                 </div>
               </div>

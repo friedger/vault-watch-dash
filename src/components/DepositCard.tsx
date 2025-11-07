@@ -2,14 +2,15 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowDownToLine } from "lucide-react";
+import { ArrowDownToLine, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface DepositCardProps {
   onDeposit: (amount: number) => void;
+  userBalance: number;
 }
 
-export const DepositCard = ({ onDeposit }: DepositCardProps) => {
+export const DepositCard = ({ onDeposit, userBalance }: DepositCardProps) => {
   const [amount, setAmount] = useState("");
   const { toast } = useToast();
 
@@ -56,10 +57,26 @@ export const DepositCard = ({ onDeposit }: DepositCardProps) => {
           onClick={handleDeposit} 
           size="lg"
           className="w-full gap-2 h-12 text-lg"
+          disabled={userBalance === 0}
         >
           <ArrowDownToLine className="w-5 h-5" />
           Deposit sBTC
         </Button>
+        {userBalance === 0 && (
+          <div className="text-center">
+            <Button
+              variant="link"
+              size="sm"
+              className="gap-2 text-primary"
+              asChild
+            >
+              <a href="https://sbtc.stacks.co/" target="_blank" rel="noopener noreferrer">
+                Get more sBTC
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

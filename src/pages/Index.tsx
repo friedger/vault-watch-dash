@@ -147,7 +147,10 @@ const Index = () => {
           <div className="space-y-8 animate-fade-in">
             {/* Main Deposit Section */}
             <div className="max-w-xl mx-auto">
-              <DepositCard onDeposit={handleSBtcDeposit} />
+              <DepositCard 
+                onDeposit={handleSBtcDeposit} 
+                userBalance={userBalances?.sBtc ?? 0}
+              />
             </div>
 
             {/* Withdraw Section - Only show if user has wrapped tokens */}

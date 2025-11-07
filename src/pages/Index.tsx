@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { WalletConnect } from "@/components/WalletConnect";
 import { BalanceCard } from "@/components/BalanceCard";
+import { BalanceSummary } from "@/components/BalanceSummary";
 import { DepositCard } from "@/components/DepositCard";
 import { DepositWithdrawCard } from "@/components/DepositWithdrawCard";
 import { Bitcoin, Coins, TrendingUp } from "lucide-react";
@@ -73,12 +74,20 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-4">
               {userAddress && (
-                <div className="hidden md:block px-4 py-2 rounded-lg bg-card border border-primary/20">
-                  <p className="text-xs text-muted-foreground">Vault Balance</p>
-                  <p className="text-sm font-bold text-primary">
-                    {(vaultBalances?.sBtc ?? 0).toFixed(4)} sBTC
-                  </p>
-                </div>
+                <>
+                  <BalanceSummary
+                    sBtcBalance={sBtcBalance}
+                    stxBalance={stxBalance}
+                    bxlBTC={userBalances?.bxlBTC ?? 0}
+                    blxSTX={userBalances?.blxSTX ?? 0}
+                  />
+                  <div className="hidden lg:block px-4 py-2 rounded-lg bg-card border border-primary/20">
+                    <p className="text-xs text-muted-foreground">Vault Balance</p>
+                    <p className="text-sm font-bold text-primary">
+                      {(vaultBalances?.sBtc ?? 0).toFixed(4)} sBTC
+                    </p>
+                  </div>
+                </>
               )}
               <WalletConnect onAddressChange={setUserAddress} />
             </div>
@@ -88,36 +97,34 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-8">
-        {/* Balance Overview - Always visible */}
-        <div className="animate-fade-in">
-          <h2 className="text-2xl font-bold mb-4">
-            {userAddress ? "Your Balance" : "Vault Balance Overview"}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <BalanceCard
-              title="sBTC Balance"
-              balance={`${sBtcBalance.toFixed(8)} sBTC`}
-              subBalance={userAddress ? `${(displayBalances?.bxlBTC ?? 0).toFixed(8)} bxlBTC` : `${wrappedBtcSupply.toFixed(8)} bxlBTC`}
-              subLabel={userAddress ? "Wrapped" : "Total Supply"}
-              icon={<Bitcoin className="w-5 h-5 text-primary" />}
-            />
-            <BalanceCard
-              title="STX Balance"
-              balance={`${stxBalance.toLocaleString()} STX`}
-              subBalance={`${(displayBalances?.blxSTX ?? 0).toLocaleString()} blxSTX`}
-              subLabel={userAddress ? "Wrapped" : "Total Supply"}
-              icon={<Coins className="w-5 h-5 text-secondary" />}
-            />
-            {!userAddress && (
+        {/* Balance Overview - Only for vault when not logged in */}
+        {!userAddress && (
+          <div className="animate-fade-in">
+            <h2 className="text-2xl font-bold mb-4">Vault Balance Overview</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <BalanceCard
+                title="sBTC Balance"
+                balance={`${sBtcBalance.toFixed(8)} sBTC`}
+                subBalance={`${wrappedBtcSupply.toFixed(8)} bxlBTC`}
+                subLabel="Total Supply"
+                icon={<Bitcoin className="w-5 h-5 text-primary" />}
+              />
+              <BalanceCard
+                title="STX Balance"
+                balance={`${stxBalance.toLocaleString()} STX`}
+                subBalance={`${(displayBalances?.blxSTX ?? 0).toLocaleString()} blxSTX`}
+                subLabel="Total Supply"
+                icon={<Coins className="w-5 h-5 text-secondary" />}
+              />
               <BalanceCard
                 title="Earned Yield"
                 balance={`${earnedYield.toFixed(8)} sBTC`}
                 icon={<TrendingUp className="w-5 h-5 text-primary" />}
                 isYield
               />
-            )}
+            </div>
           </div>
-        </div>
+        )}
 
         {!userAddress ? (
           <div className="flex flex-col items-center justify-center text-center space-y-6 animate-fade-in">

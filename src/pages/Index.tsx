@@ -157,13 +157,24 @@ const Index = () => {
         ) : (
           <div className="space-y-8 animate-fade-in">
             {/* Main Deposit Section */}
-            <div className="max-w-xl mx-auto">
-              <DepositCard 
-                onSBtcDeposit={handleSBtcDeposit}
-                onStxDeposit={handleStxDeposit}
-                sBtcBalance={userBalances?.sBtc ?? 0}
-                stxBalance={userBalances?.stx ?? 0}
-              />
+            <div className="max-w-xl mx-auto text-center space-y-4">
+              <h2 className="text-2xl font-bold">Manage Your Assets</h2>
+              <p className="text-muted-foreground">
+                Deposit assets to contribute to the Commons or withdraw from your position
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link to="/deposit">
+                  <Button size="lg" className="gap-2 w-full sm:w-auto">
+                    Deposit Assets
+                  </Button>
+                </Link>
+                <Link to="/dashboard">
+                  <Button variant="outline" size="lg" className="gap-2 w-full sm:w-auto">
+                    <LayoutDashboard className="w-4 h-4" />
+                    View Dashboard
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             {/* Withdraw Section - Only show if user has wrapped tokens */}

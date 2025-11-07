@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { WalletConnect } from "@/components/WalletConnect";
 import { BalanceCard } from "@/components/BalanceCard";
+import { DepositCard } from "@/components/DepositCard";
 import { DepositWithdrawCard } from "@/components/DepositWithdrawCard";
 import { Bitcoin, Coins, TrendingUp } from "lucide-react";
 import daoLogo from "@/assets/dao-logo.png";
@@ -139,22 +140,33 @@ const Index = () => {
           </div>
         ) : (
           <div className="space-y-8 animate-fade-in">
-            {/* Deposit/Withdraw Section */}
-            <div>
-              <h2 className="text-2xl font-bold mb-4">Vault Operations</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <DepositWithdrawCard
-                  tokenType="sBTC"
-                  onDeposit={handleSBtcDeposit}
-                  onWithdraw={handleSBtcWithdraw}
-                />
-                <DepositWithdrawCard
-                  tokenType="STX"
-                  onDeposit={handleStxDeposit}
-                  onWithdraw={handleStxWithdraw}
-                />
-              </div>
+            {/* Main Deposit Section */}
+            <div className="max-w-xl mx-auto">
+              <DepositCard onDeposit={handleSBtcDeposit} />
             </div>
+
+            {/* Withdraw Section - Only show if user has wrapped tokens */}
+            {((userBalances?.bxlBTC ?? 0) > 0 || (userBalances?.blxSTX ?? 0) > 0) && (
+              <div>
+                <h2 className="text-2xl font-bold mb-4">Withdraw Assets</h2>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {(userBalances?.bxlBTC ?? 0) > 0 && (
+                    <DepositWithdrawCard
+                      tokenType="sBTC"
+                      onDeposit={handleSBtcDeposit}
+                      onWithdraw={handleSBtcWithdraw}
+                    />
+                  )}
+                  {(userBalances?.blxSTX ?? 0) > 0 && (
+                    <DepositWithdrawCard
+                      tokenType="STX"
+                      onDeposit={handleStxDeposit}
+                      onWithdraw={handleStxWithdraw}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Info Section */}
             <div className="gradient-card border border-primary/20 rounded-lg p-6">

@@ -4,7 +4,8 @@ import { BalanceCard } from "@/components/BalanceCard";
 import { BalanceSummary } from "@/components/BalanceSummary";
 import { DepositCard } from "@/components/DepositCard";
 import { DepositWithdrawCard } from "@/components/DepositWithdrawCard";
-import { Bitcoin, Coins, TrendingUp, LayoutDashboard } from "lucide-react";
+import { Bitcoin, Coins, TrendingUp, LayoutDashboard, Shield, Lock, TrendingDown, ExternalLink } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Link } from "react-router-dom";
 import daoLogo from "@/assets/dao-logo.png";
 import { useBalances } from "@/hooks/useBalances";
@@ -266,6 +267,121 @@ const Index = () => {
             </div>
           </div>
         )}
+
+        {/* FAQ Section */}
+        <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl font-bold">Frequently Asked Questions</h2>
+            <p className="text-muted-foreground">Everything you need to know about the DAO Brussels Vault</p>
+          </div>
+          
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="text-left">
+                <div className="flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-primary" />
+                  <span>What are the risks?</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground space-y-3">
+                <p>
+                  While the vault is designed with security in mind, all DeFi protocols carry inherent risks:
+                </p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li><strong>Smart Contract Risk:</strong> Potential vulnerabilities in the smart contract code</li>
+                  <li><strong>Stacking Risk:</strong> Assets are locked in the Stacks stacking mechanism to generate yield</li>
+                  <li><strong>Market Risk:</strong> Fluctuations in sBTC and STX prices affect the value of your deposits</li>
+                  <li><strong>Governance Risk:</strong> Community stewards allocate the earned yield to Commons projects</li>
+                </ul>
+                <p className="text-sm">
+                  Always deposit amounts you're comfortable with and do your own research before participating.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-2">
+              <AccordionTrigger className="text-left">
+                <div className="flex items-center gap-2">
+                  <Lock className="w-5 h-5 text-primary" />
+                  <span>Which smart contracts are used?</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground space-y-3">
+                <p>The DAO Brussels Vault uses the following smart contracts on the Stacks blockchain:</p>
+                <div className="bg-muted/50 rounded-lg p-4 font-mono text-sm break-all">
+                  <p className="mb-2"><strong>Vault Contract:</strong></p>
+                  <code className="text-xs">{VAULT_ADDRESS}</code>
+                </div>
+                <div className="bg-muted/50 rounded-lg p-4 font-mono text-sm break-all">
+                  <p className="mb-2"><strong>Token Contracts:</strong></p>
+                  <code className="text-xs">SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-wbtc</code>
+                  <br />
+                  <code className="text-xs">SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-wstx</code>
+                </div>
+                <p className="text-sm">
+                  All smart contracts are deployed on the Stacks blockchain and can be verified on-chain.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-3">
+              <AccordionTrigger className="text-left">
+                <div className="flex items-center gap-2">
+                  <TrendingDown className="w-5 h-5 text-primary" />
+                  <span>Can I always withdraw my sBTC without locking time?</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground space-y-3">
+                <p>
+                  <strong>Yes!</strong> You can withdraw your sBTC at any time without any locking period. When you deposit 
+                  sBTC or STX into the vault, you receive wrapped tokens (bxlBTC or blxSTX) that represent your ownership.
+                </p>
+                <p>
+                  These wrapped tokens can be redeemed for the underlying assets at any time through the withdraw function. 
+                  There is no minimum holding period or withdrawal lock.
+                </p>
+                <p className="text-sm">
+                  Note: While the vault itself doesn't lock your funds, the underlying stacking mechanism may have cycles, 
+                  but this doesn't prevent you from withdrawing your share of the vault's assets.
+                </p>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="item-4">
+              <AccordionTrigger className="text-left">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                  <span>Where does the yield come from?</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="text-muted-foreground space-y-3">
+                <p>
+                  The yield is generated through <strong>dual stacking</strong> on the Stacks blockchain. This innovative 
+                  mechanism allows the vault to earn Bitcoin rewards by stacking STX tokens while simultaneously earning 
+                  stacking rewards on the deposited sBTC.
+                </p>
+                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2">
+                  <p className="font-semibold">How it works:</p>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>Your sBTC and STX are pooled together in the vault</li>
+                    <li>The vault participates in Stacks stacking to earn BTC rewards</li>
+                    <li>Earned yield accumulates in the vault and is visible in real-time</li>
+                    <li>Community stewards allocate the yield to build the Commons in Brussels</li>
+                  </ul>
+                </div>
+                <a 
+                  href="https://docs.stacks.co/nakamoto-upgrade/nakamoto-in-depth/stackers-and-stacking" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-primary hover:underline text-sm font-medium"
+                >
+                  Learn more about dual stacking on Stacks
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
       </main>
     </div>
   );

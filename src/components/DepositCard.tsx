@@ -100,7 +100,7 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
             <Button 
               onClick={handleSBtcDeposit} 
               size="lg"
-              className="w-full gap-2 h-12 text-lg"
+              className="w-full gap-2 h-12 text-lg bg-primary hover:bg-primary/90"
               disabled={sBtcBalance === 0}
             >
               <ArrowDownToLine className="w-5 h-5" />
@@ -139,7 +139,7 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
             <Button 
               onClick={handleStxDeposit} 
               size="lg"
-              className="w-full gap-2 h-12 text-lg"
+              className="w-full gap-2 h-12 text-lg bg-secondary hover:bg-secondary/90"
               disabled={stxBalance === 0}
             >
               <ArrowDownToLine className="w-5 h-5" />

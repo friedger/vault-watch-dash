@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/Header";
 import { useBalances } from "@/hooks/useBalances";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
+import { useCryptoPrices } from "@/hooks/useCryptoPrices";
+import { formatEur } from "@/lib/utils";
 import { VAULT_CONTRACT, WRAPPED_BTC_CONTRACT, WRAPPED_STX_CONTRACT } from "@/services/blockchain";
 import { Bitcoin, Coins, TrendingUp } from "lucide-react";
 import { useState } from "react";
@@ -13,6 +15,7 @@ const VaultDetails = () => {
   const [userAddress, setUserAddress] = useState<string | null>(null);
   const { data: userBalances } = useBalances(userAddress);
   const { data: vaultBalances } = useBalances(VAULT_CONTRACT);
+  const { data: prices } = useCryptoPrices();
 
   // Fetch total vault supplies
   const { data: totalBxlBTC } = useTotalSupply(WRAPPED_BTC_CONTRACT);
@@ -20,6 +23,13 @@ const VaultDetails = () => {
 
   // Calculate earned yield: vault sBTC - total supply of wrapped sBTC
   const earnedYield = Math.max(0, (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0));
+
+  // Calculate EUR values
+  const vaultSBtcEur = (vaultBalances?.sBtc ?? 0) * (prices?.btcEur ?? 0);
+  const wrappedBtcEur = (totalBxlBTC ?? 0) * (prices?.btcEur ?? 0);
+  const earnedYieldEur = earnedYield * (prices?.btcEur ?? 0);
+  const vaultStxEur = (vaultBalances?.stx ?? 0) * (prices?.stxEur ?? 0);
+  const wrappedStxEur = (totalBlxSTX ?? 0) * (prices?.stxEur ?? 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -58,19 +68,22 @@ const VaultDetails = () => {
                 <BalanceCard
                   title="Total Vault sBTC"
                   balance={`${(vaultBalances?.sBtc ?? 0).toFixed(8)}`}
-                  subBalance="Bitcoin held in vault"
+                  subBalance={formatEur(vaultSBtcEur)}
+                  subLabel="EUR value"
                   icon={<Bitcoin className="h-5 w-5 text-primary" />}
                 />
                 <BalanceCard
                   title="Wrapped Supply"
                   balance={`${(totalBxlBTC ?? 0).toFixed(8)}`}
-                  subBalance="bxlBTC in circulation"
+                  subBalance={formatEur(wrappedBtcEur)}
+                  subLabel="EUR value"
                   icon={<Coins className="h-5 w-5 text-primary" />}
                 />
                 <BalanceCard
                   title="Earned Yield"
                   balance={`${earnedYield.toFixed(8)}`}
-                  subBalance="sBTC yield generated"
+                  subBalance={formatEur(earnedYieldEur)}
+                  subLabel="EUR value"
                   icon={<TrendingUp className="h-5 w-5 text-primary" />}
                   isYield
                 />
@@ -120,13 +133,15 @@ const VaultDetails = () => {
                 <BalanceCard
                   title="Total Vault STX"
                   balance={`${(vaultBalances?.stx ?? 0).toLocaleString()}`}
-                  subBalance="STX held in vault"
+                  subBalance={formatEur(vaultStxEur)}
+                  subLabel="EUR value"
                   icon={<Coins className="h-5 w-5 text-secondary" />}
                 />
                 <BalanceCard
                   title="Wrapped Supply"
                   balance={`${(totalBlxSTX ?? 0).toLocaleString()}`}
-                  subBalance="blxSTX in circulation"
+                  subBalance={formatEur(wrappedStxEur)}
+                  subLabel="EUR value"
                   icon={<Coins className="h-5 w-5 text-secondary" />}
                 />
               </div>

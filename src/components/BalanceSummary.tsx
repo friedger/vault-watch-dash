@@ -3,6 +3,8 @@ import { Bitcoin, Coins } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+import { useCryptoPrices } from "@/hooks/useCryptoPrices";
+import { formatEur } from "@/lib/utils";
 
 interface BalanceSummaryProps {
   sBtcBalance: number;
@@ -17,6 +19,12 @@ export const BalanceSummary = ({
   bxlBTC, 
   blxSTX 
 }: BalanceSummaryProps) => {
+  const { data: prices } = useCryptoPrices();
+  
+  const sBtcEur = sBtcBalance * (prices?.btcEur ?? 0);
+  const bxlBtcEur = bxlBTC * (prices?.btcEur ?? 0);
+  const stxEur = stxBalance * (prices?.stxEur ?? 0);
+  const blxStxEur = blxSTX * (prices?.stxEur ?? 0);
   return (
     <>
       {/* Desktop View */}
@@ -28,6 +36,7 @@ export const BalanceSummary = ({
               <p className="text-xs text-muted-foreground">sBTC</p>
               <p className="text-sm font-bold">{sBtcBalance.toFixed(4)}</p>
               <p className="text-xs text-muted-foreground">bxl: {bxlBTC.toFixed(4)}</p>
+              <p className="text-xs text-muted-foreground">{formatEur(sBtcEur + bxlBtcEur)}</p>
             </div>
           </div>
         </Card>
@@ -38,6 +47,7 @@ export const BalanceSummary = ({
               <p className="text-xs text-muted-foreground">STX</p>
               <p className="text-sm font-bold">{stxBalance.toLocaleString()}</p>
               <p className="text-xs text-muted-foreground">bxl: {blxSTX.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">{formatEur(stxEur + blxStxEur)}</p>
             </div>
           </div>
         </Card>
@@ -65,6 +75,7 @@ export const BalanceSummary = ({
               <p className="text-xs text-muted-foreground mt-1">
                 Wrapped: {bxlBTC.toFixed(8)} bxlBTC
               </p>
+              <p className="text-xs text-muted-foreground">{formatEur(sBtcEur + bxlBtcEur)}</p>
             </Card>
             <Card className="p-4 border-primary/20">
               <div className="flex items-center gap-2 mb-2">
@@ -75,6 +86,7 @@ export const BalanceSummary = ({
               <p className="text-xs text-muted-foreground mt-1">
                 Wrapped: {blxSTX.toLocaleString()} blxSTX
               </p>
+              <p className="text-xs text-muted-foreground">{formatEur(stxEur + blxStxEur)}</p>
             </Card>
           </div>
         </SheetContent>

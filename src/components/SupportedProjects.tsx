@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Building2, Calendar, Users, GraduationCap } from "lucide-react";
+import { Building2, Calendar, Users } from "lucide-react";
 
 const projects = [
   {
@@ -20,12 +20,6 @@ const projects = [
     description: "Brussels Blockchain Week events and conferences",
     icon: Users,
   },
-  {
-    id: 4,
-    name: "Education Programs",
-    description: "Workshops and training sessions for crypto newcomers",
-    icon: GraduationCap,
-  },
 ];
 
 export const SupportedProjects = () => {
@@ -37,7 +31,7 @@ export const SupportedProjects = () => {
           Community initiatives funded by BXL Vault yield
         </p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project) => {
           const Icon = project.icon;
           return (

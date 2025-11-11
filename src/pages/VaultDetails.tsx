@@ -1,4 +1,5 @@
 import { BalanceCard } from "@/components/BalanceCard";
+import { YieldChart } from "@/components/YieldChart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/Header";
@@ -89,36 +90,11 @@ const VaultDetails = () => {
                 />
               </div>
 
-              {/* sBTC Statistics */}
-              <div className="mt-6 p-6 bg-primary/5 border border-primary/10 rounded-lg space-y-4">
-                <h4 className="font-semibold text-lg">sBTC Statistics</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Utilization Rate</p>
-                    <p className="text-2xl font-bold text-primary">
-                      {totalBxlBTC && vaultBalances?.sBtc 
-                        ? ((totalBxlBTC / vaultBalances.sBtc) * 100).toFixed(2) 
-                        : '0.00'}%
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Percentage of vault sBTC wrapped
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Yield Rate</p>
-                    <p className="text-2xl font-bold text-primary">
-                      {totalBxlBTC && earnedYield > 0
-                        ? ((earnedYield / totalBxlBTC) * 100).toFixed(2)
-                        : '0.00'}%
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Yield generated per wrapped sBTC
-                    </p>
-                  </div>
-                </div>
-              </div>
             </CardContent>
           </Card>
+
+          {/* Yield Chart */}
+          <YieldChart currentYield={earnedYield} />
 
           {/* STX Overview Section */}
           <Card className="gradient-card border-secondary/20">

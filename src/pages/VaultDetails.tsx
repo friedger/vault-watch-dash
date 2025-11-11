@@ -44,7 +44,7 @@ const VaultDetails = () => {
         bxlBTC={userBalances?.bxlBTC ?? 0}
         blxSTX={userBalances?.blxSTX ?? 0}
         pageTitle="Vault Details"
-        backLink="/deposit"
+        backLink="/"
       />
 
       {/* Main Content */}

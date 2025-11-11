@@ -16,7 +16,7 @@ const projects = [
     name: "Crypto Wednesday",
     description: "Monthly meetups with presentations, discussions, and networking",
     logo: cryptoWednesdayLogo,
-    url: "https://luma.com/vadhebas",
+    url: "https://dao.brussels/",
   },
   {
     id: 3,

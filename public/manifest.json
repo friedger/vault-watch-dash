@@ -1,7 +1,7 @@
 {
-  "name": "DAO Brussels Vault",
-  "short_name": "DAO Vault",
-  "description": "Manage your sBTC and STX deposits in the DAO Brussels Vault. Track balances, earn yield, and participate in governance.",
+  "name": "BXL Vault by DAO Brussels",
+  "short_name": "BXL Vault",
+  "description": "Store securely your Bitcoin and fund Brussels Crypto Community. Keep ownership, 1-week withdrawal protection, yield goes to community projects.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0F172A",

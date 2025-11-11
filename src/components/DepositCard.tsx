@@ -80,7 +80,7 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
             {activeTab === "sbtc" ? "Deposit sBTC" : "Deposit STX"}
           </CardTitle>
           <CardDescription>
-            Contribute to the Commons while maintaining ownership
+            Contribute to the Brussels Crypto Community while maintaining ownership
           </CardDescription>
         </CardHeader>
         <CardContent>

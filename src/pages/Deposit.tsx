@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { VAULT_CONTRACT, WRAPPED_BTC_CONTRACT, WRAPPED_STX_CONTRACT } from "@/services/blockchain";
+import {
+  VAULT_CONTRACT,
+  WRAPPED_BTC_CONTRACT,
+  WRAPPED_STX_CONTRACT,
+} from "@/services/blockchain";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { DepositCard } from "@/components/DepositCard";
@@ -15,7 +19,7 @@ const Deposit = () => {
   const [userAddress, setUserAddress] = useState<string | null>(null);
   const { data: userBalances } = useBalances(userAddress);
   const { data: vaultBalances } = useBalances(VAULT_CONTRACT);
-  
+
   const sBtcBalance = userBalances?.sBtc ?? 0;
   const stxBalance = userBalances?.stx ?? 0;
 
@@ -24,15 +28,16 @@ const Deposit = () => {
   const { data: totalBlxSTX } = useTotalSupply(WRAPPED_STX_CONTRACT);
 
   // Calculate earned yield
-  const earnedYield = Math.max(0, (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0));
+  const earnedYield = Math.max(
+    0,
+    (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0)
+  );
 
-  const handleSBtcDeposit = (amount: number) => {
-    
-  };
+  const handleSBtcDeposit = (amount: number) => {};
 
   const handleStxDeposit = (amount: number) => {
     // TODO: Implement actual deposit transaction
-    console.log('Deposit STX:', amount);
+    console.log("Deposit STX:", amount);
   };
 
   return (
@@ -54,7 +59,9 @@ const Deposit = () => {
         <div className="max-w-xl mx-auto space-y-6">
           <div className="space-y-2">
             <h1 className="text-4xl font-bold">Deposit Assets</h1>
-            <p className="text-muted-foreground">Deposit sBTC and STX to earn yield through dual stacking</p>
+            <p className="text-muted-foreground">
+              Deposit sBTC and STX to earn yield through dual stacking
+            </p>
           </div>
 
           {!userAddress ? (
@@ -62,16 +69,16 @@ const Deposit = () => {
               <div className="flex flex-col items-center justify-center text-center space-y-6 animate-fade-in py-12">
                 <div className="relative">
                   <div className="absolute inset-0 blur-3xl opacity-30 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
-                  <img 
-                    src={daoLogo} 
-                    alt="DAO Brussels" 
+                  <img
+                    src={daoLogo}
+                    alt="DAO Brussels"
                     className="h-32 w-32 object-contain relative z-10"
                   />
                 </div>
                 <div className="space-y-3">
                   <h2 className="text-3xl font-bold">Connect Your Wallet</h2>
                   <p className="text-muted-foreground text-lg max-w-md">
-                    Connect your wallet to deposit sBTC and STX into the DAO Brussels Vault.
+                    Connect your wallet to deposit Bitcoin into the BXL Vault.
                   </p>
                 </div>
               </div>
@@ -86,7 +93,7 @@ const Deposit = () => {
             </>
           ) : (
             <div className="animate-fade-in space-y-8">
-              <DepositCard 
+              <DepositCard
                 onSBtcDeposit={handleSBtcDeposit}
                 onStxDeposit={handleStxDeposit}
                 sBtcBalance={sBtcBalance}
@@ -97,12 +104,16 @@ const Deposit = () => {
               <div className="gradient-card border border-primary/20 rounded-lg p-6 space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold mb-2">About the Vault</h3>
+                    <h3 className="text-lg font-semibold mb-2">
+                      About the Vault
+                    </h3>
                     <p className="text-muted-foreground">
-                      The DAO Brussels Vault enables you to grant access to your sBTC and STX assets to the 
-                      community without losing ownership. The community actively uses these assets to generate 
-                      yield, which is then allocated by community stewards to build and develop the Commons in 
-                      Brussels. Monitor your contributions and the collective yield earned through this dashboard.
+                      BXL Vault enables you to grant access to your Bitcoin to
+                      the community without losing ownership. The community
+                      actively uses these assets to generate yield, which is
+                      then allocated by community stewards to build and support
+                      the Brussels Crypto Community. Monitor your contributions
+                      and the collective yield earned through this dashboard.
                     </p>
                   </div>
                 </div>
@@ -111,7 +122,7 @@ const Deposit = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <BalanceCard
                     title="Total Vault sBTC"
-                    balance={`${totalBxlBTC?.toFixed(8) ?? '0.00000000'} BTC`}
+                    balance={`${totalBxlBTC?.toFixed(8) ?? "0.00000000"} BTC`}
                     icon={<Coins className="h-5 w-5 text-primary" />}
                   />
                   <BalanceCard

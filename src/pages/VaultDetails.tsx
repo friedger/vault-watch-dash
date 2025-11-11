@@ -41,7 +41,7 @@ const VaultDetails = () => {
           <div className="text-center space-y-2">
             <h1 className="text-4xl font-bold">Vault Details</h1>
             <p className="text-muted-foreground text-lg">
-              Complete overview of the DAO Brussels Vault assets and performance
+              Overview of the BXL Vault assets and performance
             </p>
           </div>
 
@@ -50,7 +50,7 @@ const VaultDetails = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Bitcoin className="w-6 h-6 text-primary" />
-                sBTC Vault Overview
+                Overview
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -112,7 +112,7 @@ const VaultDetails = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Coins className="w-6 h-6 text-secondary" />
-                STX Vault Overview
+                Stacking STX
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -156,18 +156,80 @@ const VaultDetails = () => {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground">
               <p>
-                The DAO Brussels Vault enables community members to contribute their sBTC and STX assets 
-                while maintaining ownership. The vault actively generates yield through dual stacking on 
-                the Stacks blockchain.
+                The BXL Vault lets you support the Brussels crypto community by staking your Bitcoin. 
+                You keep full ownership of your assets while the yield automatically funds community projects.
               </p>
-              <div className="bg-primary/5 border border-primary/10 rounded-lg p-4">
-                <h4 className="font-semibold text-foreground mb-2">Key Features:</h4>
-                <ul className="space-y-2 ml-4 list-disc">
-                  <li><strong>Wrapped Tokens:</strong> When you deposit, you receive bxlBTC or blxSTX tokens representing your share</li>
-                  <li><strong>Yield Generation:</strong> The vault stakes assets to earn Bitcoin rewards through dual stacking</li>
-                  <li><strong>Community Governed:</strong> Earned yield is allocated by stewards to develop the Commons in Brussels</li>
-                  <li><strong>Instant Withdrawals:</strong> Redeem your wrapped tokens for the underlying assets anytime</li>
-                </ul>
+              
+              <div className="space-y-4">
+                {/* Features Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Protection Feature */}
+                  <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-2xl">🔧</div>
+                      <div className="space-y-1">
+                        <h4 className="font-semibold text-foreground">Protection Against Wrench Attack</h4>
+                        <p className="text-sm">
+                          1-week withdrawal delay protects you from physical coercion. You have time to cancel 
+                          if someone forces you to withdraw.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Community Yield Feature */}
+                  <div className="bg-gradient-to-r from-secondary/5 to-secondary/10 border border-secondary/20 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-2xl">🤝</div>
+                      <div className="space-y-1">
+                        <h4 className="font-semibold text-foreground">Yield for the Community</h4>
+                        <p className="text-sm">
+                          No donations needed. You keep your assets while the community benefits from the yield 
+                          they generate.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Ownership Feature */}
+                  <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border border-border rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-2xl">🪙</div>
+                      <div className="space-y-1">
+                        <h4 className="font-semibold text-foreground">Your Receipt Tokens</h4>
+                        <p className="text-sm">
+                          Receive bxlBTC or blxSTX tokens when you deposit. These represent your share and can 
+                          be redeemed anytime.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tax Feature */}
+                  <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border border-border rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="text-2xl">💰</div>
+                      <div className="space-y-1">
+                        <h4 className="font-semibold text-foreground">Non-Taxable Event</h4>
+                        <p className="text-sm">
+                          Yield goes directly to the community as an endowment model, keeping your taxes simple.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* How It Works Details */}
+                <div className="bg-primary/5 border border-primary/10 rounded-lg p-4">
+                  <h4 className="font-semibold text-foreground mb-2">How Dual Stacking Works:</h4>
+                  <ul className="space-y-1 ml-4 list-disc text-sm">
+                    <li>Your sBTC and some STX are pooled together in the vault</li>
+                    <li>The vault participates in Dual Stacking on Stacks to earn BTC rewards</li>
+                    <li>You maintain 100% ownership through your bxlBTC/blxSTX tokens</li>
+                    <li>All earned yield funds Brussels crypto community projects and events</li>
+                    <li>Community stewards allocate rewards transparently</li>
+                  </ul>
+                </div>
               </div>
             </CardContent>
           </Card>

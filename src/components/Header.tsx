@@ -50,7 +50,7 @@ export const Header = ({
             />
             <div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                DAO Brussels
+                BXL Vault
               </h1>
               <p className="text-sm text-muted-foreground">{pageTitle}</p>
             </div>

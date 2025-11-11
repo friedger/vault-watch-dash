@@ -1,7 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
 import { fetchTokenTotalSupply } from '@/services/blockchain';
+import { useQuery } from '@tanstack/react-query';
 
-export function useTotalSupply(contractAddress: string, contractName: string) {
+export function useTotalSupply(contractId:`${string}.${string}`) {
+  const [contractAddress, contractName] = contractId.split('.');
   return useQuery<number>({
     queryKey: ['totalSupply', contractAddress, contractName],
     queryFn: () => fetchTokenTotalSupply(contractAddress, contractName),

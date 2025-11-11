@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { VAULT_ADDRESS } from "@/services/blockchain";
+import { VAULT_CONTRACT, WRAPPED_BTC_CONTRACT, WRAPPED_STX_CONTRACT } from "@/services/blockchain";
 import { Link } from "react-router-dom";
 import { WalletConnect } from "@/components/WalletConnect";
 import { DepositCard } from "@/components/DepositCard";
@@ -14,21 +14,20 @@ import daoLogo from "@/assets/dao-logo.png";
 const Deposit = () => {
   const [userAddress, setUserAddress] = useState<string | null>(null);
   const { data: userBalances } = useBalances(userAddress);
-  const { data: vaultBalances } = useBalances(VAULT_ADDRESS);
+  const { data: vaultBalances } = useBalances(VAULT_CONTRACT);
   
   const sBtcBalance = userBalances?.sBtc ?? 0;
   const stxBalance = userBalances?.stx ?? 0;
 
   // Fetch total vault supplies
-  const { data: totalBxlBTC } = useTotalSupply('SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK', 'token-wbtc');
-  const { data: totalBlxSTX } = useTotalSupply('SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK', 'token-wstx');
+  const { data: totalBxlBTC } = useTotalSupply(WRAPPED_BTC_CONTRACT);
+  const { data: totalBlxSTX } = useTotalSupply(WRAPPED_STX_CONTRACT);
 
   // Calculate earned yield
   const earnedYield = Math.max(0, (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0));
 
   const handleSBtcDeposit = (amount: number) => {
-    // TODO: Implement actual deposit transaction
-    console.log('Deposit sBTC:', amount);
+    
   };
 
   const handleStxDeposit = (amount: number) => {

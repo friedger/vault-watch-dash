@@ -1,23 +1,23 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { WalletConnect } from "@/components/WalletConnect";
+import daoLogo from "@/assets/dao-logo.png";
 import { BalanceCard } from "@/components/BalanceCard";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Bitcoin, TrendingUp, Coins } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { WalletConnect } from "@/components/WalletConnect";
 import { useBalances } from "@/hooks/useBalances";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
-import { VAULT_ADDRESS } from "@/services/blockchain";
-import daoLogo from "@/assets/dao-logo.png";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { VAULT_CONTRACT, WRAPPED_BTC_CONTRACT, WRAPPED_STX_CONTRACT } from "@/services/blockchain";
+import { ArrowLeft, Bitcoin, Coins, TrendingUp } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const VaultDetails = () => {
   const [userAddress, setUserAddress] = useState<string | null>(null);
   const { data: userBalances } = useBalances(userAddress);
-  const { data: vaultBalances } = useBalances(VAULT_ADDRESS);
+  const { data: vaultBalances } = useBalances(VAULT_CONTRACT);
 
   // Fetch total vault supplies
-  const { data: totalBxlBTC } = useTotalSupply('SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK', 'token-wbtc');
-  const { data: totalBlxSTX } = useTotalSupply('SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK', 'token-wstx');
+  const { data: totalBxlBTC } = useTotalSupply(WRAPPED_BTC_CONTRACT);
+  const { data: totalBlxSTX } = useTotalSupply(WRAPPED_STX_CONTRACT);
 
   // Calculate earned yield: vault sBTC - total supply of wrapped sBTC
   const earnedYield = Math.max(0, (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0));

@@ -22,7 +22,7 @@ import { useState } from "react";
 
 // Admin wallet addresses - replace with actual admin addresses
 const ADMIN_ADDRESSES = [
-  "ST3FFRX7C911PZP5RHE148YDVDD9JWVS6FZRA60VS",
+  "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF",
   // Add more admin addresses here
 ];
 

@@ -15,14 +15,14 @@ declare global {
 const STACKS_API = "https://api.mainnet.hiro.so";
 const SBTC_CONTRACT = "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token";
 export const WRAPPED_BTC_CONTRACT =
-  "SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-wbtc";
+  "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-btc";
 export const WRAPPED_STX_CONTRACT =
-  "SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-wstx";
+  "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-stx";
 const network = "mainnet";
 
 // Vault contract - replace with actual deployed vault contract
 export const VAULT_CONTRACT =
-  "SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.bxl-vault";
+  "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-vault";
 
 export interface Balance {
   stx: number;

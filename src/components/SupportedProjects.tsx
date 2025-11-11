@@ -38,11 +38,11 @@ export const SupportedProjects = () => {
           return (
             <Card key={project.id} className="hover-scale">
               <CardContent className="pt-6 text-center">
-                <div className="w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                <div className="w-24 h-24 mx-auto mb-4 flex items-center justify-center rounded-full overflow-hidden bg-background border">
                   <img 
                     src={project.logo} 
                     alt={`${project.name} logo`}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain p-4"
                   />
                 </div>
                 <h3 className="font-semibold mb-2">{project.name}</h3>

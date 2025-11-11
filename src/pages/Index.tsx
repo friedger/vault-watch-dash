@@ -13,6 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useBalances } from "@/hooks/useBalances";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
+import { useCryptoPrices } from "@/hooks/useCryptoPrices";
+import { formatEur } from "@/lib/utils";
 import {
   VAULT_CONTRACT,
   WRAPPED_BTC_CONTRACT,
@@ -46,6 +48,9 @@ const Index = () => {
   // Fetch total supply of wrapped STX
   const { data: wrappedStxSupply = 0 } = useTotalSupply(WRAPPED_STX_CONTRACT);
 
+  // Fetch crypto prices
+  const { data: prices } = useCryptoPrices();
+
   // Use vault balances for display, or fallback to 0
   const displayBalances = userAddress ? userBalances : vaultBalances;
   const sBtcBalance = displayBalances?.sBtc ?? 0;
@@ -56,6 +61,10 @@ const Index = () => {
     0,
     (vaultBalances?.sBtc ?? 0) - wrappedBtcSupply
   );
+
+  // Calculate EUR values
+  const vaultSBtcEur = (vaultBalances?.sBtc ?? 0) * (prices?.btcEur ?? 0);
+  const earnedYieldEur = earnedYield * (prices?.btcEur ?? 0);
 
   const handleSBtcDeposit = (amount: number) => {
     // TODO: Implement actual deposit transaction
@@ -92,32 +101,31 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-8">
-        {/* Balance Overview - Only for vault when not logged in */}
+        {/* Vault Overview - Only for vault when not logged in */}
         {!userAddress && (
-          <div className="animate-fade-in">
-            <h2 className="text-2xl font-bold mb-4">Vault Balance Overview</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="animate-fade-in max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <BalanceCard
-                title="sBTC Balance"
-                balance={`${sBtcBalance.toFixed(8)} sBTC`}
-                subBalance={`${wrappedBtcSupply.toFixed(8)} bxlBTC`}
-                subLabel="Total Supply"
-                icon={<Bitcoin className="w-5 h-5 text-primary" />}
+                title="Total DAO Brussels Treasury"
+                balance={formatEur(vaultSBtcEur)}
+                subBalance={`${(vaultBalances?.sBtc ?? 0).toFixed(8)} sBTC`}
+                subLabel="Assets in fund"
+                icon={<Bitcoin className="h-5 w-5 text-primary" />}
               />
               <BalanceCard
-                title="STX Balance"
-                balance={`${stxBalance.toLocaleString()} STX`}
-                subBalance={`${(
-                  displayBalances?.blxSTX ?? 0
-                ).toLocaleString()} blxSTX`}
-                subLabel="Total Supply"
-                icon={<Coins className="w-5 h-5 text-secondary" />}
-              />
-              <BalanceCard
-                title="Earned Yield"
+                title="Current Yield"
                 balance={`${earnedYield.toFixed(8)} sBTC`}
-                icon={<TrendingUp className="w-5 h-5 text-primary" />}
+                subBalance={formatEur(earnedYieldEur)}
+                subLabel="Total earned"
+                icon={<TrendingUp className="h-5 w-5 text-primary" />}
                 isYield
+              />
+              <BalanceCard
+                title="Monthly Community Budget"
+                balance={formatEur(earnedYieldEur / 12)}
+                subBalance={`${(earnedYield / 12).toFixed(8)} sBTC`}
+                subLabel="Available per month"
+                icon={<Coins className="h-5 w-5 text-primary" />}
               />
             </div>
           </div>

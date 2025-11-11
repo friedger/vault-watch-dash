@@ -354,8 +354,6 @@ const Index = () => {
           </div>
         )}
 
-        {/* Supported Projects Section */}
-        <SupportedProjects />
 
         {/* FAQ Section */}
         <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
@@ -611,6 +609,9 @@ const Index = () => {
             </AccordionItem>
           </Accordion>
         </div>
+
+        {/* Supported Projects Section */}
+        <SupportedProjects />
       </main>
     </div>
   );

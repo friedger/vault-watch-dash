@@ -1,30 +1,30 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Building2, Zap, Users, Rocket } from "lucide-react";
+import { Building2, Calendar, Users, GraduationCap } from "lucide-react";
 
 const projects = [
   {
     id: 1,
-    name: "DAO Brussels Events",
-    description: "Community meetups and conferences",
-    icon: Users,
+    name: "Commons Hub Brussels",
+    description: "Community space for crypto citizens to work, meet, and build together",
+    icon: Building2,
   },
   {
     id: 2,
-    name: "Developer Grants",
-    description: "Supporting open-source development",
-    icon: Zap,
+    name: "Crypto Wednesday",
+    description: "Monthly meetups with presentations, discussions, and networking",
+    icon: Calendar,
   },
   {
     id: 3,
-    name: "Co-working Space",
-    description: "Physical hub for crypto builders",
-    icon: Building2,
+    name: "Block 26",
+    description: "Brussels Blockchain Week events and conferences",
+    icon: Users,
   },
   {
     id: 4,
     name: "Education Programs",
-    description: "Workshops and training sessions",
-    icon: Rocket,
+    description: "Workshops and training sessions for crypto newcomers",
+    icon: GraduationCap,
   },
 ];
 

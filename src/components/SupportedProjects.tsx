@@ -23,7 +23,7 @@ const projects = [
     name: "Block 26",
     description: "Brussels Blockchain Week events and conferences",
     logo: blockchainWeekLogo,
-    url: "https://blockchainweek.be/",
+    url: "https://dao.brussels/",
   },
 ];
 

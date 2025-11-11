@@ -1,55 +1,45 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { TrendingUp } from "lucide-react";
-
 interface YieldChartProps {
   currentYield: number;
 }
-
-export const YieldChart = ({ currentYield }: YieldChartProps) => {
+export const YieldChart = ({
+  currentYield
+}: YieldChartProps) => {
   // Generate historical data for the last 12 months
   // In a real implementation, this would come from an API
   const generateHistoricalData = () => {
     const data = [];
     const now = new Date();
     const protocolStartMonth = new Date(2024, 10); // November 2024 (month 10)
-    
+
     // Calculate how many months since protocol start
-    const monthsSinceStart = Math.min(
-      12,
-      (now.getFullYear() - protocolStartMonth.getFullYear()) * 12 +
-        (now.getMonth() - protocolStartMonth.getMonth()) + 1
-    );
-    
+    const monthsSinceStart = Math.min(12, (now.getFullYear() - protocolStartMonth.getFullYear()) * 12 + (now.getMonth() - protocolStartMonth.getMonth()) + 1);
     for (let i = monthsSinceStart - 1; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+      const monthName = date.toLocaleDateString('en-US', {
+        month: 'short'
+      });
       const year = date.getFullYear();
-      
+
       // Simulate growing yield over time
       // Most recent month uses actual current yield
-      const yieldValue = i === 0 
-        ? currentYield 
-        : currentYield * (1 - (i * 0.15)); // Earlier months had less yield
-      
+      const yieldValue = i === 0 ? currentYield : currentYield * (1 - i * 0.15); // Earlier months had less yield
+
       data.push({
         month: `${monthName} ${year}`,
-        yield: Math.max(0, yieldValue),
+        yield: Math.max(0, yieldValue)
       });
     }
-    
     return data;
   };
-
   const data = generateHistoricalData();
   const totalYield = data.reduce((sum, item) => sum + item.yield, 0);
   const averageYield = data.length > 0 ? totalYield / data.length : 0;
-
-  return (
-    <Card className="gradient-card border-primary/20">
+  return <Card className="gradient-card border-primary/20">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-primary" />
+        <CardTitle className="flex items-center gap-2">Monthly Bitcoins for the Community<TrendingUp className="w-5 h-5 text-primary" />
           Monthly Yield Performance
         </CardTitle>
       </CardHeader>
@@ -61,43 +51,32 @@ export const YieldChart = ({ currentYield }: YieldChartProps) => {
               <AreaChart data={data}>
                 <defs>
                   <linearGradient id="yieldGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis 
-                  dataKey="month" 
-                  className="text-xs"
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                />
-                <YAxis 
-                  className="text-xs"
-                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                  tickFormatter={(value) => `${value.toFixed(4)}`}
-                />
-                <Tooltip
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="bg-card border border-primary/20 rounded-lg p-3 shadow-lg">
+                <XAxis dataKey="month" className="text-xs" tick={{
+                fill: 'hsl(var(--muted-foreground))'
+              }} />
+                <YAxis className="text-xs" tick={{
+                fill: 'hsl(var(--muted-foreground))'
+              }} tickFormatter={value => `${value.toFixed(4)}`} />
+                <Tooltip content={({
+                active,
+                payload
+              }) => {
+                if (active && payload && payload.length) {
+                  return <div className="bg-card border border-primary/20 rounded-lg p-3 shadow-lg">
                           <p className="text-sm font-semibold">{payload[0].payload.month}</p>
                           <p className="text-sm text-primary">
                             Yield: {Number(payload[0].value).toFixed(8)} sBTC
                           </p>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="yield"
-                  stroke="hsl(var(--primary))"
-                  strokeWidth={2}
-                  fill="url(#yieldGradient)"
-                />
+                        </div>;
+                }
+                return null;
+              }} />
+                <Area type="monotone" dataKey="yield" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#yieldGradient)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -128,6 +107,5 @@ export const YieldChart = ({ currentYield }: YieldChartProps) => {
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };

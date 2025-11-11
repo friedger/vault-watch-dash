@@ -1,12 +1,11 @@
-import daoLogo from "@/assets/dao-logo.png";
 import { BalanceCard } from "@/components/BalanceCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { WalletConnect } from "@/components/WalletConnect";
+import { Header } from "@/components/Header";
 import { useBalances } from "@/hooks/useBalances";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import { VAULT_CONTRACT, WRAPPED_BTC_CONTRACT, WRAPPED_STX_CONTRACT } from "@/services/blockchain";
-import { ArrowLeft, Bitcoin, Coins, TrendingUp } from "lucide-react";
+import { Bitcoin, Coins, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -24,38 +23,16 @@ const VaultDetails = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Link to="/deposit">
-                <Button variant="ghost" size="icon" className="mr-2">
-                  <ArrowLeft className="w-5 h-5" />
-                </Button>
-              </Link>
-              <img 
-                src={daoLogo} 
-                alt="DAO Brussels" 
-                className="h-12 w-12 object-contain"
-              />
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  DAO Brussels
-                </h1>
-                <p className="text-sm text-muted-foreground">Vault Details</p>
-              </div>
-            </div>
-            <WalletConnect 
-              onAddressChange={setUserAddress}
-              sBtcBalance={userBalances?.sBtc ?? 0}
-              stxBalance={userBalances?.stx ?? 0}
-              bxlBTC={userBalances?.bxlBTC ?? 0}
-              blxSTX={userBalances?.blxSTX ?? 0}
-            />
-          </div>
-        </div>
-      </header>
+      <Header
+        userAddress={userAddress}
+        onAddressChange={setUserAddress}
+        sBtcBalance={userBalances?.sBtc ?? 0}
+        stxBalance={userBalances?.stx ?? 0}
+        bxlBTC={userBalances?.bxlBTC ?? 0}
+        blxSTX={userBalances?.blxSTX ?? 0}
+        pageTitle="Vault Details"
+        backLink="/deposit"
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-8">

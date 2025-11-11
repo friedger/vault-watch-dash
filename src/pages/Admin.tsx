@@ -1,5 +1,4 @@
-import daoLogo from "@/assets/dao-logo.png";
-import { WalletConnect } from "@/components/WalletConnect";
+import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,9 +17,8 @@ import {
   revokeStacking,
   transferSbtcYield,
 } from "@/services/blockchain";
-import { LayoutDashboard, Lock, Send, Shield, Unlock } from "lucide-react";
+import { Lock, Send, Shield, Unlock } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 
 // Admin wallet addresses - replace with actual admin addresses
 const ADMIN_ADDRESSES = [
@@ -103,43 +101,17 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <img
-                src={daoLogo}
-                alt="DAO Brussels"
-                className="h-12 w-12 object-contain"
-              />
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  DAO Brussels Admin
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Vault Administration
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link to="/">
-                <Button variant="outline" className="gap-2">
-                  <LayoutDashboard className="w-4 h-4" />
-                  Home
-                </Button>
-              </Link>
-              <WalletConnect
-                onAddressChange={setUserAddress}
-                sBtcBalance={sBtcBalance}
-                stxBalance={stxBalance}
-                bxlBTC={userBalances?.bxlBTC ?? 0}
-                blxSTX={userBalances?.blxSTX ?? 0}
-              />
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header
+        userAddress={userAddress}
+        onAddressChange={setUserAddress}
+        sBtcBalance={sBtcBalance}
+        stxBalance={stxBalance}
+        bxlBTC={userBalances?.bxlBTC ?? 0}
+        blxSTX={userBalances?.blxSTX ?? 0}
+        pageTitle="Vault Administration"
+        backLink="/"
+        isAdmin={isAdmin}
+      />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">

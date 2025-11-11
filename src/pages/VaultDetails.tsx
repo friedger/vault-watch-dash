@@ -1,5 +1,6 @@
 import { BalanceCard } from "@/components/BalanceCard";
 import { YieldChart } from "@/components/YieldChart";
+import { SupportedProjects } from "@/components/SupportedProjects";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/Header";
@@ -224,6 +225,9 @@ const VaultDetails = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Supported Projects */}
+          <SupportedProjects />
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

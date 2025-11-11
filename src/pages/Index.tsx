@@ -2,6 +2,7 @@ import daoLogo from "@/assets/dao-logo.png";
 import { BalanceCard } from "@/components/BalanceCard";
 import { DepositWithdrawCard } from "@/components/DepositWithdrawCard";
 import { Header } from "@/components/Header";
+import { SupportedProjects } from "@/components/SupportedProjects";
 import {
   Accordion,
   AccordionContent,
@@ -352,6 +353,9 @@ const Index = () => {
             )}
           </div>
         )}
+
+        {/* Supported Projects Section */}
+        <SupportedProjects />
 
         {/* FAQ Section */}
         <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">

@@ -21,7 +21,7 @@ const projects = [
   {
     id: 3,
     name: "Block 26",
-    description: "Brussels Blockchain Week events and conferences",
+    description: "Web3 New Year's Reception",
     logo: blockchainWeekLogo,
     url: "https://dao.brussels/",
   },
@@ -52,7 +52,7 @@ export const SupportedProjects = () => {
                     <img 
                       src={project.logo} 
                       alt={`${project.name} logo`}
-                      className="w-full h-full object-contain p-4"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                   <h3 className="font-semibold mb-2">{project.name}</h3>

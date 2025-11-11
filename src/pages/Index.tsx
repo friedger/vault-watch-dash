@@ -360,7 +360,7 @@ const Index = () => {
           <div className="text-center space-y-2">
             <h2 className="text-3xl font-bold">Common Questions</h2>
             <p className="text-muted-foreground">
-              Everything you need to know about staking with DAO Brussels
+              Everything you need to know about using BXL Vault
             </p>
           </div>
 

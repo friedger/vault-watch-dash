@@ -129,8 +129,8 @@ const VaultDetails = () => {
                 <div>
                   <p className="text-sm text-muted-foreground">Utilization Rate</p>
                   <p className="text-2xl font-bold text-secondary">
-                    {totalBlxSTX && vaultBalances?.stx 
-                      ? ((totalBlxSTX / vaultBalances.stx) * 100).toFixed(2) 
+                    {totalBlxSTX && vaultBalances?.stx
+                      ? ((totalBlxSTX / vaultBalances.stx) * 100).toFixed(2)
                       : '0.00'}%
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -148,10 +148,10 @@ const VaultDetails = () => {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground">
               <p>
-                The BXL Vault lets you support the Brussels crypto community by staking your Bitcoin. 
+                The BXL Vault lets you support the Brussels crypto community by storing securely your Bitcoin.
                 You keep full ownership of your assets while the yield automatically funds community projects.
               </p>
-              
+
               <div className="space-y-4">
                 {/* Features Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -162,7 +162,7 @@ const VaultDetails = () => {
                       <div className="space-y-1">
                         <h4 className="font-semibold text-foreground">Protection Against Wrench Attack</h4>
                         <p className="text-sm">
-                          1-week withdrawal delay protects you from physical coercion. You have time to cancel 
+                          1-week withdrawal delay protects you from physical coercion. You have time to cancel
                           if someone forces you to withdraw.
                         </p>
                       </div>
@@ -176,7 +176,7 @@ const VaultDetails = () => {
                       <div className="space-y-1">
                         <h4 className="font-semibold text-foreground">Yield for the Community</h4>
                         <p className="text-sm">
-                          No donations needed. You keep your assets while the community benefits from the yield 
+                          No donations needed. You keep your assets while the community benefits from the yield
                           they generate.
                         </p>
                       </div>
@@ -190,7 +190,7 @@ const VaultDetails = () => {
                       <div className="space-y-1">
                         <h4 className="font-semibold text-foreground">Your Receipt Tokens</h4>
                         <p className="text-sm">
-                          Receive bxlBTC or blxSTX tokens when you deposit. These represent your share and can 
+                          Receive bxlBTC or blxSTX tokens when you deposit. These represent your share and can
                           be redeemed anytime.
                         </p>
                       </div>

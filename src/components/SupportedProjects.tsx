@@ -9,18 +9,21 @@ const projects = [
     name: "Commons Hub Brussels",
     description: "Community space for crypto citizens to work, meet, and build together",
     logo: commonsHubLogo,
+    url: "https://commonshub.brussels/",
   },
   {
     id: 2,
     name: "Crypto Wednesday",
     description: "Monthly meetups with presentations, discussions, and networking",
     logo: cryptoWednesdayLogo,
+    url: "https://luma.com/vadhebas",
   },
   {
     id: 3,
     name: "Block 26",
     description: "Brussels Blockchain Week events and conferences",
     logo: blockchainWeekLogo,
+    url: "https://blockchainweek.be/",
   },
 ];
 
@@ -36,21 +39,29 @@ export const SupportedProjects = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project) => {
           return (
-            <Card key={project.id} className="hover-scale">
-              <CardContent className="pt-6 text-center">
-                <div className="w-24 h-24 mx-auto mb-4 flex items-center justify-center rounded-full overflow-hidden bg-background border">
-                  <img 
-                    src={project.logo} 
-                    alt={`${project.name} logo`}
-                    className="w-full h-full object-contain p-4"
-                  />
-                </div>
-                <h3 className="font-semibold mb-2">{project.name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {project.description}
-                </p>
-              </CardContent>
-            </Card>
+            <a 
+              key={project.id} 
+              href={project.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+            >
+              <Card className="hover-scale cursor-pointer">
+                <CardContent className="pt-6 text-center">
+                  <div className="w-24 h-24 mx-auto mb-4 flex items-center justify-center rounded-full overflow-hidden bg-background border">
+                    <img 
+                      src={project.logo} 
+                      alt={`${project.name} logo`}
+                      className="w-full h-full object-contain p-4"
+                    />
+                  </div>
+                  <h3 className="font-semibold mb-2">{project.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {project.description}
+                  </p>
+                </CardContent>
+              </Card>
+            </a>
           );
         })}
       </div>

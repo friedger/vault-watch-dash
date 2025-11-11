@@ -1,10 +1,16 @@
-import { openContractCall } from '@stacks/connect';
-import { 
-  uintCV, 
-  principalCV, 
-  PostConditionMode
-} from '@stacks/transactions';
-import { STACKS_MAINNET } from '@stacks/network';
+// SIP-30 compliant wallet provider interface
+interface WalletProvider {
+  request(params: {
+    method: string;
+    params?: any;
+  }): Promise<any>;
+}
+
+declare global {
+  interface Window {
+    StacksProvider?: WalletProvider;
+  }
+}
 
 const STACKS_API = 'https://api.mainnet.hiro.so';
 const SBTC_CONTRACT = 'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token';
@@ -15,7 +21,13 @@ const WRAPPED_STX_CONTRACT = 'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-ws
 export const VAULT_ADDRESS = 'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK';
 export const VAULT_CONTRACT = 'bxl-vault';
 
-const network = STACKS_MAINNET;
+// Helper to get wallet provider
+function getProvider(): WalletProvider {
+  if (!window.StacksProvider) {
+    throw new Error('No Stacks wallet provider found. Please install a Stacks wallet.');
+  }
+  return window.StacksProvider;
+}
 
 export interface Balance {
   stx: number;
@@ -99,77 +111,88 @@ export async function fetchTokenTotalSupply(contractAddress: string, contractNam
  * Enroll the vault in dual stacking to generate BTC yield
  */
 export async function enrollDualStacking() {
-  return openContractCall({
-    network,
-    contractAddress: VAULT_ADDRESS,
-    contractName: VAULT_CONTRACT,
-    functionName: 'enroll',
-    functionArgs: [],
-    postConditionMode: PostConditionMode.Allow,
-    onFinish: (data) => {
-      console.log('Dual stacking enrollment transaction:', data.txId);
+  const provider = getProvider();
+  
+  const result = await provider.request({
+    method: 'stx_callContract',
+    params: {
+      contract: `${VAULT_ADDRESS}.${VAULT_CONTRACT}`,
+      functionName: 'enroll',
+      functionArgs: [],
+      network: 'mainnet',
     },
   });
+  
+  console.log('Dual stacking enrollment transaction:', result.txid);
+  return result;
 }
 
 /**
  * Transfer sBTC yield to a recipient address
- * @param amount Amount in satoshis (1 BTC = 100000000 sats)
+ * @param amount Amount in BTC (will be converted to satoshis)
  * @param recipient Stacks address to receive the sBTC
  * @param memo Optional memo for the transfer
  */
 export async function transferSbtcYield(amount: number, recipient: string, memo?: string) {
+  const provider = getProvider();
   const amountInSats = Math.floor(amount * 100000000);
   
-  return openContractCall({
-    network,
-    contractAddress: VAULT_ADDRESS,
-    contractName: VAULT_CONTRACT,
-    functionName: 'admin-sbtc-transfer',
-    functionArgs: [
-      uintCV(amountInSats),
-      principalCV(recipient),
-    ],
-    postConditionMode: PostConditionMode.Allow,
-    onFinish: (data) => {
-      console.log('sBTC transfer transaction:', data.txId);
-      if (memo) {
-        console.log('Transfer memo:', memo);
-      }
+  const result = await provider.request({
+    method: 'stx_callContract',
+    params: {
+      contract: `${VAULT_ADDRESS}.${VAULT_CONTRACT}`,
+      functionName: 'admin-sbtc-transfer',
+      functionArgs: [
+        { type: 'uint', value: amountInSats.toString() },
+        { type: 'address', value: recipient },
+      ],
+      network: 'mainnet',
     },
   });
+  
+  console.log('sBTC transfer transaction:', result.txid);
+  if (memo) {
+    console.log('Transfer memo:', memo);
+  }
+  return result;
 }
 
 /**
  * Delegate vault's STX to stacking pool
  */
 export async function delegateStx() {
-  return openContractCall({
-    network,
-    contractAddress: VAULT_ADDRESS,
-    contractName: VAULT_CONTRACT,
-    functionName: 'delegate-stx',
-    functionArgs: [],
-    postConditionMode: PostConditionMode.Allow,
-    onFinish: (data) => {
-      console.log('STX delegation transaction:', data.txId);
+  const provider = getProvider();
+  
+  const result = await provider.request({
+    method: 'stx_callContract',
+    params: {
+      contract: `${VAULT_ADDRESS}.${VAULT_CONTRACT}`,
+      functionName: 'delegate-stx',
+      functionArgs: [],
+      network: 'mainnet',
     },
   });
+  
+  console.log('STX delegation transaction:', result.txid);
+  return result;
 }
 
 /**
  * Revoke STX delegation from stacking pool
  */
 export async function revokeStacking() {
-  return openContractCall({
-    network,
-    contractAddress: VAULT_ADDRESS,
-    contractName: VAULT_CONTRACT,
-    functionName: 'revoke-delegate-stx',
-    functionArgs: [],
-    postConditionMode: PostConditionMode.Allow,
-    onFinish: (data) => {
-      console.log('Revoke stacking transaction:', data.txId);
+  const provider = getProvider();
+  
+  const result = await provider.request({
+    method: 'stx_callContract',
+    params: {
+      contract: `${VAULT_ADDRESS}.${VAULT_CONTRACT}`,
+      functionName: 'revoke-delegate-stx',
+      functionArgs: [],
+      network: 'mainnet',
     },
   });
+  
+  console.log('Revoke stacking transaction:', result.txid);
+  return result;
 }

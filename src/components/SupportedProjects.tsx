@@ -1,24 +1,26 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Building2, Calendar, Users } from "lucide-react";
+import commonsHubLogo from "@/assets/commons-hub-logo.png";
+import cryptoWednesdayLogo from "@/assets/crypto-wednesday-logo.png";
+import blockchainWeekLogo from "@/assets/blockchain-week-logo.png";
 
 const projects = [
   {
     id: 1,
     name: "Commons Hub Brussels",
     description: "Community space for crypto citizens to work, meet, and build together",
-    icon: Building2,
+    logo: commonsHubLogo,
   },
   {
     id: 2,
     name: "Crypto Wednesday",
     description: "Monthly meetups with presentations, discussions, and networking",
-    icon: Calendar,
+    logo: cryptoWednesdayLogo,
   },
   {
     id: 3,
     name: "Block 26",
     description: "Brussels Blockchain Week events and conferences",
-    icon: Users,
+    logo: blockchainWeekLogo,
   },
 ];
 
@@ -33,12 +35,15 @@ export const SupportedProjects = () => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project) => {
-          const Icon = project.icon;
           return (
             <Card key={project.id} className="hover-scale">
               <CardContent className="pt-6 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Icon className="h-8 w-8 text-primary" />
+                <div className="w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                  <img 
+                    src={project.logo} 
+                    alt={`${project.name} logo`}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <h3 className="font-semibold mb-2">{project.name}</h3>
                 <p className="text-sm text-muted-foreground">

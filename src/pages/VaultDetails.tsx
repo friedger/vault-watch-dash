@@ -1,6 +1,7 @@
 import { BalanceCard } from "@/components/BalanceCard";
 import { YieldChart } from "@/components/YieldChart";
 import { SupportedProjects } from "@/components/SupportedProjects";
+import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/Header";
@@ -244,6 +245,8 @@ const VaultDetails = () => {
           </div>
         </div>
       </main>
+      
+      <Footer />
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowUpFromLine } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { TransactionHistory } from "@/components/TransactionHistory";
 import { PortfolioChart } from "@/components/PortfolioChart";
@@ -200,6 +201,8 @@ const Dashboard = () => {
           </div>
         )}
       </main>
+      
+      <Footer />
     </div>
   );
 };

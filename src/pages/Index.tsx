@@ -1,6 +1,7 @@
 import daoLogo from "@/assets/dao-logo.png";
 import { BalanceCard } from "@/components/BalanceCard";
 import { DepositWithdrawCard } from "@/components/DepositWithdrawCard";
+import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { SupportedProjects } from "@/components/SupportedProjects";
 import {
@@ -613,6 +614,8 @@ const Index = () => {
         {/* Supported Projects Section */}
         <SupportedProjects />
       </main>
+      
+      <Footer />
     </div>
   );
 };

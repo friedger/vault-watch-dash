@@ -5,6 +5,7 @@ import {
   WRAPPED_STX_CONTRACT,
 } from "@/services/blockchain";
 import { Link } from "react-router-dom";
+import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { DepositCard } from "@/components/DepositCard";
 import { Button } from "@/components/ui/button";
@@ -146,6 +147,8 @@ const Deposit = () => {
           )}
         </div>
       </main>
+      
+      <Footer />
     </div>
   );
 };

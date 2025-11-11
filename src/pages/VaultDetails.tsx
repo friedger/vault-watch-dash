@@ -67,26 +67,26 @@ const VaultDetails = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <BalanceCard
-                  title="Total Vault sBTC"
-                  balance={`${(vaultBalances?.sBtc ?? 0).toFixed(8)}`}
-                  subBalance={formatEur(vaultSBtcEur)}
-                  subLabel="EUR value"
+                  title="Total DAO Brussels Treasury"
+                  balance={formatEur(vaultSBtcEur)}
+                  subBalance={`${(vaultBalances?.sBtc ?? 0).toFixed(8)} sBTC`}
+                  subLabel="Assets in fund"
                   icon={<Bitcoin className="h-5 w-5 text-primary" />}
                 />
                 <BalanceCard
-                  title="Wrapped Supply"
-                  balance={`${(totalBxlBTC ?? 0).toFixed(8)}`}
-                  subBalance={formatEur(wrappedBtcEur)}
-                  subLabel="EUR value"
-                  icon={<Coins className="h-5 w-5 text-primary" />}
-                />
-                <BalanceCard
-                  title="Earned Yield"
-                  balance={`${earnedYield.toFixed(8)}`}
+                  title="Current Yield"
+                  balance={`${earnedYield.toFixed(8)} sBTC`}
                   subBalance={formatEur(earnedYieldEur)}
-                  subLabel="EUR value"
+                  subLabel="Total earned"
                   icon={<TrendingUp className="h-5 w-5 text-primary" />}
                   isYield
+                />
+                <BalanceCard
+                  title="Monthly Community Budget"
+                  balance={formatEur(earnedYieldEur / 12)}
+                  subBalance={`${(earnedYield / 12).toFixed(8)} sBTC`}
+                  subLabel="Available per month"
+                  icon={<Coins className="h-5 w-5 text-primary" />}
                 />
               </div>
 

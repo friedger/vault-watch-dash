@@ -4,37 +4,34 @@ import { Shield, AlertTriangle, Key } from 'lucide-react';
 export const WalletSetupStep = () => {
   return (
     <TutorialStep>
-      <TutorialStepTitle>Create Your Wallet</TutorialStepTitle>
+      <TutorialStepTitle>Import Your Existing Wallet</TutorialStepTitle>
       
       <TutorialStepContent>
         <p className="text-lg">
-          Now that you have Xverse installed, let's create your secure wallet.
+          Now that you have Xverse installed, let's import your existing Bitcoin wallet using your seed phrase.
         </p>
 
         <div className="space-y-6 mt-6">
           <div>
-            <h3 className="font-semibold text-foreground text-lg mb-3">Setup Steps</h3>
+            <h3 className="font-semibold text-foreground text-lg mb-3">Import Steps</h3>
             <TutorialStepList>
               <TutorialStepListItem icon={<span className="text-primary font-semibold">1.</span>}>
                 Open the Xverse extension (click the puzzle icon in your browser and pin Xverse)
               </TutorialStepListItem>
               <TutorialStepListItem icon={<span className="text-primary font-semibold">2.</span>}>
-                Click "Create New Wallet"
+                Click "Restore Wallet" or "Import Existing Wallet"
               </TutorialStepListItem>
               <TutorialStepListItem icon={<span className="text-primary font-semibold">3.</span>}>
-                You'll be shown a 12-word seed phrase - this is your wallet's backup
+                <strong className="text-foreground">Carefully enter your existing 12-word seed phrase</strong> in the correct order
               </TutorialStepListItem>
               <TutorialStepListItem icon={<span className="text-primary font-semibold">4.</span>}>
-                <strong className="text-foreground">Write down your seed phrase on paper</strong> - do not store it digitally
+                Double-check each word before proceeding - typos will prevent access to your funds
               </TutorialStepListItem>
               <TutorialStepListItem icon={<span className="text-primary font-semibold">5.</span>}>
-                Verify your seed phrase by selecting the words in order
+                Set a strong password for this device (this protects your wallet on this browser)
               </TutorialStepListItem>
               <TutorialStepListItem icon={<span className="text-primary font-semibold">6.</span>}>
-                Set a strong password for your wallet
-              </TutorialStepListItem>
-              <TutorialStepListItem icon={<span className="text-primary font-semibold">7.</span>}>
-                Complete the setup - your wallet is now ready!
+                Complete the import - your Bitcoin is now accessible through Xverse!
               </TutorialStepListItem>
             </TutorialStepList>
           </div>
@@ -45,11 +42,11 @@ export const WalletSetupStep = () => {
               <div className="space-y-2">
                 <p className="font-semibold text-foreground">CRITICAL: Protect Your Seed Phrase</p>
                 <ul className="text-sm space-y-1 ml-4 list-disc">
-                  <li>Your 12-word seed phrase is the ONLY way to recover your wallet</li>
-                  <li>Never share it with anyone - not even BXL Vault or Xverse support</li>
-                  <li>Store it offline in a secure location</li>
-                  <li>If someone gets your seed phrase, they can steal your funds</li>
-                  <li>Write it on paper, not in a digital file or screenshot</li>
+                  <li>Only enter your seed phrase in the official Xverse extension - verify the URL first</li>
+                  <li>Never share your seed phrase with anyone - not even BXL Vault or Xverse support</li>
+                  <li>This is the same wallet you already have - just accessible through Xverse now</li>
+                  <li>If someone gets your seed phrase, they can steal all your Bitcoin</li>
+                  <li>Never enter your seed phrase on any website or in emails</li>
                 </ul>
               </div>
             </div>
@@ -61,10 +58,10 @@ export const WalletSetupStep = () => {
               <div>
                 <p className="font-semibold text-foreground mb-1">Security Best Practices</p>
                 <ul className="text-sm space-y-1">
-                  <li>• Use a strong, unique password</li>
-                  <li>• Store your seed phrase in multiple secure locations</li>
-                  <li>• Consider using a hardware wallet for large amounts</li>
-                  <li>• Never enter your seed phrase on any website</li>
+                  <li>• Verify you're using the legitimate Xverse extension before importing</li>
+                  <li>• Use a strong, unique password for added security on this device</li>
+                  <li>• Keep your seed phrase stored securely offline</li>
+                  <li>• Your Bitcoin remains yours - Xverse just provides access to it</li>
                 </ul>
               </div>
             </div>

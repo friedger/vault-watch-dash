@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Pie, PieChart, Cell } from "recharts";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import { formatBtc, formatEur, formatStx } from "@/lib/utils";
 
@@ -18,38 +18,33 @@ export const PortfolioChart = ({ sBtc, stx, bxlBTC, bxlSTX }: PortfolioChartProp
   const bxlBtcEur = bxlBTC * (prices?.btcEur ?? 0);
   const stxEur = stx * (prices?.stxEur ?? 0);
   const bxlStxEur = bxlSTX * (prices?.stxEur ?? 0);
-  // Create chart data
+  // Create chart data for pie chart
   const chartData = [
     {
       name: "sBTC",
-      btc: sBtc,
-      stx: 0,
+      value: sBtcEur,
+      fill: "hsl(var(--primary))",
     },
     {
       name: "bxlBTC",
-      btc: bxlBTC,
-      stx: 0,
+      value: bxlBtcEur,
+      fill: "hsl(var(--primary) / 0.7)",
     },
     {
       name: "STX",
-      btc: 0,
-      stx: stx / 1000, // Scale down for better visualization
+      value: stxEur,
+      fill: "hsl(var(--secondary))",
     },
     {
       name: "bxlSTX",
-      btc: 0,
-      stx: bxlSTX / 1000,
+      value: bxlStxEur,
+      fill: "hsl(var(--secondary) / 0.7)",
     },
-  ];
+  ].filter(item => item.value > 0);
 
   const chartConfig = {
-    btc: {
-      label: "BTC",
-      color: "hsl(var(--primary))",
-    },
-    stx: {
-      label: "STX",
-      color: "hsl(var(--secondary))",
+    value: {
+      label: "Value (EUR)",
     },
   };
 
@@ -100,33 +95,37 @@ export const PortfolioChart = ({ sBtc, stx, bxlBTC, bxlSTX }: PortfolioChartProp
         </div>
 
         <ChartContainer config={chartConfig} className="h-[300px] w-full">
-          <AreaChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-            <XAxis 
-              dataKey="name" 
-              stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
+          <PieChart>
+            <ChartTooltip 
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
+                      <p className="text-sm font-semibold">{payload[0].name}</p>
+                      <p className="text-sm text-primary">
+                        {formatEur(Number(payload[0].value))}
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              }}
             />
-            <YAxis 
-              stroke="hsl(var(--muted-foreground))"
-              fontSize={12}
-            />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Area
-              type="monotone"
-              dataKey="btc"
-              stackId="1"
-              stroke="hsl(var(--primary))"
-              fill="hsl(var(--primary) / 0.3)"
-            />
-            <Area
-              type="monotone"
-              dataKey="stx"
-              stackId="1"
-              stroke="hsl(var(--secondary))"
-              fill="hsl(var(--secondary) / 0.3)"
-            />
-          </AreaChart>
+            <Pie
+              data={chartData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={100}
+              paddingAngle={2}
+            >
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.fill} />
+              ))}
+            </Pie>
+          </PieChart>
         </ChartContainer>
       </CardContent>
     </Card>

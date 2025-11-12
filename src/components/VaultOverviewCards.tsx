@@ -23,7 +23,7 @@ export const VaultOverviewCards = () => {
   );
 
   // Calculate EUR values
-  const wrappedBtcEur = (totalBxlBTC ?? 0) * (prices?.btcEur ?? 0);
+  const wrappedBtcEur = (vaultBalances?.sBtc ?? 0) * (prices?.btcEur ?? 0);
   const earnedYieldEur = earnedYield * (prices?.btcEur ?? 0);
 
   return (
@@ -31,12 +31,12 @@ export const VaultOverviewCards = () => {
       <BalanceCard
         title="Total Bitcoin in Vault"
         balance={formatEur(wrappedBtcEur)}
-        subBalance={`${formatBtc(totalBxlBTC ?? 0)} sBTC`}
+        subBalance={`${formatBtc(vaultBalances?.sBtc ?? 0)} sBTC`}
         subLabel="Securing"
         icon={<Bitcoin className="h-5 w-5 text-primary" />}
       />
       <BalanceCard
-        title="Current Yield"
+        title="Usable Bitcoin"
         balance={`${formatBtc(earnedYield)} sBTC`}
         subBalance={formatEur(earnedYieldEur)}
         subLabel="Total earned"

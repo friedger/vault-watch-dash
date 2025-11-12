@@ -37,7 +37,7 @@ const VaultDetails = () => {
 
   // Calculate EUR values for STX section only
   const vaultStxEur = (vaultBalances?.stx ?? 0) * (prices?.stxEur ?? 0);
-  const wrappedStxEur = (totalBxlSTX ?? 0) * (prices?.stxEur ?? 0);
+  const lockedStxEur = (vaultBalances?.lockedStx ?? 0) * (prices?.stxEur ?? 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -89,39 +89,20 @@ const VaultDetails = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <BalanceCard
-                  title="Total Vault STX"
+                  title="Total STX in Vault"
                   balance={formatStx(vaultBalances?.stx ?? 0)}
                   subBalance={formatEur(vaultStxEur)}
                   subLabel="EUR value"
                   icon={<Coins className="h-5 w-5 text-secondary" />}
                 />
                 <BalanceCard
-                  title="Bxl STX Supply"
-                  balance={formatStx(totalBxlSTX ?? 0)}
-                  subBalance={formatEur(wrappedStxEur)}
+                  title="Stacked STX"
+                  balance={formatStx(vaultBalances?.lockedStx ?? 0)}
+                  subBalance={formatEur(lockedStxEur)}
                   subLabel="EUR value"
                   icon={<Coins className="h-5 w-5 text-secondary" />}
                 />
-              </div>
-
-              {/* STX Statistics */}
-              <div className="mt-6 p-6 bg-secondary/5 border border-secondary/10 rounded-lg">
-                <h4 className="font-semibold text-lg mb-4">STX Statistics</h4>
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Utilization Rate
-                  </p>
-                  <p className="text-2xl font-bold text-secondary">
-                    {totalBxlSTX && vaultBalances?.stx
-                      ? ((totalBxlSTX / vaultBalances.stx) * 100).toFixed(2)
-                      : "0.00"}
-                    %
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Percentage of vault STX wrapped
-                  </p>
-                </div>
-              </div>
+              </div>              
             </CardContent>
           </Card>
 

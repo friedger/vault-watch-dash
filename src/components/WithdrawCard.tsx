@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -10,21 +16,25 @@ import { formatBtc, formatStx } from "@/lib/utils";
 interface WithdrawCardProps {
   onSBtcWithdraw: (amount: number) => void;
   onStxWithdraw: (amount: number) => void;
-  onSBtcRequestUpdate: (requestId: number, oldAmount: number, newAmount: number) => void;
+  onSBtcRequestUpdate: (
+    requestId: number,
+    oldAmount: number,
+    newAmount: number
+  ) => void;
   onSBtcFinalize: (requestId: number, amount: number) => void;
   bxlBtcBalance: number;
   bxlBtcTransitionBalance: number;
   bxlStxBalance: number;
 }
 
-export const WithdrawCard = ({ 
-  onSBtcWithdraw, 
+export const WithdrawCard = ({
+  onSBtcWithdraw,
   onStxWithdraw,
   onSBtcRequestUpdate,
   onSBtcFinalize,
   bxlBtcBalance,
   bxlBtcTransitionBalance,
-  bxlStxBalance
+  bxlStxBalance,
 }: WithdrawCardProps) => {
   const [sBtcAmount, setSBtcAmount] = useState("");
   const [stxAmount, setStxAmount] = useState("");
@@ -65,7 +75,7 @@ export const WithdrawCard = ({
   const handleSBtcUpdate = () => {
     const value = parseFloat(sBtcAmount);
     const reqId = parseInt(requestId);
-    
+
     if (isNaN(reqId) || reqId <= 0) {
       toast({
         title: "Invalid request ID",
@@ -74,7 +84,7 @@ export const WithdrawCard = ({
       });
       return;
     }
-    
+
     if (isNaN(value) || value <= 0) {
       toast({
         title: "Invalid amount",
@@ -83,7 +93,7 @@ export const WithdrawCard = ({
       });
       return;
     }
-    
+
     if (value > bxlBtcBalance + bxlBtcTransitionBalance) {
       toast({
         title: "Insufficient balance",
@@ -92,7 +102,7 @@ export const WithdrawCard = ({
       });
       return;
     }
-    
+
     onSBtcRequestUpdate(reqId, bxlBtcTransitionBalance, value);
     setSBtcAmount("");
     toast({
@@ -103,7 +113,7 @@ export const WithdrawCard = ({
 
   const handleSBtcCancel = () => {
     const reqId = parseInt(requestId);
-    
+
     if (isNaN(reqId) || reqId <= 0) {
       toast({
         title: "Invalid request ID",
@@ -112,7 +122,7 @@ export const WithdrawCard = ({
       });
       return;
     }
-    
+
     // Cancel by updating to 0
     onSBtcRequestUpdate(reqId, bxlBtcTransitionBalance, 0);
     setRequestId("");
@@ -124,7 +134,7 @@ export const WithdrawCard = ({
 
   const handleSBtcFinalize = () => {
     const reqId = parseInt(requestId);
-    
+
     if (isNaN(reqId) || reqId <= 0) {
       toast({
         title: "Invalid request ID",
@@ -133,7 +143,7 @@ export const WithdrawCard = ({
       });
       return;
     }
-    
+
     onSBtcFinalize(reqId, bxlBtcTransitionBalance);
     setRequestId("");
     toast({
@@ -171,42 +181,48 @@ export const WithdrawCard = ({
   return (
     <Card className="gradient-card border-primary/20">
       <Tabs defaultValue="sbtc" className="w-full" onValueChange={setActiveTab}>
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <CardTitle className="text-2xl">
-              {activeTab === "sbtc" ? "Withdraw sBTC" : "Withdraw STX"}
-            </CardTitle>
-            <TabsList className="h-8 p-1 bg-muted/50">
-              <TabsTrigger 
-                value="sbtc" 
-                className="text-xs h-6 px-3 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="space-y-1.5">
+              <CardTitle className="text-2xl">
+                {activeTab === "sbtc" ? "Withdraw sBTC" : "Withdraw STX"}
+              </CardTitle>
+              <CardDescription>
+                {activeTab === "sbtc"
+                  ? "Request to withdraw your sBTC from the vault"
+                  : "Burn your bxlSTX and receive STX in return"}
+              </CardDescription>
+            </div>
+            <TabsList className="h-9 p-1 bg-muted/50">
+              <TabsTrigger
+                value="sbtc"
+                className="text-sm h-7 px-4 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
               >
                 sBTC
               </TabsTrigger>
-              <TabsTrigger 
-                value="stx" 
-                className="text-xs h-6 px-3 data-[state=active]:bg-secondary/10 data-[state=active]:text-secondary"
+              <TabsTrigger
+                value="stx"
+                className="text-sm h-7 px-4 data-[state=active]:bg-secondary/10 data-[state=active]:text-secondary"
               >
                 STX
               </TabsTrigger>
             </TabsList>
           </div>
-          <CardDescription>
-            Withdraw your assets from the vault
-          </CardDescription>
         </CardHeader>
         <CardContent>
-          <TabsContent value="sbtc" className="space-y-4 mt-0">
+          <TabsContent value="sbtc" className="space-y-6 mt-0">
             {!hasActiveRequest ? (
               // Step 1: Create withdrawal request
               <div className="max-w-md mx-auto space-y-4">
                 <div className="space-y-2">
                   <Input
                     type="number"
-                    placeholder="0.00000000"
+                    placeholder="Enter amount"
                     value={sBtcAmount}
                     onChange={(e) => setSBtcAmount(e.target.value)}
                     className="text-xl text-center h-14"
+                    step="0.00000001"
+                    min="0"
                   />
                   <div className="flex items-center justify-center gap-2">
                     <p className="text-sm text-muted-foreground">
@@ -223,8 +239,8 @@ export const WithdrawCard = ({
                     </Button>
                   </div>
                 </div>
-                <Button 
-                  onClick={handleSBtcWithdraw} 
+                <Button
+                  onClick={handleSBtcWithdraw}
                   size="lg"
                   className="w-full gap-2 h-12 text-lg bg-primary hover:bg-primary/90"
                   disabled={bxlBtcBalance === 0}
@@ -238,7 +254,9 @@ export const WithdrawCard = ({
               <div className="max-w-md mx-auto space-y-4">
                 <div className="space-y-4">
                   <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                    <p className="text-sm text-muted-foreground mb-1">Active Request</p>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Active Request
+                    </p>
                     <p className="text-xl font-bold text-primary">
                       {formatBtc(bxlBtcTransitionBalance)} sBTC
                     </p>
@@ -247,23 +265,27 @@ export const WithdrawCard = ({
                     </p>
                   </div>
 
-                  <Tabs defaultValue="finalize" className="w-full" onValueChange={setActiveRequestTab}>
+                  <Tabs
+                    defaultValue="finalize"
+                    className="w-full"
+                    onValueChange={setActiveRequestTab}
+                  >
                     <TabsList className="grid w-full grid-cols-3 h-10">
-                      <TabsTrigger 
+                      <TabsTrigger
                         value="finalize"
                         className="text-xs data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
                       >
                         <CheckCircle className="w-3 h-3 mr-1" />
                         Finalize
                       </TabsTrigger>
-                      <TabsTrigger 
+                      <TabsTrigger
                         value="update"
                         className="text-xs data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
                       >
                         <RefreshCw className="w-3 h-3 mr-1" />
                         Update
                       </TabsTrigger>
-                      <TabsTrigger 
+                      <TabsTrigger
                         value="cancel"
                         className="text-xs data-[state=active]:bg-destructive/10 data-[state=active]:text-destructive"
                       >
@@ -286,8 +308,8 @@ export const WithdrawCard = ({
                           Enter your withdrawal request ID
                         </p>
                       </div>
-                      <Button 
-                        onClick={handleSBtcFinalize} 
+                      <Button
+                        onClick={handleSBtcFinalize}
                         size="lg"
                         className="w-full gap-2 h-12 text-lg bg-primary hover:bg-primary/90"
                       >
@@ -313,20 +335,21 @@ export const WithdrawCard = ({
                       <div className="space-y-2">
                         <Input
                           type="number"
-                          placeholder="0.00000000"
+                          placeholder="Enter amount"
                           value={sBtcAmount}
                           onChange={(e) => setSBtcAmount(e.target.value)}
                           className="text-xl text-center h-14"
                         />
                         <p className="text-sm text-muted-foreground text-center">
-                          New total amount (Current: {formatBtc(bxlBtcTransitionBalance)})
+                          New total amount (Current:{" "}
+                          {formatBtc(bxlBtcTransitionBalance)})
                         </p>
                         <p className="text-xs text-muted-foreground text-center">
                           Available to add: {formatBtc(bxlBtcBalance)} bxlBTC
                         </p>
                       </div>
-                      <Button 
-                        onClick={handleSBtcUpdate} 
+                      <Button
+                        onClick={handleSBtcUpdate}
                         size="lg"
                         className="w-full gap-2 h-12 text-lg bg-primary hover:bg-primary/90"
                       >
@@ -354,11 +377,13 @@ export const WithdrawCard = ({
                           Cancel Withdrawal
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          This will cancel your withdrawal request and return your {formatBtc(bxlBtcTransitionBalance)} sBTC in transit back into the vault.
+                          This will cancel your withdrawal request and return
+                          your {formatBtc(bxlBtcTransitionBalance)} sBTC in
+                          transit back into the vault.
                         </p>
                       </div>
-                      <Button 
-                        onClick={handleSBtcCancel} 
+                      <Button
+                        onClick={handleSBtcCancel}
                         size="lg"
                         variant="destructive"
                         className="w-full gap-2 h-12 text-lg"
@@ -373,15 +398,17 @@ export const WithdrawCard = ({
             )}
           </TabsContent>
 
-          <TabsContent value="stx" className="space-y-4 mt-0">
+          <TabsContent value="stx" className="space-y-6 mt-0">
             <div className="max-w-md mx-auto space-y-4">
               <div className="space-y-2">
                 <Input
                   type="number"
-                  placeholder="0.00"
+                  placeholder="Enter amount"
                   value={stxAmount}
                   onChange={(e) => setStxAmount(e.target.value)}
                   className="text-xl text-center h-14"
+                  step="0.000001"
+                  min="0"
                 />
                 <div className="flex items-center justify-center gap-2">
                   <p className="text-sm text-muted-foreground">
@@ -398,10 +425,10 @@ export const WithdrawCard = ({
                   </Button>
                 </div>
               </div>
-              <Button 
-                onClick={handleStxWithdraw} 
+              <Button
+                onClick={handleStxWithdraw}
                 size="lg"
-                className="w-full gap-2 h-12 text-lg bg-secondary hover:bg-secondary/90"
+                className="w-full gap-2 h-14 text-lg bg-secondary hover:bg-secondary/90"
                 disabled={bxlStxBalance === 0}
               >
                 <ArrowUpFromLine className="w-5 h-5" />

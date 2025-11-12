@@ -1,10 +1,17 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowDownToLine, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { formatBtc, formatStx } from "@/lib/utils";
 
 interface DepositCardProps {
   onSBtcDeposit: (amount: number) => void;
@@ -13,7 +20,12 @@ interface DepositCardProps {
   stxBalance: number;
 }
 
-export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalance }: DepositCardProps) => {
+export const DepositCard = ({
+  onSBtcDeposit,
+  onStxDeposit,
+  sBtcBalance,
+  stxBalance,
+}: DepositCardProps) => {
   const [sBtcAmount, setSBtcAmount] = useState("");
   const [stxAmount, setStxAmount] = useState("");
   const [activeTab, setActiveTab] = useState("sbtc");
@@ -65,18 +77,20 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
                 {activeTab === "sbtc" ? "Deposit sBTC" : "Deposit STX"}
               </CardTitle>
               <CardDescription>
-                Contribute to the Brussels Crypto Community while maintaining ownership
+                {activeTab === "sbtc"
+                  ? "Send sBTC to the Vault and receive 1:1 bxlBTC in return"
+                  : "Send STX to the Vault and receive 1:1 bxlSTX in return"}
               </CardDescription>
             </div>
             <TabsList className="h-9 p-1 bg-muted/50">
-              <TabsTrigger 
-                value="sbtc" 
+              <TabsTrigger
+                value="sbtc"
                 className="text-sm h-7 px-4 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
               >
                 sBTC
               </TabsTrigger>
-              <TabsTrigger 
-                value="stx" 
+              <TabsTrigger
+                value="stx"
                 className="text-sm h-7 px-4 data-[state=active]:bg-secondary/10 data-[state=active]:text-secondary"
               >
                 STX
@@ -84,27 +98,38 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
             </TabsList>
           </div>
         </CardHeader>
-        
+
         <CardContent>
           <TabsContent value="sbtc" className="space-y-6 mt-0">
             <div className="max-w-md mx-auto space-y-4">
               <div className="space-y-2">
                 <Input
                   type="number"
-                  placeholder="0.00000000"
+                  placeholder="Enter amount"
                   value={sBtcAmount}
                   onChange={(e) => setSBtcAmount(e.target.value)}
-                  className="text-2xl text-center h-16 font-mono"
+                  className="text-xl text-center h-14"
                   step="0.00000001"
                   min="0"
                 />
-                <p className="text-sm text-muted-foreground text-center">
-                  Available: {sBtcBalance.toFixed(8)} sBTC
-                </p>
+                <div className="flex items-center justify-center gap-2">
+                  <p className="text-sm text-muted-foreground">
+                    Available: {formatBtc(sBtcBalance)} sBTC
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 px-2 text-xs"
+                    onClick={() => setSBtcAmount(sBtcBalance.toString())}
+                    disabled={sBtcBalance === 0}
+                  >
+                    Max
+                  </Button>
+                </div>
               </div>
-              
-              <Button 
-                onClick={handleSBtcDeposit} 
+
+              <Button
+                onClick={handleSBtcDeposit}
                 size="lg"
                 className="w-full gap-2 h-14 text-lg bg-primary hover:bg-primary/90"
                 disabled={sBtcBalance === 0}
@@ -112,7 +137,7 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
                 <ArrowDownToLine className="w-5 h-5" />
                 Deposit
               </Button>
-              
+
               {sBtcBalance === 0 && (
                 <div className="text-center pt-2">
                   <Button
@@ -121,7 +146,11 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
                     className="gap-2 text-primary"
                     asChild
                   >
-                    <a href="https://sbtc.stacks.co/" target="_blank" rel="noopener noreferrer">
+                    <a
+                      href="https://sbtc.stacks.co/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       Get more sBTC
                       <ExternalLink className="w-3 h-3" />
                     </a>
@@ -136,20 +165,30 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
               <div className="space-y-2">
                 <Input
                   type="number"
-                  placeholder="0.00"
+                  placeholder="Enter amount"
                   value={stxAmount}
                   onChange={(e) => setStxAmount(e.target.value)}
-                  className="text-2xl text-center h-16 font-mono"
+                  className="text-xl text-center h-14"
                   step="0.000001"
                   min="0"
                 />
-                <p className="text-sm text-muted-foreground text-center">
-                  Available: {stxBalance.toFixed(6)} STX
-                </p>
+                <div className="flex items-center justify-center gap-2">
+                  <p className="text-sm text-muted-foreground">
+                    Available: {formatStx(stxBalance)} STX
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 px-2 text-xs"
+                    onClick={() => setStxAmount(stxBalance.toString())}
+                    disabled={stxBalance === 0}
+                  >
+                    Max
+                  </Button>
+                </div>
               </div>
-              
-              <Button 
-                onClick={handleStxDeposit} 
+              <Button
+                onClick={handleStxDeposit}
                 size="lg"
                 className="w-full gap-2 h-14 text-lg bg-secondary hover:bg-secondary/90"
                 disabled={stxBalance === 0}
@@ -157,7 +196,7 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
                 <ArrowDownToLine className="w-5 h-5" />
                 Deposit
               </Button>
-              
+
               {stxBalance === 0 && (
                 <div className="text-center pt-2">
                   <Button
@@ -166,7 +205,11 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
                     className="gap-2 text-secondary"
                     asChild
                   >
-                    <a href="https://www.okx.com/web3/dex-swap#inputChain=501&inputCurrency=0xc7bbec68d12a0d1830360f8ec58fa599ba1b0e9b&outputChain=501&outputCurrency=0xes" target="_blank" rel="noopener noreferrer">
+                    <a
+                      href="https://www.okx.com/web3/dex-swap#inputChain=501&inputCurrency=0xc7bbec68d12a0d1830360f8ec58fa599ba1b0e9b&outputChain=501&outputCurrency=0xes"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       Get more STX
                       <ExternalLink className="w-3 h-3" />
                     </a>

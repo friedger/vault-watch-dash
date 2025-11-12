@@ -1,8 +1,14 @@
 import daoLogo from "@/assets/dao-logo.png";
 import { Button } from "@/components/ui/button";
 import { WalletConnect } from "@/components/WalletConnect";
-import { ArrowLeft, LayoutDashboard, Shield } from "lucide-react";
+import { ArrowLeft, LayoutDashboard, Shield, HelpCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTutorial } from "@/components/tutorial/TutorialContext";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface HeaderProps {
   userAddress: string | null;
@@ -31,6 +37,8 @@ export const Header = ({
   showAdminLink = false,
   isAdmin = false,
 }: HeaderProps) => {
+  const { startTutorial } = useTutorial();
+
   return (
     <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
       <div className="container mx-auto px-4 py-4">
@@ -56,6 +64,21 @@ export const Header = ({
             </div>
           </div>
           <div className="flex items-center gap-4">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={startTutorial}
+                  className="h-10 w-10"
+                >
+                  <HelpCircle className="w-5 h-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Open Tutorial</p>
+              </TooltipContent>
+            </Tooltip>
             {userAddress && showDashboardLink && (
               <Link to="/dashboard">
                 <Button variant="outline" className="gap-2 h-[68px]">

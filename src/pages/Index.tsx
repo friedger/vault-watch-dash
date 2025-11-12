@@ -24,13 +24,26 @@ import {
   Lock,
   Shield,
   TrendingDown,
-  TrendingUp
+  TrendingUp,
+  GraduationCap
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useTutorial } from "@/components/tutorial/TutorialContext";
 
 const Index = () => {
   const [userAddress, setUserAddress] = useState<string | null>(null);
+  const { startTutorial, state } = useTutorial();
+
+  // Show tutorial for first-time users
+  useEffect(() => {
+    if (!state.isCompleted && !state.skipped && !state.isActive) {
+      const hasVisited = localStorage.getItem('bxl-vault-has-visited');
+      if (!hasVisited) {
+        localStorage.setItem('bxl-vault-has-visited', 'true');
+      }
+    }
+  }, [state]);
 
   // Fetch vault balances (always)
   const { data: vaultBalances } = useBalances(VAULT_CONTRACT);
@@ -244,6 +257,17 @@ const Index = () => {
                   community.
                 </p>
               </div>
+              {!state.isCompleted && !state.skipped && (
+                <Button 
+                  onClick={startTutorial}
+                  size="lg"
+                  variant="outline"
+                  className="gap-2"
+                >
+                  <GraduationCap className="w-5 h-5" />
+                  New User? Start Tutorial
+                </Button>
+              )}
             </div>
           </div>
         ) : (

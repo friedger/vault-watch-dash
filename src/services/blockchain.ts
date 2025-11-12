@@ -165,7 +165,7 @@ export async function withdrawSBtc(amount: number, user:string) {
     postConditionMode: "deny",
     postConditions: [
       Pc.principal(user).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
-      Pc.principal(VAULT_CONTRACT).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+      Pc.principal(BXL_BTC_CONTRACT).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
     ],
   });
 
@@ -173,7 +173,7 @@ export async function withdrawSBtc(amount: number, user:string) {
 }
 
 // user updates Sbtc withdrawal request
-export async function withDrawSBtcUpdate(requestId: number, amount: number, user:string) {
+export async function withdrawSBtcUpdate(requestId: number, amount: number, user:string) {
   const amountInSats = Math.floor(amount * 1e8); // Convert to satoshis
 
   const result = await request("stx_callContract", {
@@ -210,12 +210,13 @@ export async function withdrawStx(amount: number, user:string) {
 
   const result = await request("stx_callContract", {
     contract: VAULT_CONTRACT,
-    functionName: "withdraw-stx-request",
-    functionArgs: [Cl.uint(amountInMicroStx), Cl.uint(1000)],
+    functionName: "withdraw-stx",
+    functionArgs: [Cl.uint(amountInMicroStx)],
     network,
     postConditionMode: "deny",
     postConditions: [
       Pc.principal(user).willSendEq(amountInMicroStx).ft(BXL_STX_CONTRACT, BXL_STX_ASSET),
+      Pc.principal(VAULT_CONTRACT).willSendEq(amountInMicroStx).ustx(),
     ],
   });
 

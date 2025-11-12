@@ -66,7 +66,7 @@ export const WalletConnect = ({
       {address ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="wallet" className="h-[68px] gap-2 px-4">
+            <Button variant="wallet" className="h-10 gap-2 px-4">
               <div className="flex flex-col items-start">
                 <p className="text-xs text-muted-foreground">Connected</p>
                 <p className="font-mono text-sm font-bold text-primary">{formatAddress(address)}</p>
@@ -122,7 +122,7 @@ export const WalletConnect = ({
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Button onClick={connectWallet} className="gap-2 h-[68px] px-6">
+        <Button onClick={connectWallet} className="gap-2 h-10 px-6">
           <Wallet className="w-4 h-4" />
           Connect Wallet
         </Button>

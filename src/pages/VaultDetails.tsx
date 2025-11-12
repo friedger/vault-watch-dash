@@ -50,6 +50,7 @@ const VaultDetails = () => {
         bxlSTX={userBalances?.bxlSTX ?? 0}
         pageTitle="Vault Details"
         backLink="/"
+        showDashboardLink
       />
 
       {/* Main Content */}

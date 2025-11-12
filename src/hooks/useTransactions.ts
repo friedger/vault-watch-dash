@@ -1,15 +1,20 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { fetchUserTransactions, type Transaction } from '@/services/blockchain';
+import {
+  fetchUserTransactions,
+  TransactionResult,
+  transactionsLimit,
+} from "@/services/blockchain";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 export function useTransactions(address: string | undefined) {
-  return useInfiniteQuery<Transaction[]>({
-    queryKey: ['transactions', address],
-    queryFn: ({ pageParam = 0 }) => 
-      address ? fetchUserTransactions(address, pageParam as number) : Promise.resolve([]),
+  return useInfiniteQuery<TransactionResult>({
+    queryKey: ["transactions", address],
+    queryFn: ({ pageParam = 0 }) =>
+      address
+        ? fetchUserTransactions(address, pageParam as number)
+        : Promise.resolve({ transactions: [], total: 0 }),
     getNextPageParam: (lastPage, allPages) => {
-      // If we got less than 20 transactions, we've reached the end
-      if (lastPage.length < 20) return undefined;
-      return allPages.length * 20;
+      if (allPages.length * transactionsLimit >= lastPage.total) return undefined;
+      return allPages.length * transactionsLimit;
     },
     enabled: !!address,
     refetchInterval: 30000,

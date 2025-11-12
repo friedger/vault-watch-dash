@@ -1,6 +1,4 @@
 import daoLogo from "@/assets/dao-logo.png";
-import { BalanceCard } from "@/components/BalanceCard";
-import { DepositWithdrawCard } from "@/components/DepositWithdrawCard";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { SupportedProjects } from "@/components/SupportedProjects";
@@ -11,29 +9,25 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { VaultOverviewCards } from "@/components/VaultOverviewCards";
 import { useBalances } from "@/hooks/useBalances";
-import { useTotalSupply } from "@/hooks/useTotalSupply";
-import { useCryptoPrices } from "@/hooks/useCryptoPrices";
-import { formatEur } from "@/lib/utils";
 import {
-  VAULT_CONTRACT,
   BXL_BTC_CONTRACT,
   BXL_STX_CONTRACT,
+  VAULT_CONTRACT,
 } from "@/services/blockchain";
 import {
   Bitcoin,
   Coins,
   ExternalLink,
   LayoutDashboard,
-  LinkIcon,
   Lock,
   Shield,
   TrendingDown,
-  TrendingUp,
+  TrendingUp
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { VaultOverviewCards } from "@/components/VaultOverviewCards";
 
 const Index = () => {
   const [userAddress, setUserAddress] = useState<string | null>(null);

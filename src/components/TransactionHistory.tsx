@@ -18,11 +18,14 @@ interface TransactionHistoryProps {
   userAddress: string | null;
 }
 
-export const TransactionHistory = ({ userAddress }: TransactionHistoryProps) => {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useTransactions(userAddress ?? undefined);
-  
+export const TransactionHistory = ({
+  userAddress,
+}: TransactionHistoryProps) => {
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useTransactions(userAddress ?? undefined);
+
   // Flatten all pages into a single array
-  const transactions = data?.pages.flatMap(page => page) ?? [];
+  const transactions = data?.pages.flatMap((page) => page.transactions) ?? [];
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
@@ -69,11 +72,21 @@ export const TransactionHistory = ({ userAddress }: TransactionHistoryProps) => 
             {isLoading ? (
               Array.from({ length: 3 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-16" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-32" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : transactions && transactions.length > 0 ? (
@@ -90,7 +103,7 @@ export const TransactionHistory = ({ userAddress }: TransactionHistoryProps) => 
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge 
+                    <Badge
                       variant={getAssetBadgeVariant(tx.asset)}
                       className="font-mono"
                     >
@@ -124,7 +137,10 @@ export const TransactionHistory = ({ userAddress }: TransactionHistoryProps) => 
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={5}
+                  className="text-center text-muted-foreground"
+                >
                   No transactions yet
                 </TableCell>
               </TableRow>

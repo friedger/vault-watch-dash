@@ -6,7 +6,12 @@ import { PortfolioChart } from "@/components/PortfolioChart";
 import { WithdrawCard } from "@/components/WithdrawCard";
 import daoLogo from "@/assets/dao-logo.png";
 import { useBalances } from "@/hooks/useBalances";
-import { withdrawSBtc, withdrawStx } from "@/services/blockchain";
+import { 
+  withdrawSBtc, 
+  withdrawStx, 
+  withdrawSBtcUpdate, 
+  finalizeSbtcWithdraw 
+} from "@/services/blockchain";
 import { toast } from "sonner";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,29 +20,44 @@ const Dashboard = () => {
   const [userAddress, setUserAddress] = useState<string | null>(null);
   const { data: userBalances } = useBalances(userAddress);
 
-  const handleSBtcWithdraw = (amount: number) => {
-    if (userAddress) {
-      withdrawSBtc(amount, userAddress);
-    } else {
-      toast({
-        title: "Wallet not connected",
-        description: "Please connect your wallet to withdraw sBTC",
-        variant: "destructive",
-      });
-    }
+  // Helper function to ensure user address is available before executing action
+  const withUserAddressCheck = <T extends any[]>(
+    action: (address: string, ...args: T) => void,
+    errorMessage: string = "Please connect your wallet to perform this action"
+  ) => {
+    return (...args: T) => {
+      if (userAddress) {
+        action(userAddress, ...args);
+      } else {
+        toast({
+          title: "Wallet not connected",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+    };
   };
 
-  const handleStxWithdraw = (amount: number) => {
-    if (userAddress) {
-      withdrawStx(amount, userAddress);
-    } else {
-      toast({
-        title: "Wallet not connected",
-        description: "Please connect your wallet to withdraw sBTC",
-        variant: "destructive",
-      });
-    }
-  };
+  const handleSBtcWithdraw = withUserAddressCheck(
+    (address: string, amount: number) => withdrawSBtc(amount, address),
+    "Please connect your wallet to withdraw sBTC"
+  );
+
+  const handleSBtcUpdate = withUserAddressCheck(
+    (address: string, requestId: number, oldAmount:number, newAmount: number) => 
+      withdrawSBtcUpdate(requestId, oldAmount, newAmount, address),
+    "Please connect your wallet to update withdrawal"
+  );
+
+  const handleSBtcFinalize = withUserAddressCheck(
+    (address: string, requestId: number) => finalizeSbtcWithdraw(requestId, address),
+    "Please connect your wallet to finalize withdrawal"
+  );
+
+  const handleStxWithdraw = withUserAddressCheck(
+    (address: string, amount: number) => withdrawStx(amount, address),
+    "Please connect your wallet to withdraw STX"
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -78,8 +98,11 @@ const Dashboard = () => {
             <div className="max-w-xl mx-auto">
               <WithdrawCard
                 onSBtcWithdraw={handleSBtcWithdraw}
+                onSBtcRequestUpdate={handleSBtcUpdate}
+                onSBtcFinalize={handleSBtcFinalize}
                 onStxWithdraw={handleStxWithdraw}
                 bxlBtcBalance={userBalances?.bxlBTC ?? 0}
+                bxlBtcTransitionBalance={userBalances?.bxlBTCTransit ?? 0}
                 bxlStxBalance={userBalances?.bxlSTX ?? 0}
               />
             </div>

@@ -54,7 +54,6 @@ export async function fetchAllBalances(address: string): Promise<Balance> {
     if (!response.ok) throw new Error("Failed to fetch balances");
     const data = await response.json();
 
-    console.log("Balance data:", data);
     // Parse STX balance
     const stx = parseInt(data.stx.balance) / 1e6; // Convert from micro-STX
     const lockedStx = parseInt(data.stx.locked) / 1e6; // Convert from micro-STX
@@ -69,7 +68,9 @@ export async function fetchAllBalances(address: string): Promise<Balance> {
 
     const bxlBtcTransitToken =
       data.fungible_tokens?.[`${BXL_BTC_CONTRACT}::${BXL_BTC_TRANSIT_ASSET}`];
-    const bxlBTCTransit = bxlBtcTransitToken ? parseInt(bxlBtcTransitToken.balance) / 1e8 : 0; // 8 decimals
+    const bxlBTCTransit = bxlBtcTransitToken
+      ? parseInt(bxlBtcTransitToken.balance) / 1e8
+      : 0; // 8 decimals
 
     // Parse wrapped STX balance (bxlSTX)
     const bxlStxToken =
@@ -79,7 +80,14 @@ export async function fetchAllBalances(address: string): Promise<Balance> {
     return { stx, sBtc, lockedStx, bxlBTC, bxlBTCTransit, bxlSTX };
   } catch (error) {
     console.error("Error fetching balances:", error);
-    return { stx: 0, sBtc: 0, lockedStx: 0, bxlBTC: 0, bxlBTCTransit: 0, bxlSTX: 0 };
+    return {
+      stx: 0,
+      sBtc: 0,
+      lockedStx: 0,
+      bxlBTC: 0,
+      bxlBTCTransit: 0,
+      bxlSTX: 0,
+    };
   }
 }
 
@@ -159,7 +167,7 @@ export async function depositStx(amount: number, user: string) {
 }
 
 // user requests to withdraw sBTC from the vault
-export async function withdrawSBtc(amount: number, user:string) {
+export async function withdrawSBtc(amount: number, user: string) {
   const amountInSats = Math.floor(amount * 1e8); // Convert to satoshis
 
   const result = await request("stx_callContract", {
@@ -169,8 +177,12 @@ export async function withdrawSBtc(amount: number, user:string) {
     network,
     postConditionMode: "deny",
     postConditions: [
-      Pc.principal(user).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
-      Pc.principal(BXL_BTC_CONTRACT).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+      Pc.principal(user)
+        .willSendEq(amountInSats)
+        .ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
+      Pc.principal(BXL_BTC_CONTRACT)
+        .willSendEq(amountInSats)
+        .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
     ],
   });
 
@@ -178,18 +190,69 @@ export async function withdrawSBtc(amount: number, user:string) {
 }
 
 // user updates Sbtc withdrawal request
-export async function withdrawSBtcUpdate(requestId: number, amount: number, user:string) {
-  const amountInSats = Math.floor(amount * 1e8); // Convert to satoshis
+export async function withdrawSBtcUpdate(
+  requestId: number,
+  oldAmount: number,
+  newAmount: number,
+  user: string
+) {
+  const oldAmountInSats = Math.floor(oldAmount * 1e8);
+  const newAmountInSats = Math.floor(newAmount * 1e8);
+
+  // post conditions for unlock
+  const postConditions = [
+    Pc.principal(user)
+      .willSendEq(oldAmountInSats)
+      .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+    Pc.principal(BXL_BTC_CONTRACT)
+      .willSendEq(oldAmountInSats)
+      .ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
+  ];
+
+  // post conditions for locking new amount
+  if (newAmountInSats > 0) {
+    postConditions.push(
+      Pc.principal(user)
+        .willSendEq(newAmountInSats)
+        .ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
+      Pc.principal(BXL_BTC_CONTRACT)
+        .willSendEq(newAmountInSats)
+        .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+    );
+  }
 
   const result = await request("stx_callContract", {
     contract: VAULT_CONTRACT,
     functionName: "withdraw-update",
-    functionArgs: [Cl.uint(requestId), Cl.uint(amountInSats), Cl.uint(1000)],
+    functionArgs: [Cl.uint(requestId), Cl.uint(newAmountInSats), Cl.uint(1000)],
+    network,
+    postConditionMode: "deny",
+    postConditions,
+  });
+
+  return result;
+}
+
+// user finalizes STX withdrawal from the vault
+export async function finalizeStxWithdraw(
+  requestId: number,
+  amount: number,
+  user: string
+) {
+  const amountInSats = Math.floor(amount * 1e8); // Convert to sats
+  const result = await request("stx_callContract", {
+    contract: VAULT_CONTRACT,
+    functionName: "withdraw-stx-finalize",
+    functionArgs: [Cl.uint(requestId)],
     network,
     postConditionMode: "deny",
     postConditions: [
-      Pc.principal(user).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
-      Pc.principal(VAULT_CONTRACT).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+      Pc.principal(user)
+        .willSendEq(amountInSats)
+        .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+      Pc.principal(VAULT_CONTRACT)
+        .willSendEq(amountInSats)
+        .ft(SBTC_CONTRACT, SBTC_ASSET),
     ],
   });
 
@@ -197,7 +260,7 @@ export async function withdrawSBtcUpdate(requestId: number, amount: number, user
 }
 
 // finalize sBTC withdrawal after waiting period
-export async function finalizeSbtcWithdraw(requestId: number, user:string) {
+export async function finalizeSbtcWithdraw(requestId: number, user: string) {
   const result = await request("stx_callContract", {
     contract: VAULT_CONTRACT,
     functionName: "withdraw-finalize",
@@ -210,7 +273,7 @@ export async function finalizeSbtcWithdraw(requestId: number, user:string) {
   return result;
 }
 
-export async function withdrawStx(amount: number, user:string) {
+export async function withdrawStx(amount: number, user: string) {
   const amountInMicroStx = Math.floor(amount * 1e6); // Convert to micro-STX
 
   const result = await request("stx_callContract", {
@@ -220,15 +283,15 @@ export async function withdrawStx(amount: number, user:string) {
     network,
     postConditionMode: "deny",
     postConditions: [
-      Pc.principal(user).willSendEq(amountInMicroStx).ft(BXL_STX_CONTRACT, BXL_STX_ASSET),
+      Pc.principal(user)
+        .willSendEq(amountInMicroStx)
+        .ft(BXL_STX_CONTRACT, BXL_STX_ASSET),
       Pc.principal(VAULT_CONTRACT).willSendEq(amountInMicroStx).ustx(),
     ],
   });
 
   return result;
 }
-
-
 
 // Admin contract calls
 
@@ -292,7 +355,12 @@ export async function revokeStacking() {
 
 export interface Transaction {
   txId: string;
-  type: "deposit" | "withdraw" | "transfer";
+  type:
+    | "deposit"
+    | "withdraw"
+    | "withdraw-update"
+    | "withdraw-finalize"
+    | "transfer";
   asset: "sBTC" | "STX" | "bxlBTC" | "bxlSTX";
   amount: number;
   timestamp: Date;
@@ -300,14 +368,24 @@ export interface Transaction {
   functionName: string;
 }
 
-export async function fetchUserTransactions(address: string, offset: number = 0): Promise<Transaction[]> {
+export interface TransactionResult {
+  transactions: Transaction[];
+  total: number;
+}
+
+export const transactionsLimit = 20;
+export async function fetchUserTransactions(
+  address: string,
+  offset: number = 0
+): Promise<TransactionResult> {
   try {
     const response = await fetch(
-      `${STACKS_API}/extended/v1/address/${address}/transactions?limit=20&offset=${offset}`
+      `${STACKS_API}/extended/v1/address/${address}/transactions?limit=${transactionsLimit}&offset=${offset}`
     );
     if (!response.ok) throw new Error("Failed to fetch transactions");
     const data = await response.json();
 
+    console.log("Fetched transactions data:", data);
     const transactions: Transaction[] = [];
 
     for (const tx of data.results) {
@@ -319,7 +397,11 @@ export async function fetchUserTransactions(address: string, offset: number = 0)
       const functionName = tx.contract_call.function_name;
 
       // Filter for vault-related transactions
-      if (!contractId.includes("bxl-vault") && !contractId.includes("sbtc-token")) continue;
+      if (
+        !contractId.includes("bxl-vault") &&
+        !contractId.includes("sbtc-token")
+      )
+        continue;
 
       let type: Transaction["type"] = "transfer";
       let asset: Transaction["asset"] = "sBTC";
@@ -334,19 +416,29 @@ export async function fetchUserTransactions(address: string, offset: number = 0)
         if (amountArg?.repr) {
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
         }
-      } else if (functionName === "deposit-stx") {
-        type = "deposit";
-        asset = "STX";
-        const amountArg = tx.contract_call.function_args?.[0];
-        if (amountArg?.repr) {
-          amount = parseInt(amountArg.repr.replace("u", "")) / 1e6;
-        }
       } else if (functionName === "withdraw-request") {
         type = "withdraw";
         asset = "sBTC";
         const amountArg = tx.contract_call.function_args?.[0];
         if (amountArg?.repr) {
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
+        }
+      } else if (functionName === "withdraw-update") {
+        type = "withdraw-update";
+        asset = "sBTC";
+        const amountArg = tx.contract_call.function_args?.[1];
+        if (amountArg?.repr) {
+          amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
+        }
+      } else if (functionName === "withdraw-finalize") {
+        type = "withdraw-finalize";
+        asset = "sBTC";
+      } else if (functionName === "deposit-stx") {
+        type = "deposit";
+        asset = "STX";
+        const amountArg = tx.contract_call.function_args?.[0];
+        if (amountArg?.repr) {
+          amount = parseInt(amountArg.repr.replace("u", "")) / 1e6;
         }
       } else if (functionName === "withdraw-stx") {
         type = "withdraw";
@@ -371,9 +463,14 @@ export async function fetchUserTransactions(address: string, offset: number = 0)
       });
     }
 
-    return transactions.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+    return {
+      transactions: transactions.sort(
+        (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
+      ),
+      total: data.total,
+    };
   } catch (error) {
     console.error("Error fetching transactions:", error);
-    return [];
+    return { transactions: [], total: -1 };
   }
 }

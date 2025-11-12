@@ -66,6 +66,29 @@ export const WalletSetupStep = () => {
               </div>
             </div>
           </div>
+
+          <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-4">
+            <div className="flex items-start gap-2">
+              <Key className="h-5 w-5 text-secondary mt-0.5" />
+              <div>
+                <p className="font-semibold text-foreground mb-2">Alternative: Connect Your Ledger Device</p>
+                <p className="text-sm mb-2">
+                  For maximum security, you can connect a Ledger hardware wallet to Xverse (browser extension only):
+                </p>
+                <ol className="text-sm space-y-1 ml-4 list-decimal">
+                  <li>In Xverse, go to Account (top left) → Connect Hardware Wallet</li>
+                  <li>Click "Get Started" and select asset types (Bitcoin/Ordinals, Stacks, or both)</li>
+                  <li>Indicate if you're using Ledger Live (recommended: use only Xverse or Ledger Live, not both)</li>
+                  <li>Connect your Ledger, ensure it's unlocked with Bitcoin app open and updated</li>
+                  <li>Verify your addresses on the Ledger device</li>
+                  <li>Name your Ledger account and complete setup</li>
+                </ol>
+                <p className="text-sm mt-2 text-muted-foreground">
+                  Note: Hardware wallet support is currently only available on the browser extension, not mobile.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </TutorialStepContent>
     </TutorialStep>

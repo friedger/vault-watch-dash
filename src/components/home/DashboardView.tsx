@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { DepositCard } from "@/components/DepositCard";
-import { QuickStatsBar } from "@/components/home/QuickStatsBar";
 import { QuickActionCards } from "@/components/home/QuickActionCards";
 import { PortfolioDialog } from "@/components/PortfolioDialog";
 import { VaultPreviewDialog } from "@/components/VaultPreviewDialog";
@@ -48,31 +47,15 @@ export const DashboardView = ({
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Welcome Section */}
-      <div className="text-center space-y-4 max-w-3xl mx-auto">
-        <div className="relative inline-block">
-          <div className="absolute inset-0 blur-3xl opacity-30 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
-          <img
-            src={daoLogo}
-            alt="DAO Brussels"
-            className="h-24 w-24 object-contain relative z-10 mx-auto"
-          />
-        </div>
-        <h2 className="text-3xl md:text-4xl font-bold">
-          Welcome Back! 👋
-        </h2>
-        <p className="text-muted-foreground text-lg">
-          Manage your deposits and track your contribution to the Brussels crypto community.
-        </p>
+      {/* Compact Welcome */}
+      <div className="flex items-center justify-center gap-3">
+        <img
+          src={daoLogo}
+          alt="DAO Brussels"
+          className="h-12 w-12 object-contain"
+        />
+        <h2 className="text-2xl font-bold">Welcome Back!</h2>
       </div>
-
-      {/* Quick Stats */}
-      <QuickStatsBar
-        userContribution={userContribution}
-        totalVault={totalVault}
-        communityYield={earnedYield}
-        communityYieldEur={communityYieldEur}
-      />
 
       {/* Primary Action: Deposit */}
       <div className="max-w-xl mx-auto">
@@ -87,6 +70,10 @@ export const DashboardView = ({
       {/* Quick Action Cards */}
       <QuickActionCards
         userBalancesEur={userBalancesEur}
+        totalVaultEur={totalVault}
+        communityYield={earnedYield}
+        communityYieldEur={communityYieldEur}
+        withdrawalAmount={balances.bxlBTCTransit}
         hasActiveWithdrawal={balances.bxlBTCTransit > 0}
         onPortfolioClick={() => setPortfolioOpen(true)}
         onVaultClick={() => setVaultOpen(true)}

@@ -2,10 +2,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Wallet, Vault, ArrowUpFromLine } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { formatEur } from "@/lib/utils";
+import { formatEur, formatBtc } from "@/lib/utils";
 
 interface QuickActionCardsProps {
   userBalancesEur: number;
+  totalVaultEur: number;
+  communityYield: number;
+  communityYieldEur: number;
+  withdrawalAmount: number;
   hasActiveWithdrawal: boolean;
   onPortfolioClick: () => void;
   onVaultClick: () => void;
@@ -13,6 +17,10 @@ interface QuickActionCardsProps {
 
 export const QuickActionCards = ({
   userBalancesEur,
+  totalVaultEur,
+  communityYield,
+  communityYieldEur,
+  withdrawalAmount,
   hasActiveWithdrawal,
   onPortfolioClick,
   onVaultClick,
@@ -31,10 +39,11 @@ export const QuickActionCards = ({
             <Wallet className="w-8 h-8 text-primary" />
           </div>
           <CardTitle className="text-xl">Your Portfolio</CardTitle>
-          <CardDescription>View your assets</CardDescription>
+          <CardDescription>Your total contribution</CardDescription>
         </CardHeader>
-        <CardContent>
-          <p className="text-2xl font-bold text-primary">{formatEur(userBalancesEur)}</p>
+        <CardContent className="space-y-1">
+          <p className="text-3xl font-bold text-primary">{formatEur(userBalancesEur)}</p>
+          <p className="text-sm text-muted-foreground">bxlBTC + bxlSTX holdings</p>
         </CardContent>
       </Card>
 
@@ -48,10 +57,13 @@ export const QuickActionCards = ({
             <Vault className="w-8 h-8 text-secondary" />
           </div>
           <CardTitle className="text-xl">BXL Vault</CardTitle>
-          <CardDescription>View vault details</CardDescription>
+          <CardDescription>Community treasury</CardDescription>
         </CardHeader>
-        <CardContent>
-          <p className="text-lg font-medium text-muted-foreground">Community Treasury</p>
+        <CardContent className="space-y-1">
+          <p className="text-3xl font-bold text-secondary">{formatEur(totalVaultEur)}</p>
+          <p className="text-sm text-muted-foreground">
+            Yield: {formatBtc(communityYield)} sBTC ({formatEur(communityYieldEur)})
+          </p>
         </CardContent>
       </Card>
 
@@ -68,13 +80,16 @@ export const QuickActionCards = ({
             )}
           </div>
           <CardTitle className="text-xl">Withdrawals</CardTitle>
-          <CardDescription>Manage your withdrawals</CardDescription>
+          <CardDescription>Manage your requests</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-1">
           {hasActiveWithdrawal ? (
-            <p className="text-sm text-muted-foreground">You have an active request</p>
+            <>
+              <p className="text-3xl font-bold text-accent">{formatBtc(withdrawalAmount)} sBTC</p>
+              <p className="text-sm text-muted-foreground">Active withdrawal in transit</p>
+            </>
           ) : (
-            <p className="text-sm text-muted-foreground">No active requests</p>
+            <p className="text-lg text-muted-foreground">No active requests</p>
           )}
         </CardContent>
       </Card>

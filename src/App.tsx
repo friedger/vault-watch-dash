@@ -9,7 +9,6 @@ import { TutorialDialog } from "@/components/tutorial/TutorialDialog";
 
 // Lazy load all pages
 const Index = lazy(() => import("./pages/Index"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Deposit = lazy(() => import("./pages/Deposit"));
 const VaultDetails = lazy(() => import("./pages/VaultDetails"));
 const Admin = lazy(() => import("./pages/Admin"));
@@ -35,7 +34,6 @@ const App = () => (
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/deposit" element={<Deposit />} />
               <Route path="/vault" element={<VaultDetails />} />
               <Route path="/admin" element={<Admin />} />

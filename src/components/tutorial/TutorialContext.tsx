@@ -51,13 +51,12 @@ export const TutorialProvider = ({ children }: { children: ReactNode }) => {
   }, [state]);
 
   const startTutorial = () => {
-    setState({
+    setState((prev) => ({
+      ...prev,
       isActive: true,
-      currentStep: 1,
-      completedSteps: [],
-      isCompleted: false,
-      skipped: false,
-    });
+      // Resume from last step if available, otherwise start from step 1
+      currentStep: prev.currentStep > 0 ? prev.currentStep : 1,
+    }));
   };
 
   const nextStep = () => {

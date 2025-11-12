@@ -4,7 +4,6 @@ import { QuickActionCards } from "@/components/home/QuickActionCards";
 import { PortfolioDialog } from "@/components/PortfolioDialog";
 import { VaultPreviewDialog } from "@/components/VaultPreviewDialog";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
-import daoLogo from "@/assets/dao-logo.png";
 
 interface DashboardViewProps {
   userAddress: string;
@@ -47,16 +46,6 @@ export const DashboardView = ({
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Compact Welcome */}
-      <div className="flex items-center justify-center gap-3">
-        <img
-          src={daoLogo}
-          alt="DAO Brussels"
-          className="h-12 w-12 object-contain"
-        />
-        <h2 className="text-2xl font-bold">Welcome Back!</h2>
-      </div>
-
       {/* Primary Action: Deposit */}
       <div className="max-w-xl mx-auto">
         <DepositCard

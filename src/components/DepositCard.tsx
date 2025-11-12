@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowDownToLine, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import daoLogo from "@/assets/dao-logo.png";
 
 interface DepositCardProps {
   onSBtcDeposit: (amount: number) => void;
@@ -75,13 +76,23 @@ export const DepositCard = ({ onSBtcDeposit, onStxDeposit, sBtcBalance, stxBalan
           </TabsList>
         </div>
         
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">
-            {activeTab === "sbtc" ? "Deposit sBTC" : "Deposit STX"}
-          </CardTitle>
-          <CardDescription>
-            Contribute to the Brussels Crypto Community while maintaining ownership
-          </CardDescription>
+        <CardHeader className="text-center space-y-4">
+          <div className="flex items-center justify-center gap-3">
+            <img
+              src={daoLogo}
+              alt="DAO Brussels"
+              className="h-12 w-12 object-contain"
+            />
+            <h2 className="text-2xl font-bold">Welcome Back!</h2>
+          </div>
+          <div>
+            <CardTitle className="text-2xl">
+              {activeTab === "sbtc" ? "Deposit sBTC" : "Deposit STX"}
+            </CardTitle>
+            <CardDescription>
+              Contribute to the Brussels Crypto Community while maintaining ownership
+            </CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <TabsContent value="sbtc" className="space-y-4 mt-0">

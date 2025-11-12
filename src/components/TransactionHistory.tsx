@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { ArrowDownToLine, ArrowUpFromLine, ExternalLink } from "lucide-react";
 import { formatBtc, formatStx } from "@/lib/utils";
 import { useTransactions } from "@/hooks/useTransactions";
@@ -18,7 +19,10 @@ interface TransactionHistoryProps {
 }
 
 export const TransactionHistory = ({ userAddress }: TransactionHistoryProps) => {
-  const { data: transactions, isLoading } = useTransactions(userAddress ?? undefined);
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useTransactions(userAddress ?? undefined);
+  
+  // Flatten all pages into a single array
+  const transactions = data?.pages.flatMap(page => page) ?? [];
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
@@ -127,6 +131,17 @@ export const TransactionHistory = ({ userAddress }: TransactionHistoryProps) => 
             )}
           </TableBody>
         </Table>
+        {hasNextPage && (
+          <div className="flex justify-center mt-4">
+            <Button
+              variant="outline"
+              onClick={() => fetchNextPage()}
+              disabled={isFetchingNextPage}
+            >
+              {isFetchingNextPage ? "Loading..." : "Load More"}
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

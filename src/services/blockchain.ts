@@ -300,10 +300,10 @@ export interface Transaction {
   functionName: string;
 }
 
-export async function fetchUserTransactions(address: string): Promise<Transaction[]> {
+export async function fetchUserTransactions(address: string, offset: number = 0): Promise<Transaction[]> {
   try {
     const response = await fetch(
-      `${STACKS_API}/extended/v1/address/${address}/transactions?limit=50`
+      `${STACKS_API}/extended/v1/address/${address}/transactions?limit=20&offset=${offset}`
     );
     if (!response.ok) throw new Error("Failed to fetch transactions");
     const data = await response.json();

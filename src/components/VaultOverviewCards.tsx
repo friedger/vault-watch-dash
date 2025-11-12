@@ -2,7 +2,7 @@ import { BalanceCard } from "@/components/BalanceCard";
 import { useBalances } from "@/hooks/useBalances";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
-import { formatEur } from "@/lib/utils";
+import { formatBtc, formatEur } from "@/lib/utils";
 import { VAULT_CONTRACT, BXL_BTC_CONTRACT } from "@/services/blockchain";
 import { Bitcoin, Coins, TrendingUp } from "lucide-react";
 
@@ -31,13 +31,13 @@ export const VaultOverviewCards = () => {
       <BalanceCard
         title="Total Bitcoin in Vault"
         balance={formatEur(wrappedBtcEur)}
-        subBalance={`${(totalBxlBTC ?? 0).toFixed(8)} sBTC`}
+        subBalance={`${formatBtc(totalBxlBTC ?? 0)} sBTC`}
         subLabel="Securing"
         icon={<Bitcoin className="h-5 w-5 text-primary" />}
       />
       <BalanceCard
         title="Current Yield"
-        balance={`${earnedYield.toFixed(8)} sBTC`}
+        balance={`${formatBtc(earnedYield)} sBTC`}
         subBalance={formatEur(earnedYieldEur)}
         subLabel="Total earned"
         icon={<TrendingUp className="h-5 w-5 text-primary" />}
@@ -46,7 +46,7 @@ export const VaultOverviewCards = () => {
       <BalanceCard
         title="Monthly Community Budget"
         balance={formatEur(earnedYieldEur / 12)}
-        subBalance={`${(earnedYield / 12).toFixed(8)} sBTC`}
+        subBalance={`${formatBtc(earnedYield / 12)} sBTC`}
         subLabel="Estimated"
         icon={<Coins className="h-5 w-5 text-primary" />}
       />

@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
-import { formatEur } from "@/lib/utils";
+import { formatBtc, formatEur, formatStx } from "@/lib/utils";
 
 interface BalanceSummaryProps {
   sBtcBalance: number;
@@ -45,8 +45,8 @@ export const BalanceSummary = ({
             <Coins className="w-4 h-4 text-secondary" />
             <div>
               <p className="text-xs text-muted-foreground">STX</p>
-              <p className="text-sm font-bold">{stxBalance.toLocaleString()}</p>
-              <p className="text-xs text-muted-foreground">bxl: {bxlSTX.toLocaleString()}</p>
+              <p className="text-sm font-bold">{formatStx(stxBalance)}</p>
+              <p className="text-xs text-muted-foreground">bxl: {formatStx(bxlSTX)}</p>
               <p className="text-xs text-muted-foreground">{formatEur(stxEur + bxlStxEur)}</p>
             </div>
           </div>
@@ -71,9 +71,9 @@ export const BalanceSummary = ({
                 <Bitcoin className="w-4 h-4 text-primary" />
                 <p className="text-sm font-semibold">sBTC</p>
               </div>
-              <p className="text-xl font-bold">{sBtcBalance.toFixed(8)}</p>
+              <p className="text-xl font-bold">{formatBtc(sBtcBalance)}</p>
               <p className="text-xs text-muted-foreground mt-1">
-                Wrapped: {bxlBTC.toFixed(8)} bxlBTC
+                Wrapped: {formatBtc(bxlBTC)} bxlBTC
               </p>
               <p className="text-xs text-muted-foreground">{formatEur(sBtcEur + bxlBtcEur)}</p>
             </Card>
@@ -82,9 +82,9 @@ export const BalanceSummary = ({
                 <Coins className="w-4 h-4 text-secondary" />
                 <p className="text-sm font-semibold">STX</p>
               </div>
-              <p className="text-xl font-bold">{stxBalance.toLocaleString()}</p>
+              <p className="text-xl font-bold">{formatStx(stxBalance)}</p>
               <p className="text-xs text-muted-foreground mt-1">
-                Wrapped: {bxlSTX.toLocaleString()} bxlSTX
+                Wrapped: {formatStx(bxlSTX)} bxlSTX
               </p>
               <p className="text-xs text-muted-foreground">{formatEur(stxEur + bxlStxEur)}</p>
             </Card>

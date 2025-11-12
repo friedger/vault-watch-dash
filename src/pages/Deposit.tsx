@@ -19,6 +19,7 @@ import { Coins, TrendingUp } from "lucide-react";
 import daoLogo from "@/assets/dao-logo.png";
 import { Toast } from "@/components/ui/toast";
 import { toast } from "sonner";
+import { formatBtc } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
 const Deposit = () => {
@@ -147,12 +148,12 @@ const Deposit = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <BalanceCard
                     title="Total Vault sBTC"
-                    balance={`${totalBxlBTC?.toFixed(8) ?? "0.00000000"} BTC`}
+                    balance={`${formatBtc(totalBxlBTC ?? 0)} BTC`}
                     icon={<Coins className="h-5 w-5 text-primary" />}
                   />
                   <BalanceCard
                     title="Earned Yield"
-                    balance={`${earnedYield.toFixed(8)} sBTC`}
+                    balance={`${formatBtc(earnedYield)} sBTC`}
                     icon={<TrendingUp className="h-5 w-5 text-primary" />}
                     isYield
                   />

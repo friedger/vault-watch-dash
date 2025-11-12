@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ArrowUpFromLine } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { formatBtc, formatStx } from "@/lib/utils";
 
 interface WithdrawCardProps {
   onSBtcWithdraw: (amount: number) => void;
@@ -115,7 +116,7 @@ export const WithdrawCard = ({
                 className="text-xl text-center h-14"
               />
               <p className="text-sm text-muted-foreground text-center">
-                Available: {bxlBtcBalance.toFixed(8)} bxlBTC
+                Available: {formatBtc(bxlBtcBalance)} bxlBTC
               </p>
             </div>
             <Button 
@@ -139,7 +140,7 @@ export const WithdrawCard = ({
                 className="text-xl text-center h-14"
               />
               <p className="text-sm text-muted-foreground text-center">
-                Available: {bxlStxBalance.toLocaleString()} bxlSTX
+                Available: {formatStx(bxlStxBalance)} bxlSTX
               </p>
             </div>
             <Button 

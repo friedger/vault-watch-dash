@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Card } from "@/components/ui/card";
+import { formatBtc, formatStx } from "@/lib/utils";
 
 interface WalletConnectProps {
   onAddressChange: (address: string | null) => void;
@@ -89,9 +90,9 @@ export const WalletConnect = ({
                     <p className="text-sm font-semibold">sBTC</p>
                   </div>
                 </div>
-                <p className="text-lg font-bold">{sBtcBalance.toFixed(8)}</p>
+                <p className="text-lg font-bold">{formatBtc(sBtcBalance)}</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Wrapped: {bxlBTC.toFixed(8)} bxlBTC
+                  Wrapped: {formatBtc(bxlBTC)} bxlBTC
                 </p>
               </Card>
               
@@ -102,9 +103,9 @@ export const WalletConnect = ({
                     <p className="text-sm font-semibold">STX</p>
                   </div>
                 </div>
-                <p className="text-lg font-bold">{stxBalance.toLocaleString()}</p>
+                <p className="text-lg font-bold">{formatStx(stxBalance)}</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Wrapped: {bxlSTX.toLocaleString()} bxlSTX
+                  Wrapped: {formatStx(bxlSTX)} bxlSTX
                 </p>
               </Card>
             </div>

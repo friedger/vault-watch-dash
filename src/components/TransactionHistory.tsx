@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { formatBtc, formatStx } from "@/lib/utils";
 
 interface Transaction {
   id: string;
@@ -116,8 +117,8 @@ export const TransactionHistory = () => {
                   </TableCell>
                   <TableCell className="text-right font-mono">
                     {tx.asset === "sBTC" 
-                      ? tx.amount.toFixed(8) 
-                      : tx.amount.toLocaleString()}
+                      ? formatBtc(tx.amount)
+                      : formatStx(tx.amount)}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {formatDate(tx.timestamp)}

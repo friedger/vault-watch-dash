@@ -9,8 +9,12 @@ import { Header } from "@/components/Header";
 import { useBalances } from "@/hooks/useBalances";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
-import { formatEur } from "@/lib/utils";
-import { VAULT_CONTRACT, BXL_BTC_CONTRACT, BXL_STX_CONTRACT } from "@/services/blockchain";
+import { formatEur, formatStx } from "@/lib/utils";
+import {
+  VAULT_CONTRACT,
+  BXL_BTC_CONTRACT,
+  BXL_STX_CONTRACT,
+} from "@/services/blockchain";
 import { Coins } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -26,7 +30,10 @@ const VaultDetails = () => {
   const { data: totalBxlSTX } = useTotalSupply(BXL_STX_CONTRACT);
 
   // Calculate earned yield for YieldChart component
-  const earnedYield = Math.max(0, (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0));
+  const earnedYield = Math.max(
+    0,
+    (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0)
+  );
 
   // Calculate EUR values for STX section only
   const vaultStxEur = (vaultBalances?.stx ?? 0) * (prices?.stxEur ?? 0);
@@ -83,14 +90,14 @@ const VaultDetails = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <BalanceCard
                   title="Total Vault STX"
-                  balance={`${(vaultBalances?.stx ?? 0).toLocaleString()}`}
+                  balance={formatStx(vaultBalances?.stx ?? 0)}
                   subBalance={formatEur(vaultStxEur)}
                   subLabel="EUR value"
                   icon={<Coins className="h-5 w-5 text-secondary" />}
                 />
                 <BalanceCard
-                  title="Wrapped Supply"
-                  balance={`${(totalBxlSTX ?? 0).toLocaleString()}`}
+                  title="Bxl STX Supply"
+                  balance={formatStx(totalBxlSTX ?? 0)}
                   subBalance={formatEur(wrappedStxEur)}
                   subLabel="EUR value"
                   icon={<Coins className="h-5 w-5 text-secondary" />}
@@ -101,11 +108,14 @@ const VaultDetails = () => {
               <div className="mt-6 p-6 bg-secondary/5 border border-secondary/10 rounded-lg">
                 <h4 className="font-semibold text-lg mb-4">STX Statistics</h4>
                 <div>
-                  <p className="text-sm text-muted-foreground">Utilization Rate</p>
+                  <p className="text-sm text-muted-foreground">
+                    Utilization Rate
+                  </p>
                   <p className="text-2xl font-bold text-secondary">
                     {totalBxlSTX && vaultBalances?.stx
                       ? ((totalBxlSTX / vaultBalances.stx) * 100).toFixed(2)
-                      : '0.00'}%
+                      : "0.00"}
+                    %
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Percentage of vault STX wrapped
@@ -122,8 +132,9 @@ const VaultDetails = () => {
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground">
               <p>
-                The BXL Vault lets you support the Brussels crypto community by storing securely your Bitcoin.
-                You keep full ownership of your assets while the yield automatically funds community projects.
+                The BXL Vault lets you support the Brussels crypto community by
+                storing securely your Bitcoin. You keep full ownership of your
+                assets while the yield automatically funds community projects.
               </p>
 
               <div className="space-y-4">
@@ -134,10 +145,13 @@ const VaultDetails = () => {
                     <div className="flex items-start gap-3">
                       <div className="text-2xl">🔧</div>
                       <div className="space-y-1">
-                        <h4 className="font-semibold text-foreground">Protection Against Wrench Attack</h4>
+                        <h4 className="font-semibold text-foreground">
+                          Protection Against Wrench Attack
+                        </h4>
                         <p className="text-sm">
-                          1-week withdrawal delay protects you from physical coercion. You have time to cancel
-                          if someone forces you to withdraw.
+                          1-week withdrawal delay protects you from physical
+                          coercion. You have time to cancel if someone forces
+                          you to withdraw.
                         </p>
                       </div>
                     </div>
@@ -148,10 +162,12 @@ const VaultDetails = () => {
                     <div className="flex items-start gap-3">
                       <div className="text-2xl">🤝</div>
                       <div className="space-y-1">
-                        <h4 className="font-semibold text-foreground">Yield for the Community</h4>
+                        <h4 className="font-semibold text-foreground">
+                          Yield for the Community
+                        </h4>
                         <p className="text-sm">
-                          No donations needed. You keep your assets while the community benefits from the yield
-                          they generate.
+                          No donations needed. You keep your assets while the
+                          community benefits from the yield they generate.
                         </p>
                       </div>
                     </div>
@@ -162,10 +178,13 @@ const VaultDetails = () => {
                     <div className="flex items-start gap-3">
                       <div className="text-2xl">🪙</div>
                       <div className="space-y-1">
-                        <h4 className="font-semibold text-foreground">Your Receipt Tokens</h4>
+                        <h4 className="font-semibold text-foreground">
+                          Your Receipt Tokens
+                        </h4>
                         <p className="text-sm">
-                          Receive bxlBTC or bxlSTX tokens when you deposit. These represent your share and can
-                          be redeemed anytime.
+                          Receive bxlBTC or bxlSTX tokens when you deposit.
+                          These represent your share and can be redeemed
+                          anytime.
                         </p>
                       </div>
                     </div>
@@ -176,9 +195,12 @@ const VaultDetails = () => {
                     <div className="flex items-start gap-3">
                       <div className="text-2xl">💰</div>
                       <div className="space-y-1">
-                        <h4 className="font-semibold text-foreground">Non-Taxable Event</h4>
+                        <h4 className="font-semibold text-foreground">
+                          Non-Taxable Event
+                        </h4>
                         <p className="text-sm">
-                          Yield goes directly to the community as an endowment model, keeping your taxes simple.
+                          Yield goes directly to the community as an endowment
+                          model, keeping your taxes simple.
                         </p>
                       </div>
                     </div>
@@ -187,12 +209,25 @@ const VaultDetails = () => {
 
                 {/* How It Works Details */}
                 <div className="bg-primary/5 border border-primary/10 rounded-lg p-4">
-                  <h4 className="font-semibold text-foreground mb-2">How Dual Stacking Works:</h4>
+                  <h4 className="font-semibold text-foreground mb-2">
+                    How Dual Stacking Works:
+                  </h4>
                   <ul className="space-y-1 ml-4 list-disc text-sm">
-                    <li>Your sBTC and some STX are pooled together in the vault</li>
-                    <li>The vault participates in Dual Stacking on Stacks to earn BTC rewards</li>
-                    <li>You maintain 100% ownership through your bxlBTC/bxlSTX tokens</li>
-                    <li>All earned yield funds Brussels crypto community projects and events</li>
+                    <li>
+                      Your sBTC and some STX are pooled together in the vault
+                    </li>
+                    <li>
+                      The vault participates in Dual Stacking on Stacks to earn
+                      BTC rewards
+                    </li>
+                    <li>
+                      You maintain 100% ownership through your bxlBTC/bxlSTX
+                      tokens
+                    </li>
+                    <li>
+                      All earned yield funds Brussels crypto community projects
+                      and events
+                    </li>
                     <li>Community stewards allocate rewards transparently</li>
                   </ul>
                 </div>
@@ -218,7 +253,7 @@ const VaultDetails = () => {
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

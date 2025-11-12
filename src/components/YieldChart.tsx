@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { TrendingUp } from "lucide-react";
+import { formatBtc } from "@/lib/utils";
+
 interface YieldChartProps {
   currentYield: number;
 }
@@ -69,7 +71,7 @@ export const YieldChart = ({
                   return <div className="bg-card border border-primary/20 rounded-lg p-3 shadow-lg">
                           <p className="text-sm font-semibold">{payload[0].payload.month}</p>
                           <p className="text-sm text-primary">
-                            Yield: {Number(payload[0].value).toFixed(8)} sBTC
+                            Yield: {formatBtc(Number(payload[0].value))} sBTC
                           </p>
                         </div>;
                 }
@@ -85,21 +87,21 @@ export const YieldChart = ({
             <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg">
               <p className="text-sm text-muted-foreground">Current Month</p>
               <p className="text-2xl font-bold text-primary">
-                {currentYield.toFixed(8)}
+                {formatBtc(currentYield)}
               </p>
               <p className="text-xs text-muted-foreground mt-1">sBTC earned</p>
             </div>
             <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg">
               <p className="text-sm text-muted-foreground">Total Yield</p>
               <p className="text-2xl font-bold text-primary">
-                {totalYield.toFixed(8)}
+                {formatBtc(totalYield)}
               </p>
               <p className="text-xs text-muted-foreground mt-1">All-time sBTC earned</p>
             </div>
             <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg">
               <p className="text-sm text-muted-foreground">Average Monthly</p>
               <p className="text-2xl font-bold text-primary">
-                {averageYield.toFixed(8)}
+                {formatBtc(averageYield)}
               </p>
               <p className="text-xs text-muted-foreground mt-1">sBTC per month</p>
             </div>

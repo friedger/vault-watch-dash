@@ -30,8 +30,8 @@ const App = () => (
       <TutorialProvider>
         <Toaster />
         <Sonner />
-        <TutorialDialog />
         <BrowserRouter>
+          <TutorialDialog />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />

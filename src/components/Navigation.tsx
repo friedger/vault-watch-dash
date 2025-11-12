@@ -1,4 +1,4 @@
-import { Home, LayoutDashboard, Vault, Upload, Shield } from "lucide-react";
+import { Home, LayoutDashboard, Vault, ArrowUpFromLine, Shield } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { MobileNavigation } from "@/components/MobileNavigation";
 
@@ -10,8 +10,8 @@ interface NavigationProps {
 export const Navigation = ({ userAddress, isAdmin }: NavigationProps) => {
   const navItems = [
     { to: "/", label: "Home", icon: Home, show: true },
-    { to: "/deposit", label: "Deposit", icon: Upload, show: !!userAddress },
     { to: "/vault", label: "Vault", icon: Vault, show: true },
+    { to: "/withdraw", label: "Withdraw", icon: ArrowUpFromLine, show: !!userAddress },
     { to: "/admin", label: "Admin", icon: Shield, show: !!userAddress && isAdmin },
   ].filter((item) => item.show);
 

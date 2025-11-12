@@ -1,34 +1,54 @@
-import { WithdrawCard } from "@/components/WithdrawCard";
-import { PortfolioChart } from "@/components/PortfolioChart";
-import { TransactionHistory } from "@/components/TransactionHistory";
+import { useState } from "react";
+import { DepositCard } from "@/components/DepositCard";
+import { QuickStatsBar } from "@/components/home/QuickStatsBar";
+import { QuickActionCards } from "@/components/home/QuickActionCards";
+import { PortfolioDialog } from "@/components/PortfolioDialog";
+import { VaultPreviewDialog } from "@/components/VaultPreviewDialog";
+import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import daoLogo from "@/assets/dao-logo.png";
 
 interface DashboardViewProps {
   userAddress: string;
-  userBalances: {
+  balances: {
     sBtc: number;
     stx: number;
     bxlBTC: number;
     bxlBTCTransit: number;
     bxlSTX: number;
-  } | undefined;
-  onSBtcWithdraw: (amount: number) => void;
-  onSBtcRequestUpdate: (requestId: number, oldAmount: number, newAmount: number) => void;
-  onSBtcFinalize: (requestId: number, amount: number) => void;
-  onStxWithdraw: (amount: number) => void;
+  };
+  vaultSbtc: number;
+  earnedYield: number;
+  onSBtcDeposit: (amount: number) => void;
+  onStxDeposit: (amount: number) => void;
 }
 
 export const DashboardView = ({
   userAddress,
-  userBalances,
-  onSBtcWithdraw,
-  onSBtcRequestUpdate,
-  onSBtcFinalize,
-  onStxWithdraw,
+  balances,
+  vaultSbtc,
+  earnedYield,
+  onSBtcDeposit,
+  onStxDeposit,
 }: DashboardViewProps) => {
+  const [portfolioOpen, setPortfolioOpen] = useState(false);
+  const [vaultOpen, setVaultOpen] = useState(false);
+  const { data: prices } = useCryptoPrices();
+
+  // Calculate metrics for QuickStatsBar
+  const userContribution = 
+    (balances.bxlBTC + balances.bxlBTCTransit) * (prices?.btcEur ?? 0) +
+    balances.bxlSTX * (prices?.stxEur ?? 0);
+  
+  const totalVault = vaultSbtc * (prices?.btcEur ?? 0);
+  const communityYieldEur = earnedYield * (prices?.btcEur ?? 0);
+
+  const userBalancesEur = 
+    (balances.sBtc + balances.bxlBTC + balances.bxlBTCTransit) * (prices?.btcEur ?? 0) +
+    (balances.stx + balances.bxlSTX) * (prices?.stxEur ?? 0);
+
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Welcome Section for Connected Users */}
+      {/* Welcome Section */}
       <div className="text-center space-y-4 max-w-3xl mx-auto">
         <div className="relative inline-block">
           <div className="absolute inset-0 blur-3xl opacity-30 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
@@ -42,33 +62,50 @@ export const DashboardView = ({
           Welcome Back! 👋
         </h2>
         <p className="text-muted-foreground text-lg">
-          Manage your deposits, track your portfolio, and view your contribution to the Brussels crypto community.
+          Manage your deposits and track your contribution to the Brussels crypto community.
         </p>
       </div>
 
-      {/* Withdraw Card */}
+      {/* Quick Stats */}
+      <QuickStatsBar
+        userContribution={userContribution}
+        totalVault={totalVault}
+        communityYield={earnedYield}
+        communityYieldEur={communityYieldEur}
+      />
+
+      {/* Primary Action: Deposit */}
       <div className="max-w-xl mx-auto">
-        <WithdrawCard
-          onSBtcWithdraw={onSBtcWithdraw}
-          onSBtcRequestUpdate={onSBtcRequestUpdate}
-          onSBtcFinalize={onSBtcFinalize}
-          onStxWithdraw={onStxWithdraw}
-          bxlBtcBalance={userBalances?.bxlBTC ?? 0}
-          bxlBtcTransitionBalance={userBalances?.bxlBTCTransit ?? 0}
-          bxlStxBalance={userBalances?.bxlSTX ?? 0}
+        <DepositCard
+          onSBtcDeposit={onSBtcDeposit}
+          onStxDeposit={onStxDeposit}
+          sBtcBalance={balances.sBtc}
+          stxBalance={balances.stx}
         />
       </div>
 
-      {/* Portfolio Chart */}
-      <PortfolioChart
-        sBtc={userBalances?.sBtc ?? 0}
-        stx={userBalances?.stx ?? 0}
-        bxlBTC={(userBalances?.bxlBTC ?? 0) + (userBalances?.bxlBTCTransit ?? 0)}
-        bxlSTX={userBalances?.bxlSTX ?? 0}
+      {/* Quick Action Cards */}
+      <QuickActionCards
+        userBalancesEur={userBalancesEur}
+        hasActiveWithdrawal={balances.bxlBTCTransit > 0}
+        onPortfolioClick={() => setPortfolioOpen(true)}
+        onVaultClick={() => setVaultOpen(true)}
       />
 
-      {/* Transaction History */}
-      <TransactionHistory userAddress={userAddress} />
+      {/* Dialogs */}
+      <PortfolioDialog
+        open={portfolioOpen}
+        onOpenChange={setPortfolioOpen}
+        userAddress={userAddress}
+        balances={balances}
+      />
+
+      <VaultPreviewDialog
+        open={vaultOpen}
+        onOpenChange={setVaultOpen}
+        vaultSbtc={vaultSbtc}
+        earnedYield={earnedYield}
+      />
     </div>
   );
 };

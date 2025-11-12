@@ -8,11 +8,11 @@ import { DashboardView } from "@/components/home/DashboardView";
 import { useBalances } from "@/hooks/useBalances";
 import { 
   VAULT_CONTRACT,
-  withdrawSBtc, 
-  withdrawStx, 
-  withdrawSBtcUpdate, 
-  finalizeSbtcWithdraw 
+  BXL_BTC_CONTRACT,
+  depositSBtc,
+  depositStx,
 } from "@/services/blockchain";
+import { useTotalSupply } from "@/hooks/useTotalSupply";
 import { useToast } from "@/hooks/use-toast";
 import { useTutorial } from "@/components/tutorial/TutorialContext";
 
@@ -22,6 +22,7 @@ const Index = () => {
   const { state } = useTutorial();
   const { data: vaultBalances } = useBalances(VAULT_CONTRACT);
   const { data: userBalances } = useBalances(userAddress);
+  const { data: totalBxlBTC } = useTotalSupply(BXL_BTC_CONTRACT);
 
   // Show tutorial for first-time users
   useEffect(() => {
@@ -51,28 +52,23 @@ const Index = () => {
     };
   };
 
-  const handleSBtcWithdraw = withUserAddressCheck(
-    (address: string, amount: number) => withdrawSBtc(amount, address),
-    "Please connect your wallet to withdraw sBTC"
+  const handleSBtcDeposit = withUserAddressCheck(
+    (address: string, amount: number) => depositSBtc(amount, address),
+    "Please connect your wallet to deposit sBTC"
   );
 
-  const handleSBtcUpdate = withUserAddressCheck(
-    (address: string, requestId: number, oldAmount: number, newAmount: number) => 
-      withdrawSBtcUpdate(requestId, oldAmount, newAmount, address),
-    "Please connect your wallet to update withdrawal"
-  );
-
-  const handleSBtcFinalize = withUserAddressCheck(
-    (address: string, requestId: number, amount: number) => finalizeSbtcWithdraw(requestId, amount, address),
-    "Please connect your wallet to finalize withdrawal"
-  );
-
-  const handleStxWithdraw = withUserAddressCheck(
-    (address: string, amount: number) => withdrawStx(amount, address),
-    "Please connect your wallet to withdraw STX"
+  const handleStxDeposit = withUserAddressCheck(
+    (address: string, amount: number) => depositStx(amount, address),
+    "Please connect your wallet to deposit STX"
   );
 
   const isAdmin = false; // Not implemented yet
+
+  // Calculate earned yield: vault sBTC - total supply of wrapped sBTC
+  const earnedYield = Math.max(
+    0,
+    (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0)
+  );
 
   // Use vault balances for display when not connected, or fallback to 0
   const displayBalances = userAddress ? userBalances : vaultBalances;
@@ -96,14 +92,16 @@ const Index = () => {
         {!userAddress ? (
           <MarketingView />
         ) : (
-          <DashboardView
-            userAddress={userAddress}
-            userBalances={userBalances}
-            onSBtcWithdraw={handleSBtcWithdraw}
-            onSBtcRequestUpdate={handleSBtcUpdate}
-            onSBtcFinalize={handleSBtcFinalize}
-            onStxWithdraw={handleStxWithdraw}
-          />
+          userBalances && (
+            <DashboardView
+              userAddress={userAddress}
+              balances={userBalances}
+              vaultSbtc={vaultBalances?.sBtc ?? 0}
+              earnedYield={earnedYield}
+              onSBtcDeposit={handleSBtcDeposit}
+              onStxDeposit={handleStxDeposit}
+            />
+          )
         )}
 
         {/* Supported Projects Section - Always Visible */}

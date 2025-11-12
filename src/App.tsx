@@ -9,7 +9,7 @@ import { TutorialDialog } from "@/components/tutorial/TutorialDialog";
 
 // Lazy load all pages
 const Index = lazy(() => import("./pages/Index"));
-const Deposit = lazy(() => import("./pages/Deposit"));
+const Withdraw = lazy(() => import("./pages/Withdraw"));
 const VaultDetails = lazy(() => import("./pages/VaultDetails"));
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -34,7 +34,8 @@ const App = () => (
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/deposit" element={<Deposit />} />
+              <Route path="/withdraw" element={<Withdraw />} />
+              <Route path="/withdraw/:requestId" element={<Withdraw />} />
               <Route path="/vault" element={<VaultDetails />} />
               <Route path="/admin" element={<Admin />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -88,7 +88,9 @@ const Dashboard = () => {
             <PortfolioChart
               sBtc={userBalances?.sBtc ?? 0}
               stx={userBalances?.stx ?? 0}
-              bxlBTC={userBalances?.bxlBTC ?? 0}
+              bxlBTC={
+                (userBalances?.bxlBTC ?? 0) + (userBalances?.bxlBTCTransit ?? 0)
+              }
               bxlSTX={userBalances?.bxlSTX ?? 0}
             />
 

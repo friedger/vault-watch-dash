@@ -41,6 +41,7 @@ export interface Balance {
   sBtc: number;
   lockedStx: number;
   bxlBTC: number;
+  bxlBTCTransit: number;
   bxlSTX: number;
 }
 
@@ -66,15 +67,19 @@ export async function fetchAllBalances(address: string): Promise<Balance> {
       data.fungible_tokens?.[`${BXL_BTC_CONTRACT}::${BXL_BTC_ASSET}`];
     const bxlBTC = bxlBtcToken ? parseInt(bxlBtcToken.balance) / 1e8 : 0; // 8 decimals
 
+    const bxlBtcTransitToken =
+      data.fungible_tokens?.[`${BXL_BTC_CONTRACT}::${BXL_BTC_TRANSIT_ASSET}`];
+    const bxlBTCTransit = bxlBtcTransitToken ? parseInt(bxlBtcTransitToken.balance) / 1e8 : 0; // 8 decimals
+
     // Parse wrapped STX balance (bxlSTX)
     const bxlStxToken =
       data.fungible_tokens?.[`${BXL_STX_CONTRACT}::${BXL_STX_ASSET}`];
     const bxlSTX = bxlStxToken ? parseInt(bxlStxToken.balance) / 1e6 : 0; // 6 decimals
 
-    return { stx, sBtc, lockedStx, bxlBTC, bxlSTX };
+    return { stx, sBtc, lockedStx, bxlBTC, bxlBTCTransit, bxlSTX };
   } catch (error) {
     console.error("Error fetching balances:", error);
-    return { stx: 0, sBtc: 0, lockedStx: 0, bxlBTC: 0, bxlSTX: 0 };
+    return { stx: 0, sBtc: 0, lockedStx: 0, bxlBTC: 0, bxlBTCTransit: 0, bxlSTX: 0 };
   }
 }
 

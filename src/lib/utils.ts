@@ -23,7 +23,7 @@ export function formatBtc(amount: number): string {
 
 export function formatStx(amount: number): string {
   return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: 6,
+    maximumFractionDigits: 6,
   }).format(amount);
 }

@@ -1,5 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import { Pie, PieChart, Cell } from "recharts";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import { formatBtc, formatEur, formatStx } from "@/lib/utils";
@@ -11,7 +15,12 @@ interface PortfolioChartProps {
   bxlSTX: number;
 }
 
-export const PortfolioChart = ({ sBtc, stx, bxlBTC, bxlSTX }: PortfolioChartProps) => {
+export const PortfolioChart = ({
+  sBtc,
+  stx,
+  bxlBTC,
+  bxlSTX,
+}: PortfolioChartProps) => {
   const { data: prices } = useCryptoPrices();
   // Calculate EUR values
   const sBtcEur = sBtc * (prices?.btcEur ?? 0);
@@ -40,7 +49,7 @@ export const PortfolioChart = ({ sBtc, stx, bxlBTC, bxlSTX }: PortfolioChartProp
       value: bxlStxEur,
       fill: "hsl(var(--secondary) / 0.7)",
     },
-  ].filter(item => item.value > 0);
+  ].filter((item) => item.value > 0);
 
   const chartConfig = {
     value: {
@@ -51,7 +60,7 @@ export const PortfolioChart = ({ sBtc, stx, bxlBTC, bxlSTX }: PortfolioChartProp
   return (
     <Card className="gradient-card border-primary/10">
       <CardHeader>
-        <CardTitle>Portfolio Overview</CardTitle>
+        <CardTitle>Portfolio</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -61,16 +70,24 @@ export const PortfolioChart = ({ sBtc, stx, bxlBTC, bxlSTX }: PortfolioChartProp
                 <p className="text-sm text-muted-foreground">sBTC Balance</p>
                 <div className="h-3 w-3 rounded-full bg-primary"></div>
               </div>
-              <p className="text-2xl font-bold text-primary">{formatBtc(sBtc)}</p>
-              <p className="text-xs text-muted-foreground mt-1">{formatEur(sBtcEur)}</p>
+              <p className="text-2xl font-bold text-primary">
+                {formatBtc(sBtc)}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {formatEur(sBtcEur)}
+              </p>
             </div>
             <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm text-muted-foreground">bxlBTC Balance</p>
                 <div className="h-3 w-3 rounded-full bg-primary"></div>
               </div>
-              <p className="text-2xl font-bold text-primary">{formatBtc(bxlBTC)}</p>
-              <p className="text-xs text-muted-foreground mt-1">{formatEur(bxlBtcEur)}</p>
+              <p className="text-2xl font-bold text-primary">
+                {formatBtc(bxlBTC)}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {formatEur(bxlBtcEur)}
+              </p>
             </div>
           </div>
 
@@ -80,23 +97,31 @@ export const PortfolioChart = ({ sBtc, stx, bxlBTC, bxlSTX }: PortfolioChartProp
                 <p className="text-sm text-muted-foreground">STX Balance</p>
                 <div className="h-3 w-3 rounded-full bg-secondary"></div>
               </div>
-              <p className="text-2xl font-bold text-secondary">{formatStx(stx)}</p>
-              <p className="text-xs text-muted-foreground mt-1">{formatEur(stxEur)}</p>
+              <p className="text-2xl font-bold text-secondary">
+                {formatStx(stx)}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {formatEur(stxEur)}
+              </p>
             </div>
             <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/10">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm text-muted-foreground">bxlSTX Balance</p>
                 <div className="h-3 w-3 rounded-full bg-secondary"></div>
               </div>
-              <p className="text-2xl font-bold text-secondary">{formatStx(bxlSTX)}</p>
-              <p className="text-xs text-muted-foreground mt-1">{formatEur(bxlStxEur)}</p>
+              <p className="text-2xl font-bold text-secondary">
+                {formatStx(bxlSTX)}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {formatEur(bxlStxEur)}
+              </p>
             </div>
           </div>
         </div>
 
         <ChartContainer config={chartConfig} className="h-[300px] w-full">
           <PieChart>
-            <ChartTooltip 
+            <ChartTooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   return (

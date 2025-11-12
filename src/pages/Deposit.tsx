@@ -9,6 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { Navigation } from "@/components/Navigation";
 import { DepositCard } from "@/components/DepositCard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -66,6 +67,8 @@ const Deposit = () => {
     }
   };
 
+  const isAdmin = false; // Not implemented yet
+
   return (
     <div className="min-h-screen bg-background">
       <Header
@@ -75,10 +78,8 @@ const Deposit = () => {
         stxBalance={stxBalance}
         bxlBTC={userBalances?.bxlBTC ?? 0}
         bxlSTX={userBalances?.bxlSTX ?? 0}
-        pageTitle="Deposit Assets"
-        backLink="/"
-        showDashboardLink={true}
       />
+      <Navigation userAddress={userAddress} isAdmin={isAdmin} />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">

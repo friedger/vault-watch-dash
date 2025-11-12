@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { Navigation } from "@/components/Navigation";
 import { TransactionHistory } from "@/components/TransactionHistory";
 import { PortfolioChart } from "@/components/PortfolioChart";
 import { WithdrawCard } from "@/components/WithdrawCard";
@@ -59,6 +60,8 @@ const Dashboard = () => {
     "Please connect your wallet to withdraw STX"
   );
 
+  const isAdmin = false; // Not implemented yet
+
   return (
     <div className="min-h-screen bg-background">
       <Header
@@ -68,9 +71,8 @@ const Dashboard = () => {
         stxBalance={userBalances?.stx ?? 0}
         bxlBTC={userBalances?.bxlBTC ?? 0}
         bxlSTX={userBalances?.bxlSTX ?? 0}
-        pageTitle="User Dashboard"
-        backLink="/"
       />
+      <Navigation userAddress={userAddress} isAdmin={isAdmin} />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-8">

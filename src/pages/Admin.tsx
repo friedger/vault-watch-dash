@@ -1,5 +1,6 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -188,10 +189,8 @@ const Admin = () => {
         stxBalance={stxBalance}
         bxlBTC={userBalances?.bxlBTC ?? 0}
         bxlSTX={userBalances?.bxlSTX ?? 0}
-        pageTitle="Vault Administration"
-        backLink="/"
-        isAdmin={isAdmin}
       />
+      <Navigation userAddress={userAddress} isAdmin={isAdmin} />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">

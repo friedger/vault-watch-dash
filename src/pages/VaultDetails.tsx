@@ -6,6 +6,7 @@ import { VaultOverviewCards } from "@/components/VaultOverviewCards";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/Header";
+import { Navigation } from "@/components/Navigation";
 import { useBalances } from "@/hooks/useBalances";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
@@ -39,6 +40,8 @@ const VaultDetails = () => {
   const vaultStxEur = (vaultBalances?.stx ?? 0) * (prices?.stxEur ?? 0);
   const lockedStxEur = (vaultBalances?.lockedStx ?? 0) * (prices?.stxEur ?? 0);
 
+  const isAdmin = false; // Not implemented yet
+
   return (
     <div className="min-h-screen bg-background">
       <Header
@@ -48,10 +51,8 @@ const VaultDetails = () => {
         stxBalance={userBalances?.stx ?? 0}
         bxlBTC={userBalances?.bxlBTC ?? 0}
         bxlSTX={userBalances?.bxlSTX ?? 0}
-        pageTitle="Vault Details"
-        backLink="/"
-        showDashboardLink
       />
+      <Navigation userAddress={userAddress} isAdmin={isAdmin} />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-8">

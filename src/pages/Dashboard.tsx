@@ -50,7 +50,7 @@ const Dashboard = () => {
   );
 
   const handleSBtcFinalize = withUserAddressCheck(
-    (address: string, requestId: number) => finalizeSbtcWithdraw(requestId, address),
+    (address: string, requestId: number, amount: number) => finalizeSbtcWithdraw(requestId, amount, address),
     "Please connect your wallet to finalize withdrawal"
   );
 

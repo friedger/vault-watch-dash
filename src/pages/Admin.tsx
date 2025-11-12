@@ -10,15 +10,20 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useBalances } from "@/hooks/useBalances";
+import { formatBtc } from "@/lib/utils";
 import {
+  adminFinalizeSbtcWithdraw,
   delegateStx,
   enrollDualStacking,
+  fetchWithdrawalRequest,
   revokeStacking,
   transferSbtcYield,
+  type WithdrawalRequest,
 } from "@/services/blockchain";
-import { Lock, Send, Shield, Unlock } from "lucide-react";
+import { AlertCircle, CheckCircle, Coins, Lock, Send, Shield, Unlock } from "lucide-react";
 import { useState } from "react";
 
 // Admin wallet addresses - replace with actual admin addresses
@@ -32,13 +37,14 @@ const Admin = () => {
   const { data: userBalances } = useBalances(userAddress);
   const { toast } = useToast();
 
-  // Dual Stacking form
-  const [stackingAmount, setStackingAmount] = useState("");
-  const [stackingCycles, setStackingCycles] = useState("");
-
   // Move sBTC form
   const [transferAddress, setTransferAddress] = useState("");
   const [transferAmount, setTransferAmount] = useState("");
+
+  // Finalize withdrawal form
+  const [finalizeRequestId, setFinalizeRequestId] = useState("");
+  const [withdrawalRequest, setWithdrawalRequest] = useState<WithdrawalRequest | null>(null);
+  const [isLoadingRequest, setIsLoadingRequest] = useState(false);
 
   // Check if user is admin
   const isAdmin = userAddress && ADMIN_ADDRESSES.includes(userAddress);
@@ -100,6 +106,79 @@ const Admin = () => {
     }
   };
 
+  const handleFetchRequest = async () => {
+    const reqId = parseInt(finalizeRequestId);
+    if (isNaN(reqId) || reqId <= 0) {
+      toast({
+        title: "Invalid Request ID",
+        description: "Please enter a valid request ID",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoadingRequest(true);
+    try {
+      const request = await fetchWithdrawalRequest(reqId);
+      if (request) {
+        setWithdrawalRequest(request);
+        toast({
+          title: "Request Found",
+          description: `Found withdrawal request for ${request.owner.substring(0, 8)}...`,
+        });
+      } else {
+        setWithdrawalRequest(null);
+        toast({
+          title: "Request Not Found",
+          description: "No withdrawal request found with this ID",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch withdrawal request",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingRequest(false);
+    }
+  };
+
+  const handleAdminFinalize = async () => {
+    if (!withdrawalRequest) {
+      toast({
+        title: "Error",
+        description: "Please fetch request details first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const reqId = parseInt(finalizeRequestId);
+    try {
+      const result = await adminFinalizeSbtcWithdraw(
+        reqId,
+        withdrawalRequest.owner,
+        withdrawalRequest.amount
+      );
+      if (result.txid) {
+        toast({
+          title: "Withdrawal Finalized",
+          description: `Finalized ${formatBtc(withdrawalRequest.amount)} sBTC for ${withdrawalRequest.owner.substring(0, 8)}...`,
+        });
+        setFinalizeRequestId("");
+        setWithdrawalRequest(null);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to finalize withdrawal",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header
@@ -140,7 +219,7 @@ const Admin = () => {
             </div>
           </div>
         ) : (
-          <div className="space-y-8 animate-fade-in">
+          <div className="space-y-8 animate-fade-in max-w-4xl mx-auto">
             <div className="text-center space-y-2">
               <div className="flex items-center justify-center gap-2 text-primary">
                 <Shield className="w-8 h-8" />
@@ -151,128 +230,187 @@ const Admin = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Dual Stacking Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Lock className="w-5 h-5" />
-                    Enroll Dual Stacking
-                  </CardTitle>
-                  <CardDescription>
-                    Enroll the vault in dual stacking to earn BTC yield
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="stacking-amount">Amount (STX)</Label>
-                    <Input
-                      id="stacking-amount"
-                      type="number"
-                      placeholder="0.00"
-                      value={stackingAmount}
-                      onChange={(e) => setStackingAmount(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="stacking-cycles">Number of Cycles</Label>
-                    <Input
-                      id="stacking-cycles"
-                      type="number"
-                      placeholder="1"
-                      value={stackingCycles}
-                      onChange={(e) => setStackingCycles(e.target.value)}
-                    />
-                  </div>
-                  <Button onClick={handleEnrollDualStacking} className="w-full">
-                    <Lock className="w-4 h-4 mr-2" />
-                    Enroll Vault
-                  </Button>
-                </CardContent>
-              </Card>
+            <Tabs defaultValue="yield" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="yield" className="gap-2">
+                  <Coins className="w-4 h-4" />
+                  Yield
+                </TabsTrigger>
+                <TabsTrigger value="withdrawals" className="gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Withdrawals
+                </TabsTrigger>
+                <TabsTrigger value="stacking" className="gap-2">
+                  <Lock className="w-4 h-4" />
+                  Stacking
+                </TabsTrigger>
+              </TabsList>
 
-              {/* Move sBTC Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Send className="w-5 h-5" />
-                    Move sBTC from Yield
-                  </CardTitle>
-                  <CardDescription>
-                    Transfer earned sBTC yield to another address
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="transfer-address">Recipient Address</Label>
-                    <Input
-                      id="transfer-address"
-                      type="text"
-                      placeholder="SP..."
-                      value={transferAddress}
-                      onChange={(e) => setTransferAddress(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="transfer-amount">Amount (sBTC)</Label>
-                    <Input
-                      id="transfer-amount"
-                      type="number"
-                      placeholder="0.00000000"
-                      step="0.00000001"
-                      value={transferAmount}
-                      onChange={(e) => setTransferAmount(e.target.value)}
-                    />
-                  </div>
-                  <Button onClick={handleMovesBTC} className="w-full">
-                    <Send className="w-4 h-4 mr-2" />
-                    Transfer sBTC
-                  </Button>
-                </CardContent>
-              </Card>
+              {/* Yield Management Tab */}
+              <TabsContent value="yield" className="space-y-6 mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Transfer sBTC Yield</CardTitle>
+                    <CardDescription>
+                      Transfer earned sBTC yield to another address
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="transfer-address">Recipient Address</Label>
+                      <Input
+                        id="transfer-address"
+                        type="text"
+                        placeholder="SP..."
+                        value={transferAddress}
+                        onChange={(e) => setTransferAddress(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="transfer-amount">Amount (sBTC)</Label>
+                      <Input
+                        id="transfer-amount"
+                        type="number"
+                        placeholder="0.00000000"
+                        step="0.00000001"
+                        value={transferAmount}
+                        onChange={(e) => setTransferAmount(e.target.value)}
+                      />
+                    </div>
+                    <Button onClick={handleMovesBTC} className="w-full" size="lg">
+                      <Send className="w-4 h-4 mr-2" />
+                      Transfer sBTC
+                    </Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-              {/* Stacking Management Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Lock className="w-5 h-5" />
-                    Stack Vault
-                  </CardTitle>
-                  <CardDescription>
-                    Initiate stacking operation for the vault
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button onClick={handleStackVault} className="w-full">
-                    <Lock className="w-4 h-4 mr-2" />
-                    Stack Vault Assets
-                  </Button>
-                </CardContent>
-              </Card>
+              {/* Withdrawals Tab */}
+              <TabsContent value="withdrawals" className="space-y-6 mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Finalize User Withdrawal</CardTitle>
+                    <CardDescription>
+                      Finalize a user's withdrawal request early
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="finalize-request-id">Request ID</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          id="finalize-request-id"
+                          type="number"
+                          placeholder="Enter request ID"
+                          value={finalizeRequestId}
+                          onChange={(e) => {
+                            setFinalizeRequestId(e.target.value);
+                            setWithdrawalRequest(null);
+                          }}
+                        />
+                        <Button 
+                          onClick={handleFetchRequest}
+                          disabled={isLoadingRequest}
+                          variant="outline"
+                        >
+                          {isLoadingRequest ? "Loading..." : "Fetch"}
+                        </Button>
+                      </div>
+                    </div>
 
-              {/* Revoke Stacking Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Unlock className="w-5 h-5" />
-                    Revoke Stacking
-                  </CardTitle>
-                  <CardDescription>
-                    Revoke stacking delegation and unlock assets
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    onClick={handleRevokeStacking}
-                    variant="destructive"
-                    className="w-full"
-                  >
-                    <Unlock className="w-4 h-4 mr-2" />
-                    Revoke Stacking
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+                    {withdrawalRequest && (
+                      <div className="space-y-3 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                        <div className="flex items-start gap-2">
+                          <AlertCircle className="w-4 h-4 text-primary mt-0.5" />
+                          <div className="flex-1 space-y-1">
+                            <p className="text-sm font-semibold">Request Details</p>
+                            <div className="text-xs space-y-1">
+                              <p>
+                                <span className="text-muted-foreground">Owner: </span>
+                                <span className="font-mono">{withdrawalRequest.owner}</span>
+                              </p>
+                              <p>
+                                <span className="text-muted-foreground">Amount: </span>
+                                <span className="font-semibold">{formatBtc(withdrawalRequest.amount)} sBTC</span>
+                              </p>
+                              <p>
+                                <span className="text-muted-foreground">Block: </span>
+                                <span className="font-mono">{withdrawalRequest.blockHeight}</span>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <Button 
+                      onClick={handleAdminFinalize}
+                      className="w-full"
+                      size="lg"
+                      disabled={!withdrawalRequest}
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Finalize Withdrawal
+                    </Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Stacking Management Tab */}
+              <TabsContent value="stacking" className="space-y-6 mt-6">
+                <div className="grid gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Enroll in Dual Stacking</CardTitle>
+                      <CardDescription>
+                        Enroll the vault in dual stacking to earn BTC yield
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button onClick={handleEnrollDualStacking} className="w-full" size="lg">
+                        <Lock className="w-4 h-4 mr-2" />
+                        Enroll Vault
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Delegate STX Stacking</CardTitle>
+                      <CardDescription>
+                        Initiate stacking delegation for the vault
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button onClick={handleStackVault} className="w-full" size="lg">
+                        <Lock className="w-4 h-4 mr-2" />
+                        Stack Vault Assets
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Revoke Stacking</CardTitle>
+                      <CardDescription>
+                        Revoke stacking delegation and unlock assets
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button
+                        onClick={handleRevokeStacking}
+                        variant="destructive"
+                        className="w-full"
+                        size="lg"
+                      >
+                        <Unlock className="w-4 h-4 mr-2" />
+                        Revoke Stacking
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         )}
       </main>

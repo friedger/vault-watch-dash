@@ -44,10 +44,10 @@ export const SupportedProjects = () => {
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block"
+              className="block h-full"
             >
-              <Card className="hover-scale cursor-pointer">
-                <CardContent className="pt-6 text-center">
+              <Card className="hover-scale cursor-pointer h-full flex flex-col">
+                <CardContent className="pt-6 text-center flex-1 flex flex-col">
                   <div className="w-24 h-24 mx-auto mb-4 flex items-center justify-center rounded-full overflow-hidden bg-background border">
                     <img 
                       src={project.logo} 
@@ -56,7 +56,7 @@ export const SupportedProjects = () => {
                     />
                   </div>
                   <h3 className="font-semibold mb-2">{project.name}</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground flex-1">
                     {project.description}
                   </p>
                 </CardContent>

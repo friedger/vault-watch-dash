@@ -11,7 +11,7 @@ interface WithdrawCardProps {
   onSBtcWithdraw: (amount: number) => void;
   onStxWithdraw: (amount: number) => void;
   onSBtcRequestUpdate: (requestId: number, oldAmount: number, newAmount: number) => void;
-  onSBtcFinalize: (requestId: number) => void;
+  onSBtcFinalize: (requestId: number, amount: number) => void;
   bxlBtcBalance: number;
   bxlBtcTransitionBalance: number;
   bxlStxBalance: number;
@@ -134,7 +134,7 @@ export const WithdrawCard = ({
       return;
     }
     
-    onSBtcFinalize(reqId);
+    onSBtcFinalize(reqId, bxlBtcTransitionBalance);
     setRequestId("");
     toast({
       title: "Finalizing withdrawal",
@@ -209,9 +209,20 @@ export const WithdrawCard = ({
                     onChange={(e) => setSBtcAmount(e.target.value)}
                     className="text-xl text-center h-14"
                   />
-                  <p className="text-sm text-muted-foreground text-center">
-                    Available: {formatBtc(bxlBtcBalance)} bxlBTC
-                  </p>
+                  <div className="flex items-center justify-center gap-2">
+                    <p className="text-sm text-muted-foreground">
+                      Available: {formatBtc(bxlBtcBalance)} bxlBTC
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 px-2 text-xs"
+                      onClick={() => setSBtcAmount(bxlBtcBalance.toString())}
+                      disabled={bxlBtcBalance === 0}
+                    >
+                      Max
+                    </Button>
+                  </div>
                 </div>
                 <Button 
                   onClick={handleSBtcWithdraw} 
@@ -372,9 +383,20 @@ export const WithdrawCard = ({
                 onChange={(e) => setStxAmount(e.target.value)}
                 className="text-xl text-center h-14"
               />
-              <p className="text-sm text-muted-foreground text-center">
-                Available: {formatStx(bxlStxBalance)} bxlSTX
-              </p>
+              <div className="flex items-center justify-center gap-2">
+                <p className="text-sm text-muted-foreground">
+                  Available: {formatStx(bxlStxBalance)} bxlSTX
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                  onClick={() => setStxAmount(bxlStxBalance.toString())}
+                  disabled={bxlStxBalance === 0}
+                >
+                  Max
+                </Button>
+              </div>
             </div>
             <Button 
               onClick={handleStxWithdraw} 

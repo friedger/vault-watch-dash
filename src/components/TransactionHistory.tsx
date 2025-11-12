@@ -99,7 +99,7 @@ export const TransactionHistory = ({
                       ) : (
                         <ArrowUpFromLine className="w-4 h-4 text-secondary" />
                       )}
-                      <span className="capitalize">{tx.type}</span>
+                      <span className="capitalize">{tx.type}</span>{tx.requestId ? ` (#${tx.requestId})` : null}
                     </div>
                   </TableCell>
                   <TableCell>

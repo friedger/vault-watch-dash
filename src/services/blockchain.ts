@@ -1,10 +1,17 @@
+import { createClient } from "@stacks/blockchain-api-client";
 import { request } from "@stacks/connect";
+import path from "path";
 import {
   Cl,
+  ClarityType,
+  fetchCallReadOnlyFunction,
+  fetchContractMapEntry,
   hexToCV,
   Pc,
+  PrincipalCV,
   ResponseErrorCV,
   ResponseOkCV,
+  TupleCV,
   UIntCV,
 } from "@stacks/transactions";
 
@@ -36,6 +43,17 @@ const network = "mainnet";
 export const VAULT_CONTRACT =
   "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-vault";
 
+const client = createClient({
+  baseUrl: "https://api.mainnet.hiro.so",
+});
+
+client.use({
+  onRequest({ request }) {
+    // request.headers.set('x-custom-header', 'custom-value');
+    return request;
+  },
+});
+
 export interface Balance {
   stx: number;
   sBtc: number;
@@ -48,11 +66,12 @@ export interface Balance {
 export async function fetchAllBalances(address: string): Promise<Balance> {
   try {
     // Make a single API call to get all balances
-    const response = await fetch(
-      `${STACKS_API}/extended/v1/address/${address}/balances`
+    const response = await client.GET(
+      `/extended/v1/address/{principal}/balances`,
+      { params: { path: { principal: address } } }
     );
-    if (!response.ok) throw new Error("Failed to fetch balances");
-    const data = await response.json();
+    const { data, error } = response;
+    if (error) throw new Error("Failed to fetch balances");
 
     // Parse STX balance
     const stx = parseInt(data.stx.balance) / 1e6; // Convert from micro-STX
@@ -96,34 +115,19 @@ export async function fetchTokenTotalSupply(
   contractName: string
 ): Promise<number> {
   try {
-    const response = await fetch(
-      `${STACKS_API}/v2/contracts/call-read/${contractAddress}/${contractName}/get-total-supply`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          sender: contractAddress,
-          arguments: [],
-        }),
-      }
-    );
+    const response = (await fetchCallReadOnlyFunction({
+      contractAddress,
+      contractName,
+      functionName: "get-total-supply",
+      functionArgs: [],
+      senderAddress: contractAddress,
+      network,
+    })) as ResponseOkCV<UIntCV>;
 
-    if (!response.ok) throw new Error("Failed to fetch total supply");
-    const data = await response.json();
-    // Parse the Clarity value response
-
-    if (data.okay && data.result) {
-      const supplyCV = hexToCV(data.result) as
-        | ResponseOkCV<UIntCV>
-        | ResponseErrorCV<UIntCV>;
-      const supply = supplyCV.value.value;
-      const factor =
-        contractName === "bxl-btc" ? 1e8 : contractName === "bxl-stx" ? 1e6 : 0;
-      return Number(supply) / factor;
-    }
-    return 0;
+    const supply = response.value.value;
+    const factor =
+      contractName === "bxl-btc" ? 1e8 : contractName === "bxl-stx" ? 1e6 : 0;
+    return Number(supply) / factor;
   } catch (error) {
     console.error("Error fetching total supply:", error);
     return 0;
@@ -217,7 +221,7 @@ export async function withdrawSBtcUpdate(
         .ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
       Pc.principal(BXL_BTC_CONTRACT)
         .willSendEq(newAmountInSats)
-        .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+        .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET)
     );
   }
 
@@ -233,16 +237,17 @@ export async function withdrawSBtcUpdate(
   return result;
 }
 
-// user finalizes STX withdrawal from the vault
-export async function finalizeStxWithdraw(
+// finalize sBTC withdrawal after waiting period
+export async function finalizeSbtcWithdraw(
   requestId: number,
   amount: number,
   user: string
 ) {
   const amountInSats = Math.floor(amount * 1e8); // Convert to sats
+
   const result = await request("stx_callContract", {
     contract: VAULT_CONTRACT,
-    functionName: "withdraw-stx-finalize",
+    functionName: "withdraw-finalize",
     functionArgs: [Cl.uint(requestId)],
     network,
     postConditionMode: "deny",
@@ -254,20 +259,6 @@ export async function finalizeStxWithdraw(
         .willSendEq(amountInSats)
         .ft(SBTC_CONTRACT, SBTC_ASSET),
     ],
-  });
-
-  return result;
-}
-
-// finalize sBTC withdrawal after waiting period
-export async function finalizeSbtcWithdraw(requestId: number, user: string) {
-  const result = await request("stx_callContract", {
-    contract: VAULT_CONTRACT,
-    functionName: "withdraw-finalize",
-    functionArgs: [Cl.uint(requestId)],
-    network,
-    postConditionMode: "deny",
-    postConditions: [],
   });
 
   return result;
@@ -353,6 +344,89 @@ export async function revokeStacking() {
   return result;
 }
 
+export interface WithdrawalRequest {
+  owner: string;
+  amount: number;
+  blockHeight: number;
+}
+
+/**
+ * Fetch withdrawal request details from the contract
+ * @param requestId The withdrawal request ID
+ * @returns Withdrawal request details or null if not found
+ */
+export async function fetchWithdrawalRequest(
+  requestId: number
+): Promise<WithdrawalRequest | null> {
+  try {
+    const [contractAddress, contractName] = VAULT_CONTRACT.split(".");
+    const resultCV = await fetchContractMapEntry({
+      contractAddress,
+      contractName,
+      mapName: "withdrawal-requests",
+      mapKey: Cl.uint(requestId),
+      network,
+    });
+    // Check if it's a (some ...) response
+    if (resultCV.type === ClarityType.OptionalSome) {
+      // OptionalSome
+      const tupleCV = resultCV.value;
+      if (tupleCV.type === ClarityType.Tuple) {
+        // Tuple
+        const tupleData = (
+          tupleCV as TupleCV<{
+            user: PrincipalCV;
+            amount: UIntCV;
+            "opens-at": UIntCV;
+          }>
+        ).value;
+
+        return {
+          owner: tupleData.user.value,
+          amount: Number(tupleData.amount.value) / 1e8,
+          blockHeight: Number(tupleData["opens-at"].value),
+        };
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching withdrawal request:", error);
+    return null;
+  }
+}
+
+/**
+ * Admin finalize a user's withdrawal request early
+ * @param requestId The withdrawal request ID
+ * @param user The user who made the request
+ * @param amount The amount to finalize
+ */
+export async function adminFinalizeSbtcWithdraw(
+  requestId: number,
+  user: string,
+  amount: number
+) {
+  const amountInSats = Math.floor(amount * 1e8);
+
+  const result = await request("stx_callContract", {
+    contract: VAULT_CONTRACT,
+    functionName: "withdraw-finalize",
+    functionArgs: [Cl.uint(requestId)],
+    network,
+    postConditionMode: "deny",
+    postConditions: [
+      Pc.principal(user)
+        .willSendEq(amountInSats)
+        .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+      Pc.principal(VAULT_CONTRACT)
+        .willSendEq(amountInSats)
+        .ft(SBTC_CONTRACT, SBTC_ASSET),
+    ],
+  });
+
+  return result;
+}
+
 export interface Transaction {
   txId: string;
   type:
@@ -363,6 +437,7 @@ export interface Transaction {
     | "transfer";
   asset: "sBTC" | "STX" | "bxlBTC" | "bxlSTX";
   amount: number;
+  requestId?: number;
   timestamp: Date;
   status: "success" | "pending" | "failed";
   functionName: string;
@@ -385,7 +460,6 @@ export async function fetchUserTransactions(
     if (!response.ok) throw new Error("Failed to fetch transactions");
     const data = await response.json();
 
-    console.log("Fetched transactions data:", data);
     const transactions: Transaction[] = [];
 
     for (const tx of data.results) {
@@ -406,6 +480,7 @@ export async function fetchUserTransactions(
       let type: Transaction["type"] = "transfer";
       let asset: Transaction["asset"] = "sBTC";
       let amount = 0;
+      let requestId: number | null = null;
 
       // Parse based on function name
       if (functionName === "deposit") {
@@ -423,9 +498,17 @@ export async function fetchUserTransactions(
         if (amountArg?.repr) {
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
         }
+        const requestIdCV = hexToCV(tx.tx_result.hex) as ResponseOkCV<UIntCV>;
+        console.log("requestIdCV", requestIdCV);
+        requestId = Number(requestIdCV.value.value);
+        
       } else if (functionName === "withdraw-update") {
         type = "withdraw-update";
         asset = "sBTC";
+        const requestIdArg = tx.contract_call.function_args?.[0];
+        if (requestIdArg?.hex) {
+          requestId = Number((hexToCV(requestIdArg.hex) as UIntCV).value);
+        }
         const amountArg = tx.contract_call.function_args?.[1];
         if (amountArg?.repr) {
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
@@ -433,6 +516,11 @@ export async function fetchUserTransactions(
       } else if (functionName === "withdraw-finalize") {
         type = "withdraw-finalize";
         asset = "sBTC";
+        const requestIdArg = tx.contract_call.function_args?.[0];
+
+        if (requestIdArg?.hex) {
+          requestId = Number((hexToCV(requestIdArg.hex) as UIntCV).value);
+        }
       } else if (functionName === "deposit-stx") {
         type = "deposit";
         asset = "STX";
@@ -457,6 +545,7 @@ export async function fetchUserTransactions(
         type,
         asset,
         amount,
+        requestId,
         timestamp: new Date(tx.burn_block_time * 1000),
         status: tx.tx_status === "success" ? "success" : "pending",
         functionName,

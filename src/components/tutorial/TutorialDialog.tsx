@@ -41,19 +41,19 @@ export const TutorialDialog = () => {
 
   return (
     <Dialog open={state.isActive} onOpenChange={(open) => !open && closeTutorial()}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-sm text-muted-foreground">
             Step {state.currentStep} of {totalSteps}
           </DialogTitle>
           <Progress value={progress} className="h-2 mt-2" />
         </DialogHeader>
 
-        <div className="py-6">
+        <div className="flex-1 overflow-y-auto py-6">
           {renderStep()}
         </div>
 
-        <DialogFooter className="flex-col sm:flex-row gap-2">
+        <DialogFooter className="flex-shrink-0 flex-col sm:flex-row gap-2">
           <div className="flex gap-2 w-full sm:w-auto">
             {isFirstStep ? (
               <Button

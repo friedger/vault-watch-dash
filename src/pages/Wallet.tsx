@@ -5,7 +5,6 @@ import { PortfolioChart } from "@/components/PortfolioChart";
 import { TransactionHistory } from "@/components/TransactionHistory";
 import { MarketingView } from "@/components/home/MarketingView";
 import { useTutorial } from "@/components/tutorial/TutorialContext";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { useBalances } from "@/hooks/useBalances";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
@@ -68,29 +67,27 @@ const Wallet = () => {
       <Navigation userAddress={userAddress} isAdmin={isAdmin} />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 space-y-16">
+      <main className="container mx-auto px-4 py-8">
         {!userAddress ? (
           <MarketingView />
         ) : (
-          <ScrollArea className="h-full max-h-[70vh] pr-4">
-            <div className="space-y-6">
-              {/* Portfolio Chart */}
-              <PortfolioChart
-                sBtc={vaultBalances.sBtc}
-                stx={vaultBalances.stx}
-                bxlBTC={vaultBalances.bxlBTC + vaultBalances.bxlBTCTransit}
-                bxlSTX={vaultBalances.bxlSTX}
-              />
+          <div className="max-w-5xl mx-auto space-y-8">
+            {/* Portfolio Chart */}
+            <PortfolioChart
+              sBtc={userBalances?.sBtc ?? 0}
+              stx={userBalances?.stx ?? 0}
+              bxlBTC={(userBalances?.bxlBTC ?? 0) + (userBalances?.bxlBTCTransit ?? 0)}
+              bxlSTX={userBalances?.bxlSTX ?? 0}
+            />
 
-              {/* Recent Transactions */}
-              <div>
-                <h3 className="text-lg font-semibold mb-4">
-                  Recent Transactions
-                </h3>
-                <TransactionHistory userAddress={userAddress} />
-              </div>
+            {/* Recent Transactions */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">
+                Recent Transactions
+              </h3>
+              <TransactionHistory userAddress={userAddress} />
             </div>
-          </ScrollArea>
+          </div>
         )}
       </main>
 

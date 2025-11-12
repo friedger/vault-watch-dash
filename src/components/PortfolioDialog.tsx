@@ -38,31 +38,6 @@ export const PortfolioDialog = ({
             View your complete asset breakdown and transaction history
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="h-full max-h-[70vh] pr-4">
-          <div className="space-y-6">
-            {/* Balance Summary */}
-            <BalanceSummary
-              sBtcBalance={balances.sBtc}
-              stxBalance={balances.stx}
-              bxlBTC={balances.bxlBTC + balances.bxlBTCTransit}
-              bxlSTX={balances.bxlSTX}
-            />
-
-            {/* Portfolio Chart */}
-            <PortfolioChart
-              sBtc={balances.sBtc}
-              stx={balances.stx}
-              bxlBTC={balances.bxlBTC + balances.bxlBTCTransit}
-              bxlSTX={balances.bxlSTX}
-            />
-
-            {/* Recent Transactions */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Recent Transactions</h3>
-              <TransactionHistory userAddress={userAddress} />
-            </div>
-          </div>
-        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

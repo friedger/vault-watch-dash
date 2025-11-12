@@ -1,22 +1,18 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
-import { SupportedProjects } from "@/components/SupportedProjects";
-import { DashboardView } from "@/components/home/DashboardView";
+import { PortfolioChart } from "@/components/PortfolioChart";
+import { TransactionHistory } from "@/components/TransactionHistory";
 import { MarketingView } from "@/components/home/MarketingView";
 import { useTutorial } from "@/components/tutorial/TutorialContext";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { useBalances } from "@/hooks/useBalances";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
-import {
-  BXL_BTC_CONTRACT,
-  depositSBtc,
-  depositStx,
-  VAULT_CONTRACT,
-} from "@/services/blockchain";
+import { BXL_BTC_CONTRACT, VAULT_CONTRACT } from "@/services/blockchain";
 import { useEffect, useState } from "react";
 
-const Index = () => {
+const Wallet = () => {
   const { toast } = useToast();
   const [userAddress, setUserAddress] = useState<string | null>(null);
   const { state } = useTutorial();
@@ -52,23 +48,7 @@ const Index = () => {
     };
   };
 
-  const handleSBtcDeposit = withUserAddressCheck(
-    (address: string, amount: number) => depositSBtc(amount, address),
-    "Please connect your wallet to deposit sBTC"
-  );
-
-  const handleStxDeposit = withUserAddressCheck(
-    (address: string, amount: number) => depositStx(amount, address),
-    "Please connect your wallet to deposit STX"
-  );
-
   const isAdmin = false; // Not implemented yet
-
-  // Calculate earned yield: vault sBTC - total supply of wrapped sBTC
-  const earnedYield = Math.max(
-    0,
-    (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0)
-  );
 
   // Use vault balances for display when not connected, or fallback to 0
   const displayBalances = userAddress ? userBalances : vaultBalances;
@@ -90,21 +70,27 @@ const Index = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-16">
         {!userAddress ? (
-          <>
-            <MarketingView />
-            <SupportedProjects />
-          </>
+          <MarketingView />
         ) : (
-          userBalances && (
-            <DashboardView
-              userAddress={userAddress}
-              balances={userBalances}
-              vaultSbtc={vaultBalances?.sBtc ?? 0}
-              earnedYield={earnedYield}
-              onSBtcDeposit={handleSBtcDeposit}
-              onStxDeposit={handleStxDeposit}
-            />
-          )
+          <ScrollArea className="h-full max-h-[70vh] pr-4">
+            <div className="space-y-6">
+              {/* Portfolio Chart */}
+              <PortfolioChart
+                sBtc={vaultBalances.sBtc}
+                stx={vaultBalances.stx}
+                bxlBTC={vaultBalances.bxlBTC + vaultBalances.bxlBTCTransit}
+                bxlSTX={vaultBalances.bxlSTX}
+              />
+
+              {/* Recent Transactions */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4">
+                  Recent Transactions
+                </h3>
+                <TransactionHistory userAddress={userAddress} />
+              </div>
+            </div>
+          </ScrollArea>
         )}
       </main>
 
@@ -113,4 +99,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Wallet;

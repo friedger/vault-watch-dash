@@ -219,21 +219,7 @@ const VaultDetails = () => {
           </Card>
 
           {/* Supported Projects */}
-          <SupportedProjects />
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/deposit">
-              <Button size="lg" className="w-full sm:w-auto">
-                Deposit Assets
-              </Button>
-            </Link>
-            <Link to="/dashboard">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                View Dashboard
-              </Button>
-            </Link>
-          </div>
+          <SupportedProjects />         
         </div>
       </main>
 

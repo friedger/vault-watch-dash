@@ -6,11 +6,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { TutorialProvider } from "@/components/tutorial/TutorialContext";
 import { TutorialDialog } from "@/components/tutorial/TutorialDialog";
+import { Wallet } from 'lucide-react';
 
 // Lazy load all pages
 const Index = lazy(() => import("./pages/Index"));
 const Withdraw = lazy(() => import("./pages/Withdraw"));
 const VaultDetails = lazy(() => import("./pages/VaultDetails"));
+const Wallet = lazy(() => import("./pages/Wallet"));
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -34,9 +36,10 @@ const App = () => (
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/vault" element={<VaultDetails />} />
+              <Route path="/wallet" element={<Wallet />} />
               <Route path="/withdraw" element={<Withdraw />} />
               <Route path="/withdraw/:requestId" element={<Withdraw />} />
-              <Route path="/vault" element={<VaultDetails />} />
               <Route path="/admin" element={<Admin />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

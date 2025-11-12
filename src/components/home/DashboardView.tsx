@@ -33,30 +33,27 @@ export const DashboardView = ({
   const { data: prices } = useCryptoPrices();
 
   // Calculate metrics for QuickStatsBar
-  const userContribution = 
+  const userContribution =
     (balances.bxlBTC + balances.bxlBTCTransit) * (prices?.btcEur ?? 0) +
     balances.bxlSTX * (prices?.stxEur ?? 0);
-  
+
   const totalVault = vaultSbtc * (prices?.btcEur ?? 0);
   const communityYieldEur = earnedYield * (prices?.btcEur ?? 0);
 
-  const userBalancesEur = 
-    (balances.sBtc + balances.bxlBTC + balances.bxlBTCTransit) * (prices?.btcEur ?? 0) +
+  const userBalancesEur =
+    (balances.sBtc + balances.bxlBTC + balances.bxlBTCTransit) *
+      (prices?.btcEur ?? 0) +
     (balances.stx + balances.bxlSTX) * (prices?.stxEur ?? 0);
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Quick Action Cards */}
-      <QuickActionCards
-        userBalancesEur={userBalancesEur}
-        totalVaultEur={totalVault}
-        communityYield={earnedYield}
-        communityYieldEur={communityYieldEur}
-        withdrawalAmount={balances.bxlBTCTransit}
-        hasActiveWithdrawal={balances.bxlBTCTransit > 0}
-        onPortfolioClick={() => setPortfolioOpen(true)}
-        onVaultClick={() => setVaultOpen(true)}
-      />
+      {/* Page Header */}
+      <div className="text-center space-y-2">
+        <h1 className="text-4xl font-bold">Deposit sBTC</h1>
+        <p className="text-muted-foreground text-lg">
+          Store sBTC in the vault to support the community
+        </p>
+      </div>
 
       {/* Primary Action: Deposit */}
       <div className="max-w-xl mx-auto">

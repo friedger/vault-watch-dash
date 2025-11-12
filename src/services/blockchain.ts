@@ -289,3 +289,91 @@ export async function revokeStacking() {
   });
   return result;
 }
+
+export interface Transaction {
+  txId: string;
+  type: "deposit" | "withdraw" | "transfer";
+  asset: "sBTC" | "STX" | "bxlBTC" | "bxlSTX";
+  amount: number;
+  timestamp: Date;
+  status: "success" | "pending" | "failed";
+  functionName: string;
+}
+
+export async function fetchUserTransactions(address: string): Promise<Transaction[]> {
+  try {
+    const response = await fetch(
+      `${STACKS_API}/extended/v1/address/${address}/transactions?limit=50`
+    );
+    if (!response.ok) throw new Error("Failed to fetch transactions");
+    const data = await response.json();
+
+    const transactions: Transaction[] = [];
+
+    for (const tx of data.results) {
+      // Only process contract calls that are relevant to our vault
+      if (tx.tx_type !== "contract_call") continue;
+      if (tx.tx_status !== "success" && tx.tx_status !== "pending") continue;
+
+      const contractId = `${tx.contract_call.contract_id}`;
+      const functionName = tx.contract_call.function_name;
+
+      // Filter for vault-related transactions
+      if (!contractId.includes("bxl-vault") && !contractId.includes("sbtc-token")) continue;
+
+      let type: Transaction["type"] = "transfer";
+      let asset: Transaction["asset"] = "sBTC";
+      let amount = 0;
+
+      // Parse based on function name
+      if (functionName === "deposit") {
+        type = "deposit";
+        asset = "sBTC";
+        // Parse amount from function args
+        const amountArg = tx.contract_call.function_args?.[0];
+        if (amountArg?.repr) {
+          amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
+        }
+      } else if (functionName === "deposit-stx") {
+        type = "deposit";
+        asset = "STX";
+        const amountArg = tx.contract_call.function_args?.[0];
+        if (amountArg?.repr) {
+          amount = parseInt(amountArg.repr.replace("u", "")) / 1e6;
+        }
+      } else if (functionName === "withdraw-request") {
+        type = "withdraw";
+        asset = "sBTC";
+        const amountArg = tx.contract_call.function_args?.[0];
+        if (amountArg?.repr) {
+          amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
+        }
+      } else if (functionName === "withdraw-stx") {
+        type = "withdraw";
+        asset = "STX";
+        const amountArg = tx.contract_call.function_args?.[0];
+        if (amountArg?.repr) {
+          amount = parseInt(amountArg.repr.replace("u", "")) / 1e6;
+        }
+      } else {
+        // Skip other function calls
+        continue;
+      }
+
+      transactions.push({
+        txId: tx.tx_id,
+        type,
+        asset,
+        amount,
+        timestamp: new Date(tx.burn_block_time * 1000),
+        status: tx.tx_status === "success" ? "success" : "pending",
+        functionName,
+      });
+    }
+
+    return transactions.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    return [];
+  }
+}

@@ -8,55 +8,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowDownToLine, ArrowUpFromLine, ExternalLink } from "lucide-react";
 import { formatBtc, formatStx } from "@/lib/utils";
+import { useTransactions } from "@/hooks/useTransactions";
 
-interface Transaction {
-  id: string;
-  type: "deposit" | "withdraw";
-  asset: "sBTC" | "STX";
-  amount: number;
-  timestamp: Date;
-  status: "completed" | "pending" | "failed";
+interface TransactionHistoryProps {
+  userAddress: string | null;
 }
 
-// Mock data for demonstration
-const mockTransactions: Transaction[] = [
-  {
-    id: "1",
-    type: "deposit",
-    asset: "sBTC",
-    amount: 0.5,
-    timestamp: new Date(Date.now() - 3600000),
-    status: "completed",
-  },
-  {
-    id: "2",
-    type: "deposit",
-    asset: "STX",
-    amount: 1000,
-    timestamp: new Date(Date.now() - 7200000),
-    status: "completed",
-  },
-  {
-    id: "3",
-    type: "withdraw",
-    asset: "sBTC",
-    amount: 0.2,
-    timestamp: new Date(Date.now() - 86400000),
-    status: "completed",
-  },
-  {
-    id: "4",
-    type: "deposit",
-    asset: "STX",
-    amount: 500,
-    timestamp: new Date(Date.now() - 172800000),
-    status: "completed",
-  },
-];
-
-export const TransactionHistory = () => {
+export const TransactionHistory = ({ userAddress }: TransactionHistoryProps) => {
+  const { data: transactions, isLoading } = useTransactions(userAddress ?? undefined);
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
@@ -66,15 +28,21 @@ export const TransactionHistory = () => {
     }).format(date);
   };
 
-  const getStatusColor = (status: Transaction["status"]) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case "completed":
+      case "success":
         return "default";
       case "pending":
         return "secondary";
       case "failed":
         return "destructive";
+      default:
+        return "default";
     }
+  };
+
+  const getAssetBadgeVariant = (asset: string) => {
+    return asset === "sBTC" || asset === "bxlBTC" ? "default" : "secondary";
   };
 
   return (
@@ -94,9 +62,19 @@ export const TransactionHistory = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockTransactions.length > 0 ? (
-              mockTransactions.map((tx) => (
-                <TableRow key={tx.id}>
+            {isLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                </TableRow>
+              ))
+            ) : transactions && transactions.length > 0 ? (
+              transactions.map((tx) => (
+                <TableRow key={tx.txId}>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       {tx.type === "deposit" ? (
@@ -109,19 +87,29 @@ export const TransactionHistory = () => {
                   </TableCell>
                   <TableCell>
                     <Badge 
-                      variant={tx.asset === "sBTC" ? "default" : "secondary"}
+                      variant={getAssetBadgeVariant(tx.asset)}
                       className="font-mono"
                     >
                       {tx.asset}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right font-mono">
-                    {tx.asset === "sBTC" 
+                    {tx.asset === "sBTC" || tx.asset === "bxlBTC"
                       ? formatBtc(tx.amount)
                       : formatStx(tx.amount)}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {formatDate(tx.timestamp)}
+                    <div className="flex items-center gap-2">
+                      {formatDate(tx.timestamp)}
+                      <a
+                        href={`https://explorer.hiro.so/txid/${tx.txId}?chain=mainnet`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex text-primary hover:text-primary/80"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant={getStatusColor(tx.status)}>

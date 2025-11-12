@@ -95,7 +95,7 @@ const Dashboard = () => {
             />
 
             {/* Transaction History */}
-            <TransactionHistory />
+            <TransactionHistory userAddress={userAddress} />
           </div>
         )}
       </main>

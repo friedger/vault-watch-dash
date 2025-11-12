@@ -169,29 +169,28 @@ export const WithdrawCard = ({
   };
 
   return (
-    <Card className="gradient-card border-primary/20 relative">
+    <Card className="gradient-card border-primary/20">
       <Tabs defaultValue="sbtc" className="w-full" onValueChange={setActiveTab}>
-        <div className="absolute top-4 right-4 z-10">
-          <TabsList className="h-8 p-1 bg-muted/50">
-            <TabsTrigger 
-              value="sbtc" 
-              className="text-xs h-6 px-3 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
-            >
-              sBTC
-            </TabsTrigger>
-            <TabsTrigger 
-              value="stx" 
-              className="text-xs h-6 px-3 data-[state=active]:bg-secondary/10 data-[state=active]:text-secondary"
-            >
-              STX
-            </TabsTrigger>
-          </TabsList>
-        </div>
-        
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">
-            {activeTab === "sbtc" ? "Withdraw sBTC" : "Withdraw STX"}
-          </CardTitle>
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <CardTitle className="text-2xl">
+              {activeTab === "sbtc" ? "Withdraw sBTC" : "Withdraw STX"}
+            </CardTitle>
+            <TabsList className="h-8 p-1 bg-muted/50">
+              <TabsTrigger 
+                value="sbtc" 
+                className="text-xs h-6 px-3 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+              >
+                sBTC
+              </TabsTrigger>
+              <TabsTrigger 
+                value="stx" 
+                className="text-xs h-6 px-3 data-[state=active]:bg-secondary/10 data-[state=active]:text-secondary"
+              >
+                STX
+              </TabsTrigger>
+            </TabsList>
+          </div>
           <CardDescription>
             Withdraw your assets from the vault
           </CardDescription>
@@ -200,7 +199,7 @@ export const WithdrawCard = ({
           <TabsContent value="sbtc" className="space-y-4 mt-0">
             {!hasActiveRequest ? (
               // Step 1: Create withdrawal request
-              <>
+              <div className="max-w-md mx-auto space-y-4">
                 <div className="space-y-2">
                   <Input
                     type="number"
@@ -233,10 +232,10 @@ export const WithdrawCard = ({
                   <ArrowUpFromLine className="w-5 h-5" />
                   Request Withdrawal
                 </Button>
-              </>
+              </div>
             ) : (
               // Step 2 & 3: Manage active withdrawal request with tabs
-              <>
+              <div className="max-w-md mx-auto space-y-4">
                 <div className="space-y-4">
                   <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
                     <p className="text-sm text-muted-foreground mb-1">Active Request</p>
@@ -370,43 +369,45 @@ export const WithdrawCard = ({
                     </TabsContent>
                   </Tabs>
                 </div>
-              </>
+              </div>
             )}
           </TabsContent>
 
           <TabsContent value="stx" className="space-y-4 mt-0">
-            <div className="space-y-2">
-              <Input
-                type="number"
-                placeholder="0.00"
-                value={stxAmount}
-                onChange={(e) => setStxAmount(e.target.value)}
-                className="text-xl text-center h-14"
-              />
-              <div className="flex items-center justify-center gap-2">
-                <p className="text-sm text-muted-foreground">
-                  Available: {formatStx(bxlStxBalance)} bxlSTX
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-6 px-2 text-xs"
-                  onClick={() => setStxAmount(bxlStxBalance.toString())}
-                  disabled={bxlStxBalance === 0}
-                >
-                  Max
-                </Button>
+            <div className="max-w-md mx-auto space-y-4">
+              <div className="space-y-2">
+                <Input
+                  type="number"
+                  placeholder="0.00"
+                  value={stxAmount}
+                  onChange={(e) => setStxAmount(e.target.value)}
+                  className="text-xl text-center h-14"
+                />
+                <div className="flex items-center justify-center gap-2">
+                  <p className="text-sm text-muted-foreground">
+                    Available: {formatStx(bxlStxBalance)} bxlSTX
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 px-2 text-xs"
+                    onClick={() => setStxAmount(bxlStxBalance.toString())}
+                    disabled={bxlStxBalance === 0}
+                  >
+                    Max
+                  </Button>
+                </div>
               </div>
+              <Button 
+                onClick={handleStxWithdraw} 
+                size="lg"
+                className="w-full gap-2 h-12 text-lg bg-secondary hover:bg-secondary/90"
+                disabled={bxlStxBalance === 0}
+              >
+                <ArrowUpFromLine className="w-5 h-5" />
+                Withdraw
+              </Button>
             </div>
-            <Button 
-              onClick={handleStxWithdraw} 
-              size="lg"
-              className="w-full gap-2 h-12 text-lg bg-secondary hover:bg-secondary/90"
-              disabled={bxlStxBalance === 0}
-            >
-              <ArrowUpFromLine className="w-5 h-5" />
-              Withdraw STX
-            </Button>
           </TabsContent>
         </CardContent>
       </Tabs>

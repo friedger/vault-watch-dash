@@ -1,5 +1,5 @@
 import { TutorialStep, TutorialStepTitle, TutorialStepContent, TutorialStepList, TutorialStepListItem, TutorialStepWarning } from '../TutorialStep';
-import { Chrome, Smartphone, AlertTriangle, ExternalLink } from 'lucide-react';
+import { Laptop, Smartphone, AlertTriangle, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const WalletInstallStep = () => {
@@ -9,13 +9,13 @@ export const WalletInstallStep = () => {
       
       <TutorialStepContent>
         <p className="text-lg">
-          Xverse is a secure wallet for the Stacks blockchain that allows you to interact with BXL Vault.
+          Xverse is a secure wallet for the Stacks blockchain that allows you to interact with sBTC, STX and the BXL Vault.
         </p>
 
         <div className="space-y-6 mt-6">
           <div>
             <h3 className="font-semibold text-foreground text-lg mb-3 flex items-center gap-2">
-              <Chrome className="h-5 w-5" />
+              <Laptop className="h-5 w-5" />
               Browser Extension
             </h3>
             <TutorialStepList>

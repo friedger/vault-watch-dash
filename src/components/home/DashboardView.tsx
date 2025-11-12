@@ -56,7 +56,7 @@ export const DashboardView = ({
       </div>
 
       {/* Primary Action: Deposit */}
-      <div className="max-w-xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <DepositCard
           onSBtcDeposit={onSBtcDeposit}
           onStxDeposit={onStxDeposit}

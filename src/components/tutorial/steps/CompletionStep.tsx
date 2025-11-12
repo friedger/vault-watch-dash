@@ -1,8 +1,18 @@
 import { TutorialStep, TutorialStepTitle, TutorialStepContent, TutorialStepList, TutorialStepListItem } from '../TutorialStep';
 import { CheckCircle, TrendingUp, Users, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTutorial } from '../TutorialContext';
+import { useNavigate } from 'react-router-dom';
 
 export const CompletionStep = () => {
+  const { closeTutorial } = useTutorial();
+  const navigate = useNavigate();
+
+  const handleNavigate = (path: string) => {
+    closeTutorial();
+    navigate(path);
+  };
+
   return (
     <TutorialStep>
       <div className="text-center mb-6">
@@ -70,15 +80,19 @@ export const CompletionStep = () => {
               Next Steps
             </h3>
             <div className="grid gap-3">
-              <Button asChild variant="default" className="w-full justify-start">
-                <a href="/dashboard">
-                  View Your Portfolio Dashboard
-                </a>
+              <Button 
+                variant="default" 
+                className="w-full justify-start"
+                onClick={() => handleNavigate('/wallet')}
+              >
+                View Your Portfolio Dashboard
               </Button>
-              <Button asChild variant="outline" className="w-full justify-start">
-                <a href="/vault">
-                  Explore Vault Details & Community Impact
-                </a>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => handleNavigate('/vault')}
+              >
+                Explore Vault Details & Community Impact
               </Button>
               <Button asChild variant="outline" className="w-full justify-start">
                 <a 

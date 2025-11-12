@@ -1,5 +1,7 @@
 import { useState } from "react";
 import {
+  depositSBtc,
+  depositStx,
   VAULT_CONTRACT,
   WRAPPED_BTC_CONTRACT,
   WRAPPED_STX_CONTRACT,
@@ -34,11 +36,12 @@ const Deposit = () => {
     (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0)
   );
 
-  const handleSBtcDeposit = (amount: number) => {};
+  const handleSBtcDeposit = (amount: number) => {
+    depositSBtc(amount);
+  };
 
   const handleStxDeposit = (amount: number) => {
-    // TODO: Implement actual deposit transaction
-    console.log("Deposit STX:", amount);
+    depositStx(amount);
   };
 
   return (
@@ -61,7 +64,7 @@ const Deposit = () => {
           <div className="space-y-2">
             <h1 className="text-4xl font-bold">Deposit Assets</h1>
             <p className="text-muted-foreground">
-              Deposit sBTC and STX to earn yield through dual stacking
+              Deposit sBTC to earn yield through dual stacking
             </p>
           </div>
 
@@ -147,7 +150,7 @@ const Deposit = () => {
           )}
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

@@ -1,4 +1,4 @@
-import { Github } from "lucide-react";
+import { GitBranch } from "lucide-react";
 
 export const Footer = () => {
   return (
@@ -23,7 +23,7 @@ export const Footer = () => {
               rel="noopener noreferrer"
               className="flex items-center gap-2 hover:text-foreground transition-colors"
             >
-              <Github className="w-4 h-4" />
+              <GitBranch className="w-4 h-4" />
               <span>Dashboard</span>
             </a>
             <a
@@ -32,7 +32,7 @@ export const Footer = () => {
               rel="noopener noreferrer"
               className="flex items-center gap-2 hover:text-foreground transition-colors"
             >
-              <Github className="w-4 h-4" />
+              <GitBranch className="w-4 h-4" />
               <span>Smart Contracts</span>
             </a>
           </div>

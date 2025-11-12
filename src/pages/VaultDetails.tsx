@@ -2,6 +2,7 @@ import { BalanceCard } from "@/components/BalanceCard";
 import { YieldChart } from "@/components/YieldChart";
 import { SupportedProjects } from "@/components/SupportedProjects";
 import { Footer } from "@/components/Footer";
+import { VaultOverviewCards } from "@/components/VaultOverviewCards";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/Header";
@@ -10,7 +11,7 @@ import { useTotalSupply } from "@/hooks/useTotalSupply";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import { formatEur } from "@/lib/utils";
 import { VAULT_CONTRACT, WRAPPED_BTC_CONTRACT, WRAPPED_STX_CONTRACT } from "@/services/blockchain";
-import { Bitcoin, Coins, TrendingUp } from "lucide-react";
+import { Coins } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -24,13 +25,10 @@ const VaultDetails = () => {
   const { data: totalBxlBTC } = useTotalSupply(WRAPPED_BTC_CONTRACT);
   const { data: totalBlxSTX } = useTotalSupply(WRAPPED_STX_CONTRACT);
 
-  // Calculate earned yield: vault sBTC - total supply of wrapped sBTC
+  // Calculate earned yield for YieldChart component
   const earnedYield = Math.max(0, (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0));
 
-  // Calculate EUR values
-  const vaultSBtcEur = (vaultBalances?.sBtc ?? 0) * (prices?.btcEur ?? 0);
-  const wrappedBtcEur = (totalBxlBTC ?? 0) * (prices?.btcEur ?? 0);
-  const earnedYieldEur = earnedYield * (prices?.btcEur ?? 0);
+  // Calculate EUR values for STX section only
   const vaultStxEur = (vaultBalances?.stx ?? 0) * (prices?.stxEur ?? 0);
   const wrappedStxEur = (totalBlxSTX ?? 0) * (prices?.stxEur ?? 0);
 
@@ -62,36 +60,11 @@ const VaultDetails = () => {
           <Card className="gradient-card border-primary/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Bitcoin className="w-6 h-6 text-primary" />
                 Overview
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <BalanceCard
-                  title="Total DAO Brussels Treasury"
-                  balance={formatEur(vaultSBtcEur)}
-                  subBalance={`${(vaultBalances?.sBtc ?? 0).toFixed(8)} sBTC`}
-                  subLabel="Assets in fund"
-                  icon={<Bitcoin className="h-5 w-5 text-primary" />}
-                />
-                <BalanceCard
-                  title="Current Yield"
-                  balance={`${earnedYield.toFixed(8)} sBTC`}
-                  subBalance={formatEur(earnedYieldEur)}
-                  subLabel="Total earned"
-                  icon={<TrendingUp className="h-5 w-5 text-primary" />}
-                  isYield
-                />
-                <BalanceCard
-                  title="Monthly Community Budget"
-                  balance={formatEur(earnedYieldEur / 12)}
-                  subBalance={`${(earnedYield / 12).toFixed(8)} sBTC`}
-                  subLabel="Available per month"
-                  icon={<Coins className="h-5 w-5 text-primary" />}
-                />
-              </div>
-
+              <VaultOverviewCards />
             </CardContent>
           </Card>
 

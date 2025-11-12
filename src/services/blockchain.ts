@@ -116,6 +116,37 @@ export async function fetchTokenTotalSupply(
   }
 }
 
+
+// User contract calls
+
+// Deposit sBTC into the vault
+export async function depositSBtc(amount: number) {
+  const amountInSats = Math.floor(amount * 1e8); // Convert to satoshis
+
+  const result = await request("stx_callContract", {
+    contract: VAULT_CONTRACT,
+    functionName: "deposit-sbtc",
+    functionArgs: [Cl.uint(amountInSats)],
+    network,
+  });
+
+  return result;
+}
+
+// Deposit STX into the vault
+export async function depositStx(amount: number) {
+  const amountInMicroStx = Math.floor(amount * 1e6); // Convert to micro-STX
+
+  const result = await request("stx_callContract", {
+    contract: VAULT_CONTRACT,
+    functionName: "deposit-stx",
+    functionArgs: [Cl.uint(amountInMicroStx)],
+    network,
+  });
+
+  return result;
+}
+
 // Admin contract calls
 
 /**

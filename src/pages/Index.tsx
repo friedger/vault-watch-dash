@@ -25,6 +25,7 @@ import {
   Coins,
   ExternalLink,
   LayoutDashboard,
+  LinkIcon,
   Lock,
   Shield,
   TrendingDown,
@@ -32,6 +33,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { VaultOverviewCards } from "@/components/VaultOverviewCards";
 
 const Index = () => {
   const [userAddress, setUserAddress] = useState<string | null>(null);
@@ -104,30 +106,7 @@ const Index = () => {
         {/* Vault Overview - Only for vault when not logged in */}
         {!userAddress && (
           <div className="animate-fade-in max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <BalanceCard
-                title="Total DAO Brussels Treasury"
-                balance={formatEur(vaultSBtcEur)}
-                subBalance={`${(vaultBalances?.sBtc ?? 0).toFixed(8)} sBTC`}
-                subLabel="Assets in fund"
-                icon={<Bitcoin className="h-5 w-5 text-primary" />}
-              />
-              <BalanceCard
-                title="Current Yield"
-                balance={`${earnedYield.toFixed(8)} sBTC`}
-                subBalance={formatEur(earnedYieldEur)}
-                subLabel="Total earned"
-                icon={<TrendingUp className="h-5 w-5 text-primary" />}
-                isYield
-              />
-              <BalanceCard
-                title="Monthly Community Budget"
-                balance={formatEur(earnedYieldEur / 12)}
-                subBalance={`${(earnedYield / 12).toFixed(8)} sBTC`}
-                subLabel="Available per month"
-                icon={<Coins className="h-5 w-5 text-primary" />}
-              />
-            </div>
+            <VaultOverviewCards />
           </div>
         )}
 
@@ -189,10 +168,19 @@ const Index = () => {
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
                     2
                   </div>
-                  <h4 className="text-xl font-semibold">Deposit in the Vault</h4>
+                  <h4 className="text-xl font-semibold">
+                    Deposit in the Vault
+                  </h4>
                   <p className="text-muted-foreground">
                     Store securely your Bitcoin into the BXL Vault. You remain
-                    the owner and can withdraw anytime.
+                    the owner and can withdraw anytime.{" "}
+                    <a
+                      href="/connect"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline inline-flex items-center gap-1"
+                    >
+                      Connect Wallet.
+                    </a>
                   </p>
                 </div>
 
@@ -206,6 +194,13 @@ const Index = () => {
                   <p className="text-muted-foreground">
                     Stacking rewards automatically fund Brussels crypto
                     community projects and initiatives.
+                    <a
+                      href="/vault"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline inline-flex items-center gap-1"
+                    >
+                      See transactions.
+                    </a>
                   </p>
                 </div>
               </div>
@@ -315,8 +310,8 @@ const Index = () => {
               <h2 className="text-2xl font-bold">Manage Your Assets</h2>
               <p className="text-muted-foreground">
                 Deposit your Bitcoin to support community projects, or withdraw
-                when needed. You keep full ownership and can
-                access your Bitcoin anytime.
+                when needed. You keep full ownership and can access your Bitcoin
+                anytime.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/deposit">
@@ -363,7 +358,6 @@ const Index = () => {
           </div>
         )}
 
-
         {/* FAQ Section */}
         <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
           <div className="text-center space-y-2">
@@ -384,8 +378,8 @@ const Index = () => {
               <AccordionContent className="text-muted-foreground space-y-3">
                 <p>
                   <strong>bxlBTC</strong> is the token you receive when you
-                  deposit Bitcoin into the BXL Vault. It represents
-                  your share of Bitcoin in the vault.
+                  deposit Bitcoin into the BXL Vault. It represents your share
+                  of Bitcoin in the vault.
                 </p>
                 <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
                   <p className="font-semibold mb-2">The backing chain:</p>
@@ -497,7 +491,9 @@ const Index = () => {
                 <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2">
                   <p className="font-semibold">How it works:</p>
                   <ul className="list-disc list-inside space-y-1 ml-2">
-                    <li>Your sBTC and some STX are pooled together in the vault</li>
+                    <li>
+                      Your sBTC and some STX are pooled together in the vault
+                    </li>
                     <li>
                       The vault participates in Dual Stacking to earn BTC
                       rewards
@@ -544,12 +540,12 @@ const Index = () => {
                         could potentially affect funds
                       </li>
                       <li>
-                        <strong>Market Risk:</strong> Bitcoin, sBTC and STX prices can
-                        fluctuate
+                        <strong>Market Risk:</strong> Bitcoin, sBTC and STX
+                        prices can fluctuate
                       </li>
                       <li>
-                        <strong>Stacking Risk:</strong> STX tokens participate in
-                        Stacks stacking mechanism
+                        <strong>Stacking Risk:</strong> STX tokens participate
+                        in Stacks stacking mechanism
                       </li>
                     </ul>
                   </div>
@@ -622,7 +618,7 @@ const Index = () => {
         {/* Supported Projects Section */}
         <SupportedProjects />
       </main>
-      
+
       <Footer />
     </div>
   );

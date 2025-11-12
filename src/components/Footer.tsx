@@ -1,4 +1,4 @@
-import { GitBranch } from "lucide-react";
+import { GitBranch, FileText } from "lucide-react";
 
 export const Footer = () => {
   return (
@@ -17,6 +17,15 @@ export const Footer = () => {
             </a>
           </p>
           <div className="flex items-center gap-4">
+            <a
+              href="https://github.com/friedger/dao-brussels-vault/blob/main/DOCS.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 hover:text-foreground transition-colors"
+            >
+              <FileText className="w-4 h-4" />
+              <span>White Paper</span>
+            </a>
             <a
               href="https://github.com/friedger/vault-watch-dash"
               target="_blank"

@@ -7,6 +7,7 @@ import {
 import { Pie, PieChart, Cell } from "recharts";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import { formatBtc, formatEur, formatStx } from "@/lib/utils";
+import { TrendingUp } from "lucide-react";
 
 interface PortfolioChartProps {
   sBtc: number;
@@ -119,39 +120,53 @@ export const PortfolioChart = ({
           </div>
         </div>
 
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
-          <PieChart>
-            <ChartTooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  return (
-                    <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
-                      <p className="text-sm font-semibold">{payload[0].name}</p>
-                      <p className="text-sm text-primary">
-                        {formatEur(Number(payload[0].value))}
-                      </p>
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-            <Pie
-              data={chartData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={100}
-              paddingAngle={2}
-            >
-              {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.fill} />
-              ))}
-            </Pie>
-          </PieChart>
-        </ChartContainer>
+        {chartData.length === 0 ? (
+          <div className="h-[300px] w-full flex flex-col items-center justify-center text-muted-foreground">
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full border-4 border-dashed border-primary/20 flex items-center justify-center">
+                <TrendingUp className="w-12 h-12 text-primary/40" />
+              </div>
+            </div>
+            <p className="mt-6 text-lg font-medium">Start Your Journey</p>
+            <p className="text-sm mt-2 text-center max-w-xs">
+              Zero is a perfect starting point. Deposit your first assets to begin building your portfolio.
+            </p>
+          </div>
+        ) : (
+          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+            <PieChart>
+              <ChartTooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
+                        <p className="text-sm font-semibold">{payload[0].name}</p>
+                        <p className="text-sm text-primary">
+                          {formatEur(Number(payload[0].value))}
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={100}
+                paddingAngle={2}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
+              </Pie>
+            </PieChart>
+          </ChartContainer>
+        )}
       </CardContent>
     </Card>
   );

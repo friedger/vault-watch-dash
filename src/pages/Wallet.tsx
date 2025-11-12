@@ -72,6 +72,14 @@ const Wallet = () => {
           <MarketingView />
         ) : (
           <div className="max-w-5xl mx-auto space-y-8">
+            {/* Page Header */}
+            <div className="text-center space-y-2">
+              <h1 className="text-4xl font-bold">Your Wallet</h1>
+              <p className="text-muted-foreground text-lg">
+                Track your portfolio and transaction history
+              </p>
+            </div>
+
             {/* Portfolio Chart */}
             <PortfolioChart
               sBtc={userBalances?.sBtc ?? 0}

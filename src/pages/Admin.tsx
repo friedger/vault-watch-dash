@@ -108,7 +108,7 @@ const Admin = () => {
         sBtcBalance={sBtcBalance}
         stxBalance={stxBalance}
         bxlBTC={userBalances?.bxlBTC ?? 0}
-        blxSTX={userBalances?.blxSTX ?? 0}
+        bxlSTX={userBalances?.bxlSTX ?? 0}
         pageTitle="Vault Administration"
         backLink="/"
         isAdmin={isAdmin}

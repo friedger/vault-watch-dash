@@ -17,7 +17,7 @@ interface WalletConnectProps {
   sBtcBalance?: number;
   stxBalance?: number;
   bxlBTC?: number;
-  blxSTX?: number;
+  bxlSTX?: number;
 }
 
 export const WalletConnect = ({ 
@@ -25,7 +25,7 @@ export const WalletConnect = ({
   sBtcBalance = 0,
   stxBalance = 0,
   bxlBTC = 0,
-  blxSTX = 0
+  bxlSTX = 0
 }: WalletConnectProps) => {
   const [address, setAddress] = useState<string | null>(() => {
     return getLocalStorage()?.addresses.stx[0]?.address || null;
@@ -104,7 +104,7 @@ export const WalletConnect = ({
                 </div>
                 <p className="text-lg font-bold">{stxBalance.toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Wrapped: {blxSTX.toLocaleString()} blxSTX
+                  Wrapped: {bxlSTX.toLocaleString()} bxlSTX
                 </p>
               </Card>
             </div>

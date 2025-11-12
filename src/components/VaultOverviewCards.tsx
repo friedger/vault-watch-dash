@@ -3,21 +3,24 @@ import { useBalances } from "@/hooks/useBalances";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import { formatEur } from "@/lib/utils";
-import { VAULT_CONTRACT, WRAPPED_BTC_CONTRACT } from "@/services/blockchain";
+import { VAULT_CONTRACT, BXL_BTC_CONTRACT } from "@/services/blockchain";
 import { Bitcoin, Coins, TrendingUp } from "lucide-react";
 
 export const VaultOverviewCards = () => {
   // Fetch vault balances
   const { data: vaultBalances } = useBalances(VAULT_CONTRACT);
-  
+
   // Fetch total vault supplies
-  const { data: totalBxlBTC } = useTotalSupply(WRAPPED_BTC_CONTRACT);
-  
+  const { data: totalBxlBTC } = useTotalSupply(BXL_BTC_CONTRACT);
+
   // Fetch crypto prices
   const { data: prices } = useCryptoPrices();
 
   // Calculate earned yield: vault sBTC - total supply of wrapped sBTC
-  const earnedYield = Math.max(0, (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0));
+  const earnedYield = Math.max(
+    0,
+    (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0)
+  );
 
   // Calculate EUR values
   const wrappedBtcEur = (totalBxlBTC ?? 0) * (prices?.btcEur ?? 0);

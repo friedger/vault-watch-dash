@@ -17,8 +17,8 @@ import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import { formatEur } from "@/lib/utils";
 import {
   VAULT_CONTRACT,
-  WRAPPED_BTC_CONTRACT,
-  WRAPPED_STX_CONTRACT,
+  BXL_BTC_CONTRACT,
+  BXL_STX_CONTRACT,
 } from "@/services/blockchain";
 import {
   Bitcoin,
@@ -44,49 +44,10 @@ const Index = () => {
   // Fetch user balances (when connected)
   const { data: userBalances } = useBalances(userAddress);
 
-  // Fetch total supply of wrapped BTC for yield calculation
-  const { data: wrappedBtcSupply = 0 } = useTotalSupply(WRAPPED_BTC_CONTRACT);
-
-  // Fetch total supply of wrapped STX
-  const { data: wrappedStxSupply = 0 } = useTotalSupply(WRAPPED_STX_CONTRACT);
-
-  // Fetch crypto prices
-  const { data: prices } = useCryptoPrices();
-
   // Use vault balances for display, or fallback to 0
   const displayBalances = userAddress ? userBalances : vaultBalances;
   const sBtcBalance = displayBalances?.sBtc ?? 0;
   const stxBalance = displayBalances?.stx ?? 0;
-
-  // Calculate earned yield: vault sBTC - total supply of wrapped sBTC
-  const earnedYield = Math.max(
-    0,
-    (vaultBalances?.sBtc ?? 0) - wrappedBtcSupply
-  );
-
-  // Calculate EUR values
-  const vaultSBtcEur = (vaultBalances?.sBtc ?? 0) * (prices?.btcEur ?? 0);
-  const earnedYieldEur = earnedYield * (prices?.btcEur ?? 0);
-
-  const handleSBtcDeposit = (amount: number) => {
-    // TODO: Implement actual deposit transaction
-    console.log("Deposit sBTC:", amount);
-  };
-
-  const handleSBtcWithdraw = (amount: number) => {
-    // TODO: Implement actual withdraw transaction
-    console.log("Withdraw sBTC:", amount);
-  };
-
-  const handleStxDeposit = (amount: number) => {
-    // TODO: Implement actual deposit transaction
-    console.log("Deposit STX:", amount);
-  };
-
-  const handleStxWithdraw = (amount: number) => {
-    // TODO: Implement actual withdraw transaction
-    console.log("Withdraw STX:", amount);
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -96,7 +57,7 @@ const Index = () => {
         sBtcBalance={sBtcBalance}
         stxBalance={stxBalance}
         bxlBTC={userBalances?.bxlBTC ?? 0}
-        blxSTX={userBalances?.blxSTX ?? 0}
+        bxlSTX={userBalances?.bxlSTX ?? 0}
         pageTitle="Vault Dashboard"
         showDashboardLink={true}
       />
@@ -331,30 +292,6 @@ const Index = () => {
                 </Link>
               </div>
             </div>
-
-            {/* Withdraw Section - Only show if user has wrapped tokens */}
-            {((userBalances?.bxlBTC ?? 0) > 0 ||
-              (userBalances?.blxSTX ?? 0) > 0) && (
-              <div>
-                <h2 className="text-2xl font-bold mb-4">Withdraw Assets</h2>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {(userBalances?.bxlBTC ?? 0) > 0 && (
-                    <DepositWithdrawCard
-                      tokenType="sBTC"
-                      onDeposit={handleSBtcDeposit}
-                      onWithdraw={handleSBtcWithdraw}
-                    />
-                  )}
-                  {(userBalances?.blxSTX ?? 0) > 0 && (
-                    <DepositWithdrawCard
-                      tokenType="STX"
-                      onDeposit={handleStxDeposit}
-                      onWithdraw={handleStxWithdraw}
-                    />
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -599,10 +536,10 @@ const Index = () => {
                       Token Contracts:
                     </p>
                     <code className="text-xs block mb-1">
-                      {WRAPPED_BTC_CONTRACT}
+                      {BXL_BTC_CONTRACT}
                     </code>
                     <code className="text-xs block">
-                      {WRAPPED_STX_CONTRACT}
+                      {BXL_STX_CONTRACT}
                     </code>
                   </div>
                 </div>

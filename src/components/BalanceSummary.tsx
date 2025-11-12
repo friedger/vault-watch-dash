@@ -10,21 +10,21 @@ interface BalanceSummaryProps {
   sBtcBalance: number;
   stxBalance: number;
   bxlBTC: number;
-  blxSTX: number;
+  bxlSTX: number;
 }
 
 export const BalanceSummary = ({ 
   sBtcBalance, 
   stxBalance, 
   bxlBTC, 
-  blxSTX 
+  bxlSTX 
 }: BalanceSummaryProps) => {
   const { data: prices } = useCryptoPrices();
   
   const sBtcEur = sBtcBalance * (prices?.btcEur ?? 0);
   const bxlBtcEur = bxlBTC * (prices?.btcEur ?? 0);
   const stxEur = stxBalance * (prices?.stxEur ?? 0);
-  const blxStxEur = blxSTX * (prices?.stxEur ?? 0);
+  const bxlStxEur = bxlSTX * (prices?.stxEur ?? 0);
   return (
     <>
       {/* Desktop View */}
@@ -46,8 +46,8 @@ export const BalanceSummary = ({
             <div>
               <p className="text-xs text-muted-foreground">STX</p>
               <p className="text-sm font-bold">{stxBalance.toLocaleString()}</p>
-              <p className="text-xs text-muted-foreground">bxl: {blxSTX.toLocaleString()}</p>
-              <p className="text-xs text-muted-foreground">{formatEur(stxEur + blxStxEur)}</p>
+              <p className="text-xs text-muted-foreground">bxl: {bxlSTX.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">{formatEur(stxEur + bxlStxEur)}</p>
             </div>
           </div>
         </Card>
@@ -84,9 +84,9 @@ export const BalanceSummary = ({
               </div>
               <p className="text-xl font-bold">{stxBalance.toLocaleString()}</p>
               <p className="text-xs text-muted-foreground mt-1">
-                Wrapped: {blxSTX.toLocaleString()} blxSTX
+                Wrapped: {bxlSTX.toLocaleString()} bxlSTX
               </p>
-              <p className="text-xs text-muted-foreground">{formatEur(stxEur + blxStxEur)}</p>
+              <p className="text-xs text-muted-foreground">{formatEur(stxEur + bxlStxEur)}</p>
             </Card>
           </div>
         </SheetContent>

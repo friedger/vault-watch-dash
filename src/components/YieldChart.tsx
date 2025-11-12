@@ -40,7 +40,6 @@ export const YieldChart = ({
   return <Card className="gradient-card border-primary/20">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">Monthly Bitcoins for the Community<TrendingUp className="w-5 h-5 text-primary" />
-          Monthly Yield Performance
         </CardTitle>
       </CardHeader>
       <CardContent>

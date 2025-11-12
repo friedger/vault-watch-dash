@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ArrowUpFromLine } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -9,18 +10,18 @@ interface WithdrawCardProps {
   onSBtcWithdraw: (amount: number) => void;
   onStxWithdraw: (amount: number) => void;
   bxlBtcBalance: number;
-  blxStxBalance: number;
+  bxlStxBalance: number;
 }
 
 export const WithdrawCard = ({ 
   onSBtcWithdraw, 
   onStxWithdraw,
   bxlBtcBalance,
-  blxStxBalance
+  bxlStxBalance
 }: WithdrawCardProps) => {
   const [sBtcAmount, setSBtcAmount] = useState("");
   const [stxAmount, setStxAmount] = useState("");
-  const [activeTab, setActiveTab] = useState<"sBTC" | "STX">("sBTC");
+  const [activeTab, setActiveTab] = useState("sbtc");
   const { toast } = useToast();
 
   const handleSBtcWithdraw = () => {
@@ -59,10 +60,10 @@ export const WithdrawCard = ({
       });
       return;
     }
-    if (value > blxStxBalance) {
+    if (value > bxlStxBalance) {
       toast({
         title: "Insufficient balance",
-        description: "You don't have enough blxSTX to withdraw",
+        description: "You don't have enough bxlSTX to withdraw",
         variant: "destructive",
       });
       return;
@@ -76,84 +77,83 @@ export const WithdrawCard = ({
   };
 
   return (
-    <Card className="gradient-card border-primary/10 relative overflow-hidden">
-      <div className="absolute top-4 right-4 flex gap-2 z-10">
-        <Button
-          variant={activeTab === "sBTC" ? "default" : "outline"}
-          size="sm"
-          onClick={() => setActiveTab("sBTC")}
-          className={activeTab === "sBTC" ? "" : ""}
-        >
-          sBTC
-        </Button>
-        <Button
-          variant={activeTab === "STX" ? "secondary" : "outline"}
-          size="sm"
-          onClick={() => setActiveTab("STX")}
-        >
-          STX
-        </Button>
-      </div>
-
-      <CardHeader>
-        <CardTitle className="text-lg">Withdraw Assets</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {activeTab === "sBTC" ? (
-          <div className="space-y-4 pt-4">
+    <Card className="gradient-card border-primary/20 relative">
+      <Tabs defaultValue="sbtc" className="w-full" onValueChange={setActiveTab}>
+        <div className="absolute top-4 right-4 z-10">
+          <TabsList className="h-8 p-1 bg-muted/50">
+            <TabsTrigger 
+              value="sbtc" 
+              className="text-xs h-6 px-3 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+            >
+              sBTC
+            </TabsTrigger>
+            <TabsTrigger 
+              value="stx" 
+              className="text-xs h-6 px-3 data-[state=active]:bg-secondary/10 data-[state=active]:text-secondary"
+            >
+              STX
+            </TabsTrigger>
+          </TabsList>
+        </div>
+        
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">
+            {activeTab === "sbtc" ? "Withdraw sBTC" : "Withdraw STX"}
+          </CardTitle>
+          <CardDescription>
+            Withdraw your assets from the vault
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TabsContent value="sbtc" className="space-y-4 mt-0">
             <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <label className="text-sm text-muted-foreground">Amount</label>
-                <p className="text-xs text-muted-foreground">
-                  Balance: {bxlBtcBalance.toFixed(8)} bxlBTC
-                </p>
-              </div>
               <Input
                 type="number"
-                placeholder="0.00"
+                placeholder="0.00000000"
                 value={sBtcAmount}
                 onChange={(e) => setSBtcAmount(e.target.value)}
-                className="text-lg"
+                className="text-xl text-center h-14"
               />
+              <p className="text-sm text-muted-foreground text-center">
+                Available: {bxlBtcBalance.toFixed(8)} bxlBTC
+              </p>
             </div>
-            <Button
-              onClick={handleSBtcWithdraw}
-              className="w-full gap-2"
-              disabled={bxlBtcBalance <= 0}
+            <Button 
+              onClick={handleSBtcWithdraw} 
+              size="lg"
+              className="w-full gap-2 h-12 text-lg bg-primary hover:bg-primary/90"
+              disabled={bxlBtcBalance === 0}
             >
-              <ArrowUpFromLine className="w-4 h-4" />
+              <ArrowUpFromLine className="w-5 h-5" />
               Withdraw sBTC
             </Button>
-          </div>
-        ) : (
-          <div className="space-y-4 pt-4">
+          </TabsContent>
+
+          <TabsContent value="stx" className="space-y-4 mt-0">
             <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <label className="text-sm text-muted-foreground">Amount</label>
-                <p className="text-xs text-muted-foreground">
-                  Balance: {blxStxBalance.toLocaleString()} blxSTX
-                </p>
-              </div>
               <Input
                 type="number"
                 placeholder="0.00"
                 value={stxAmount}
                 onChange={(e) => setStxAmount(e.target.value)}
-                className="text-lg"
+                className="text-xl text-center h-14"
               />
+              <p className="text-sm text-muted-foreground text-center">
+                Available: {bxlStxBalance.toLocaleString()} bxlSTX
+              </p>
             </div>
-            <Button
-              onClick={handleStxWithdraw}
-              variant="secondary"
-              className="w-full gap-2"
-              disabled={blxStxBalance <= 0}
+            <Button 
+              onClick={handleStxWithdraw} 
+              size="lg"
+              className="w-full gap-2 h-12 text-lg bg-secondary hover:bg-secondary/90"
+              disabled={bxlStxBalance === 0}
             >
-              <ArrowUpFromLine className="w-4 h-4" />
+              <ArrowUpFromLine className="w-5 h-5" />
               Withdraw STX
             </Button>
-          </div>
-        )}
-      </CardContent>
+          </TabsContent>
+        </CardContent>
+      </Tabs>
     </Card>
   );
 };

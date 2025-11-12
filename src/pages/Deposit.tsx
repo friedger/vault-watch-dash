@@ -3,8 +3,8 @@ import {
   depositSBtc,
   depositStx,
   VAULT_CONTRACT,
-  WRAPPED_BTC_CONTRACT,
-  WRAPPED_STX_CONTRACT,
+  BXL_BTC_CONTRACT,
+  BXL_STX_CONTRACT,
 } from "@/services/blockchain";
 import { Link } from "react-router-dom";
 import { Footer } from "@/components/Footer";
@@ -17,8 +17,13 @@ import { useTotalSupply } from "@/hooks/useTotalSupply";
 import { BalanceCard } from "@/components/BalanceCard";
 import { Coins, TrendingUp } from "lucide-react";
 import daoLogo from "@/assets/dao-logo.png";
+import { Toast } from "@/components/ui/toast";
+import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 const Deposit = () => {
+  const { toast } = useToast();
+
   const [userAddress, setUserAddress] = useState<string | null>(null);
   const { data: userBalances } = useBalances(userAddress);
   const { data: vaultBalances } = useBalances(VAULT_CONTRACT);
@@ -27,8 +32,8 @@ const Deposit = () => {
   const stxBalance = userBalances?.stx ?? 0;
 
   // Fetch total vault supplies
-  const { data: totalBxlBTC } = useTotalSupply(WRAPPED_BTC_CONTRACT);
-  const { data: totalBlxSTX } = useTotalSupply(WRAPPED_STX_CONTRACT);
+  const { data: totalBxlBTC } = useTotalSupply(BXL_BTC_CONTRACT);
+  const { data: totalBxlSTX } = useTotalSupply(BXL_STX_CONTRACT);
 
   // Calculate earned yield
   const earnedYield = Math.max(
@@ -37,11 +42,27 @@ const Deposit = () => {
   );
 
   const handleSBtcDeposit = (amount: number) => {
-    depositSBtc(amount);
+    if (userAddress) {
+      depositSBtc(amount, userAddress);
+    } else {
+      toast({
+        title: "Wallet not connected",
+        description: "Please connect your wallet to deposit sBTC",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleStxDeposit = (amount: number) => {
-    depositStx(amount);
+    if (userAddress) {
+      depositStx(amount, userAddress);
+    } else {
+      toast({
+        title: "Wallet not connected",
+        description: "Please connect your wallet to deposit STX",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -52,7 +73,7 @@ const Deposit = () => {
         sBtcBalance={sBtcBalance}
         stxBalance={stxBalance}
         bxlBTC={userBalances?.bxlBTC ?? 0}
-        blxSTX={userBalances?.blxSTX ?? 0}
+        bxlSTX={userBalances?.bxlSTX ?? 0}
         pageTitle="Deposit Assets"
         backLink="/"
         showDashboardLink={true}
@@ -139,7 +160,7 @@ const Deposit = () => {
 
                 {/* See Details Button */}
                 <div className="pt-2">
-                  <Link to="/vault-details">
+                  <Link to="/vault">
                     <Button variant="outline" className="w-full">
                       See Details
                     </Button>

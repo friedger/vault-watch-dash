@@ -10,7 +10,7 @@ interface HeaderProps {
   sBtcBalance?: number;
   stxBalance?: number;
   bxlBTC?: number;
-  blxSTX?: number;
+  bxlSTX?: number;
   pageTitle?: string;
   backLink?: string;
   showDashboardLink?: boolean;
@@ -24,7 +24,7 @@ export const Header = ({
   sBtcBalance = 0,
   stxBalance = 0,
   bxlBTC = 0,
-  blxSTX = 0,
+  bxlSTX = 0,
   pageTitle = "Vault Dashboard",
   backLink,
   showDashboardLink = false,
@@ -77,7 +77,7 @@ export const Header = ({
               sBtcBalance={sBtcBalance}
               stxBalance={stxBalance}
               bxlBTC={bxlBTC}
-              blxSTX={blxSTX}
+              bxlSTX={bxlSTX}
             />
           </div>
         </div>

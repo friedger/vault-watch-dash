@@ -1,5 +1,12 @@
 import { request } from "@stacks/connect";
-import { Cl } from "@stacks/transactions";
+import {
+  Cl,
+  hexToCV,
+  Pc,
+  ResponseErrorCV,
+  ResponseOkCV,
+  UIntCV,
+} from "@stacks/transactions";
 
 // SIP-30 compliant wallet provider interface
 interface WalletProvider {
@@ -14,10 +21,15 @@ declare global {
 
 const STACKS_API = "https://api.mainnet.hiro.so";
 const SBTC_CONTRACT = "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token";
-export const WRAPPED_BTC_CONTRACT =
+const SBTC_ASSET = "sbtc-token";
+export const BXL_BTC_CONTRACT =
   "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-btc";
-export const WRAPPED_STX_CONTRACT =
+const BXL_BTC_ASSET = "bxl-btc";
+const BXL_BTC_TRANSIT_ASSET = "bxl-btc-transit";
+
+export const BXL_STX_CONTRACT =
   "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-stx";
+const BXL_STX_ASSET = "bxl-stx";
 const network = "mainnet";
 
 // Vault contract - replace with actual deployed vault contract
@@ -29,7 +41,7 @@ export interface Balance {
   sBtc: number;
   lockedStx: number;
   bxlBTC: number;
-  blxSTX: number;
+  bxlSTX: number;
 }
 
 export async function fetchAllBalances(address: string): Promise<Balance> {
@@ -41,40 +53,28 @@ export async function fetchAllBalances(address: string): Promise<Balance> {
     if (!response.ok) throw new Error("Failed to fetch balances");
     const data = await response.json();
 
+    console.log("Balance data:", data);
     // Parse STX balance
-    const stx = parseInt(data.stx.balance) / 1000000; // Convert from micro-STX
-    const lockedStx = parseInt(data.stx.locked) / 1000000; // Convert from micro-STX
+    const stx = parseInt(data.stx.balance) / 1e6; // Convert from micro-STX
+    const lockedStx = parseInt(data.stx.locked) / 1e6; // Convert from micro-STX
 
     // Parse sBTC balance
-    const [sbtcContractAddress, sbtcContractName] = SBTC_CONTRACT.split(".");
-    const sbtcToken =
-      data.fungible_tokens?.[
-        `${sbtcContractAddress}.${sbtcContractName}::sbtc`
-      ];
-    const sBtc = sbtcToken ? parseInt(sbtcToken.balance) / 100000000 : 0; // sBTC has 8 decimals
-
+    const sbtcToken = data.fungible_tokens?.[`${SBTC_CONTRACT}::${SBTC_ASSET}`];
+    const sBtc = sbtcToken ? parseInt(sbtcToken.balance) / 1e8 : 0; // sBTC has 8 decimals
     // Parse wrapped BTC balance (bxlBTC)
-    const [wbtcContractAddress, wbtcContractName] =
-      WRAPPED_BTC_CONTRACT.split(".");
-    const wbtcToken =
-      data.fungible_tokens?.[
-        `${wbtcContractAddress}.${wbtcContractName}::wbtc`
-      ];
-    const bxlBTC = wbtcToken ? parseInt(wbtcToken.balance) / 100000000 : 0; // 8 decimals
+    const bxlBtcToken =
+      data.fungible_tokens?.[`${BXL_BTC_CONTRACT}::${BXL_BTC_ASSET}`];
+    const bxlBTC = bxlBtcToken ? parseInt(bxlBtcToken.balance) / 1e8 : 0; // 8 decimals
 
-    // Parse wrapped STX balance (blxSTX)
-    const [wstxContractAddress, wstxContractName] =
-      WRAPPED_STX_CONTRACT.split(".");
-    const wstxToken =
-      data.fungible_tokens?.[
-        `${wstxContractAddress}.${wstxContractName}::wstx`
-      ];
-    const blxSTX = wstxToken ? parseInt(wstxToken.balance) / 1000000 : 0; // 6 decimals
+    // Parse wrapped STX balance (bxlSTX)
+    const bxlStxToken =
+      data.fungible_tokens?.[`${BXL_STX_CONTRACT}::${BXL_STX_ASSET}`];
+    const bxlSTX = bxlStxToken ? parseInt(bxlStxToken.balance) / 1e6 : 0; // 6 decimals
 
-    return { stx, sBtc, lockedStx, bxlBTC, blxSTX };
+    return { stx, sBtc, lockedStx, bxlBTC, bxlSTX };
   } catch (error) {
     console.error("Error fetching balances:", error);
-    return { stx: 0, sBtc: 0, lockedStx: 0, bxlBTC: 0, blxSTX: 0 };
+    return { stx: 0, sBtc: 0, lockedStx: 0, bxlBTC: 0, bxlSTX: 0 };
   }
 }
 
@@ -99,15 +99,16 @@ export async function fetchTokenTotalSupply(
 
     if (!response.ok) throw new Error("Failed to fetch total supply");
     const data = await response.json();
-
     // Parse the Clarity value response
-    if (data.okay && data.result) {
-      const hexValue = data.result.replace("0x", "");
-      const supply = parseInt(hexValue, 16);
 
-      // Determine decimals based on contract name
-      const decimals = contractName.includes("wstx") ? 1000000 : 100000000;
-      return supply / decimals;
+    if (data.okay && data.result) {
+      const supplyCV = hexToCV(data.result) as
+        | ResponseOkCV<UIntCV>
+        | ResponseErrorCV<UIntCV>;
+      const supply = supplyCV.value.value;
+      const factor =
+        contractName === "bxl-btc" ? 1e8 : contractName === "bxl-stx" ? 1e6 : 0;
+      return Number(supply) / factor;
     }
     return 0;
   } catch (error) {
@@ -116,25 +117,28 @@ export async function fetchTokenTotalSupply(
   }
 }
 
-
 // User contract calls
 
 // Deposit sBTC into the vault
-export async function depositSBtc(amount: number) {
+export async function depositSBtc(amount: number, user: string) {
   const amountInSats = Math.floor(amount * 1e8); // Convert to satoshis
 
   const result = await request("stx_callContract", {
     contract: VAULT_CONTRACT,
-    functionName: "deposit-sbtc",
+    functionName: "deposit",
     functionArgs: [Cl.uint(amountInSats)],
     network,
+    postConditionMode: "deny",
+    postConditions: [
+      Pc.principal(user).willSendEq(amountInSats).ft(SBTC_CONTRACT, SBTC_ASSET),
+    ],
   });
 
   return result;
 }
 
 // Deposit STX into the vault
-export async function depositStx(amount: number) {
+export async function depositStx(amount: number, user: string) {
   const amountInMicroStx = Math.floor(amount * 1e6); // Convert to micro-STX
 
   const result = await request("stx_callContract", {
@@ -142,10 +146,83 @@ export async function depositStx(amount: number) {
     functionName: "deposit-stx",
     functionArgs: [Cl.uint(amountInMicroStx)],
     network,
+    postConditionMode: "deny",
+    postConditions: [Pc.principal(user).willSendEq(amountInMicroStx).ustx()],
   });
 
   return result;
 }
+
+// user requests to withdraw sBTC from the vault
+export async function withdrawSBtc(amount: number, user:string) {
+  const amountInSats = Math.floor(amount * 1e8); // Convert to satoshis
+
+  const result = await request("stx_callContract", {
+    contract: VAULT_CONTRACT,
+    functionName: "withdraw-request",
+    functionArgs: [Cl.uint(amountInSats), Cl.uint(1000)],
+    network,
+    postConditionMode: "deny",
+    postConditions: [
+      Pc.principal(user).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
+      Pc.principal(VAULT_CONTRACT).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+    ],
+  });
+
+  return result;
+}
+
+// user updates Sbtc withdrawal request
+export async function withDrawSBtcUpdate(requestId: number, amount: number, user:string) {
+  const amountInSats = Math.floor(amount * 1e8); // Convert to satoshis
+
+  const result = await request("stx_callContract", {
+    contract: VAULT_CONTRACT,
+    functionName: "withdraw-update",
+    functionArgs: [Cl.uint(requestId), Cl.uint(amountInSats), Cl.uint(1000)],
+    network,
+    postConditionMode: "deny",
+    postConditions: [
+      Pc.principal(user).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
+      Pc.principal(VAULT_CONTRACT).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+    ],
+  });
+
+  return result;
+}
+
+// finalize sBTC withdrawal after waiting period
+export async function finalizeSbtcWithdraw(requestId: number, user:string) {
+  const result = await request("stx_callContract", {
+    contract: VAULT_CONTRACT,
+    functionName: "withdraw-finalize",
+    functionArgs: [Cl.uint(requestId)],
+    network,
+    postConditionMode: "deny",
+    postConditions: [],
+  });
+
+  return result;
+}
+
+export async function withdrawStx(amount: number, user:string) {
+  const amountInMicroStx = Math.floor(amount * 1e6); // Convert to micro-STX
+
+  const result = await request("stx_callContract", {
+    contract: VAULT_CONTRACT,
+    functionName: "withdraw-stx-request",
+    functionArgs: [Cl.uint(amountInMicroStx), Cl.uint(1000)],
+    network,
+    postConditionMode: "deny",
+    postConditions: [
+      Pc.principal(user).willSendEq(amountInMicroStx).ft(BXL_STX_CONTRACT, BXL_STX_ASSET),
+    ],
+  });
+
+  return result;
+}
+
+
 
 // Admin contract calls
 

@@ -10,7 +10,7 @@ import { useBalances } from "@/hooks/useBalances";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import { formatEur } from "@/lib/utils";
-import { VAULT_CONTRACT, WRAPPED_BTC_CONTRACT, WRAPPED_STX_CONTRACT } from "@/services/blockchain";
+import { VAULT_CONTRACT, BXL_BTC_CONTRACT, BXL_STX_CONTRACT } from "@/services/blockchain";
 import { Coins } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -22,15 +22,15 @@ const VaultDetails = () => {
   const { data: prices } = useCryptoPrices();
 
   // Fetch total vault supplies
-  const { data: totalBxlBTC } = useTotalSupply(WRAPPED_BTC_CONTRACT);
-  const { data: totalBlxSTX } = useTotalSupply(WRAPPED_STX_CONTRACT);
+  const { data: totalBxlBTC } = useTotalSupply(BXL_BTC_CONTRACT);
+  const { data: totalBxlSTX } = useTotalSupply(BXL_STX_CONTRACT);
 
   // Calculate earned yield for YieldChart component
   const earnedYield = Math.max(0, (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0));
 
   // Calculate EUR values for STX section only
   const vaultStxEur = (vaultBalances?.stx ?? 0) * (prices?.stxEur ?? 0);
-  const wrappedStxEur = (totalBlxSTX ?? 0) * (prices?.stxEur ?? 0);
+  const wrappedStxEur = (totalBxlSTX ?? 0) * (prices?.stxEur ?? 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -40,7 +40,7 @@ const VaultDetails = () => {
         sBtcBalance={userBalances?.sBtc ?? 0}
         stxBalance={userBalances?.stx ?? 0}
         bxlBTC={userBalances?.bxlBTC ?? 0}
-        blxSTX={userBalances?.blxSTX ?? 0}
+        bxlSTX={userBalances?.bxlSTX ?? 0}
         pageTitle="Vault Details"
         backLink="/"
       />
@@ -90,7 +90,7 @@ const VaultDetails = () => {
                 />
                 <BalanceCard
                   title="Wrapped Supply"
-                  balance={`${(totalBlxSTX ?? 0).toLocaleString()}`}
+                  balance={`${(totalBxlSTX ?? 0).toLocaleString()}`}
                   subBalance={formatEur(wrappedStxEur)}
                   subLabel="EUR value"
                   icon={<Coins className="h-5 w-5 text-secondary" />}
@@ -103,8 +103,8 @@ const VaultDetails = () => {
                 <div>
                   <p className="text-sm text-muted-foreground">Utilization Rate</p>
                   <p className="text-2xl font-bold text-secondary">
-                    {totalBlxSTX && vaultBalances?.stx
-                      ? ((totalBlxSTX / vaultBalances.stx) * 100).toFixed(2)
+                    {totalBxlSTX && vaultBalances?.stx
+                      ? ((totalBxlSTX / vaultBalances.stx) * 100).toFixed(2)
                       : '0.00'}%
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -164,7 +164,7 @@ const VaultDetails = () => {
                       <div className="space-y-1">
                         <h4 className="font-semibold text-foreground">Your Receipt Tokens</h4>
                         <p className="text-sm">
-                          Receive bxlBTC or blxSTX tokens when you deposit. These represent your share and can
+                          Receive bxlBTC or bxlSTX tokens when you deposit. These represent your share and can
                           be redeemed anytime.
                         </p>
                       </div>
@@ -191,7 +191,7 @@ const VaultDetails = () => {
                   <ul className="space-y-1 ml-4 list-disc text-sm">
                     <li>Your sBTC and some STX are pooled together in the vault</li>
                     <li>The vault participates in Dual Stacking on Stacks to earn BTC rewards</li>
-                    <li>You maintain 100% ownership through your bxlBTC/blxSTX tokens</li>
+                    <li>You maintain 100% ownership through your bxlBTC/bxlSTX tokens</li>
                     <li>All earned yield funds Brussels crypto community projects and events</li>
                     <li>Community stewards allocate rewards transparently</li>
                   </ul>

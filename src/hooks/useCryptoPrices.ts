@@ -24,7 +24,7 @@ export function useCryptoPrices() {
         stxEur: data.blockstack?.eur ?? 0,
       };
     },
-    staleTime: 30000, // Consider data fresh for 30 seconds
-    refetchInterval: 60000, // Refetch every minute
+    staleTime: 300000, // Consider data fresh for 5 minutes
+    refetchInterval: 600000, // Refetch every 10 minute
   });
 }

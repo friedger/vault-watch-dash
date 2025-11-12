@@ -10,7 +10,6 @@ interface NavigationProps {
 export const Navigation = ({ userAddress, isAdmin }: NavigationProps) => {
   const navItems = [
     { to: "/", label: "Home", icon: Home, show: true },
-    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: !!userAddress },
     { to: "/deposit", label: "Deposit", icon: Upload, show: !!userAddress },
     { to: "/vault", label: "Vault", icon: Vault, show: true },
     { to: "/admin", label: "Admin", icon: Shield, show: !!userAddress && isAdmin },

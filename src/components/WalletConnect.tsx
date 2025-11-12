@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { clearLocalStorage, getLocalStorage, request, connect } from "@stacks/connect";
-import { Wallet, ChevronDown, Bitcoin, Coins, LogOut } from "lucide-react";
+import { Wallet, ChevronDown, Bitcoin, Coins, LogOut, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   DropdownMenu,
@@ -78,7 +78,18 @@ export const WalletConnect = ({
             align="end" 
             className="w-80 bg-card/95 backdrop-blur-sm border-primary/20 z-50"
           >
-            <DropdownMenuLabel>Wallet Details</DropdownMenuLabel>
+            <DropdownMenuLabel className="flex items-center justify-between">
+              <span>Wallet Details</span>
+              <a
+                href={`https://explorer.hiro.so/address/${address}?chain=mainnet`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              >
+                View on Explorer
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             
             {/* Balances */}
@@ -114,7 +125,7 @@ export const WalletConnect = ({
             
             <DropdownMenuItem 
               onClick={disconnectWallet}
-              className="cursor-pointer text-destructive focus:text-destructive"
+              className="cursor-pointer"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Disconnect Wallet

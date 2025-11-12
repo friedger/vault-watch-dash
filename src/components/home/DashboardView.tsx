@@ -46,16 +46,6 @@ export const DashboardView = ({
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Primary Action: Deposit */}
-      <div className="max-w-xl mx-auto">
-        <DepositCard
-          onSBtcDeposit={onSBtcDeposit}
-          onStxDeposit={onStxDeposit}
-          sBtcBalance={balances.sBtc}
-          stxBalance={balances.stx}
-        />
-      </div>
-
       {/* Quick Action Cards */}
       <QuickActionCards
         userBalancesEur={userBalancesEur}
@@ -67,6 +57,16 @@ export const DashboardView = ({
         onPortfolioClick={() => setPortfolioOpen(true)}
         onVaultClick={() => setVaultOpen(true)}
       />
+
+      {/* Primary Action: Deposit */}
+      <div className="max-w-xl mx-auto">
+        <DepositCard
+          onSBtcDeposit={onSBtcDeposit}
+          onStxDeposit={onStxDeposit}
+          sBtcBalance={balances.sBtc}
+          stxBalance={balances.stx}
+        />
+      </div>
 
       {/* Dialogs */}
       <PortfolioDialog

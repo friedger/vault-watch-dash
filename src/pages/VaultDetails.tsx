@@ -3,6 +3,7 @@ import { YieldChart } from "@/components/YieldChart";
 import { SupportedProjects } from "@/components/SupportedProjects";
 import { Footer } from "@/components/Footer";
 import { VaultOverviewCards } from "@/components/VaultOverviewCards";
+import { TransactionHistory } from "@/components/TransactionHistory";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/Header";
@@ -246,6 +247,9 @@ const VaultDetails = () => {
               </div>
             </CardContent>
           </Card>
+
+          {/* Transaction History */}
+          <TransactionHistory userAddress={VAULT_CONTRACT} />
 
           {/* Supported Projects */}
           <SupportedProjects />         

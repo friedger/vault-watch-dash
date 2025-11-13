@@ -88,13 +88,8 @@ const Wallet = () => {
               bxlSTX={userBalances?.bxlSTX ?? 0}
             />
 
-            {/* Recent Transactions */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">
-                Recent Transactions
-              </h3>
-              <TransactionHistory userAddress={userAddress} />
-            </div>
+            {/* Transaction History */}
+            <TransactionHistory userAddress={userAddress} />
           </div>
         )}
       </main>

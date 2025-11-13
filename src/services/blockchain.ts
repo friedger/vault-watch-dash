@@ -499,9 +499,7 @@ export async function fetchUserTransactions(
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
         }
         const requestIdCV = hexToCV(tx.tx_result.hex) as ResponseOkCV<UIntCV>;
-        console.log("requestIdCV", requestIdCV);
         requestId = Number(requestIdCV.value.value);
-        
       } else if (functionName === "withdraw-update") {
         type = "withdraw-update";
         asset = "sBTC";
@@ -517,10 +515,11 @@ export async function fetchUserTransactions(
         type = "withdraw-finalize";
         asset = "sBTC";
         const requestIdArg = tx.contract_call.function_args?.[0];
-
         if (requestIdArg?.hex) {
           requestId = Number((hexToCV(requestIdArg.hex) as UIntCV).value);
         }
+        const amountCV = hexToCV(tx.tx_result.hex) as ResponseOkCV<UIntCV>;
+        amount = Number(amountCV.value.value);
       } else if (functionName === "deposit-stx") {
         type = "deposit";
         asset = "STX";

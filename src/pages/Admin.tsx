@@ -25,7 +25,7 @@ import {
 import { AlertCircle, CheckCircle, Coins, Lock, Send, Shield, Unlock } from "lucide-react";
 import { useState } from "react";
 
-const AdminContent = () => {
+const Admin = () => {
   const { userAddress, userBalances, isAdmin } = useLayout();
   const { toast } = useToast();
 
@@ -166,19 +166,7 @@ const AdminContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header
-        userAddress={userAddress}
-        onAddressChange={setUserAddress}
-        sBtcBalance={sBtcBalance}
-        stxBalance={stxBalance}
-        bxlBTC={userBalances?.bxlBTC ?? 0}
-        bxlSTX={userBalances?.bxlSTX ?? 0}
-      />
-      <Navigation userAddress={userAddress} isAdmin={isAdmin} />
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+    <main className="container mx-auto px-4 py-8">
         {!userAddress ? (
           <div className="flex flex-col items-center justify-center text-center space-y-6 animate-fade-in min-h-[60vh]">
             <Shield className="w-24 h-24 text-primary" />
@@ -398,10 +386,11 @@ const AdminContent = () => {
           </div>
         )}
       </main>
-      
-      <Footer />
-    </div>
   );
 };
 
-export default Admin;
+export default () => (
+  <Layout>
+    <Admin />
+  </Layout>
+);

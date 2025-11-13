@@ -93,7 +93,7 @@ const WithdrawContent = () => {
 };
 
 const Withdraw = () => (
-  <Layout showBanner={false}>
+  <Layout>
     <WithdrawContent />
   </Layout>
 );

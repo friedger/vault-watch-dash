@@ -38,7 +38,7 @@ const WalletContent = () => {
 };
 
 const Wallet = () => (
-  <Layout showBanner={false}>
+  <Layout>
     <WalletContent />
   </Layout>
 );

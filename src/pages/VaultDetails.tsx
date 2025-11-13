@@ -1,267 +1,196 @@
 import { BalanceCard } from "@/components/BalanceCard";
-import { DevelopmentBanner } from "@/components/DevelopmentBanner";
 import { YieldChart } from "@/components/YieldChart";
 import { SupportedProjects } from "@/components/SupportedProjects";
-import { Footer } from "@/components/Footer";
+import { Layout } from "@/components/Layout";
+import { useLayout } from "@/contexts/LayoutContext";
 import { VaultOverviewCards } from "@/components/VaultOverviewCards";
 import { TransactionHistory } from "@/components/TransactionHistory";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Header } from "@/components/Header";
-import { Navigation } from "@/components/Navigation";
-import { useBalances } from "@/hooks/useBalances";
+import { VAULT_CONTRACT, BXL_STX_CONTRACT } from "@/services/blockchain";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import { formatEur, formatStx } from "@/lib/utils";
-import {
-  VAULT_CONTRACT,
-  BXL_BTC_CONTRACT,
-  BXL_STX_CONTRACT,
-} from "@/services/blockchain";
-import { Coins } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Coins, Shield, FileText } from "lucide-react";
 
-const VaultDetails = () => {
-  const [userAddress, setUserAddress] = useState<string | null>(null);
-  const { data: userBalances } = useBalances(userAddress);
-  const { data: vaultBalances } = useBalances(VAULT_CONTRACT);
+const VaultDetailsContent = () => {
+  const { vaultBalances, totalBxlBTC } = useLayout();
   const { data: prices } = useCryptoPrices();
-
-  // Fetch total vault supplies
-  const { data: totalBxlBTC } = useTotalSupply(BXL_BTC_CONTRACT);
   const { data: totalBxlSTX } = useTotalSupply(BXL_STX_CONTRACT);
 
-  // Calculate earned yield for YieldChart component
-  const earnedYield = Math.max(
-    0,
-    (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ?? 0)
-  );
+  const earnedYield =
+    (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ? totalBxlBTC / 1e8 : 0);
 
   // Calculate EUR values for STX section only
   const vaultStxEur = (vaultBalances?.stx ?? 0) * (prices?.stxEur ?? 0);
   const lockedStxEur = (vaultBalances?.lockedStx ?? 0) * (prices?.stxEur ?? 0);
 
-  const isAdmin = false; // Not implemented yet
-
   return (
-    <div className="min-h-screen bg-background">
-      <Header
-        userAddress={userAddress}
-        onAddressChange={setUserAddress}
-        sBtcBalance={userBalances?.sBtc ?? 0}
-        stxBalance={userBalances?.stx ?? 0}
-        bxlBTC={userBalances?.bxlBTC ?? 0}
-        bxlSTX={userBalances?.bxlSTX ?? 0}
-      />
-      <Navigation userAddress={userAddress} isAdmin={isAdmin} />
+    <main className="container mx-auto px-4 py-8 space-y-8 animate-fade-in">
+      <div className="max-w-5xl mx-auto space-y-8">
+        {/* Page Header */}
+        <div className="text-center space-y-2">
+          <h1 className="text-4xl font-bold">Vault Details</h1>
+          <p className="text-muted-foreground text-lg">
+            Overview of the BXL Vault assets and performance
+          </p>
+        </div>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 space-y-8 animate-fade-in">
-        <div className="max-w-5xl mx-auto space-y-8">
-          <DevelopmentBanner />
-          
-          {/* Page Header */}
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl font-bold">Vault Details</h1>
-            <p className="text-muted-foreground text-lg">
-              Overview of the BXL Vault assets and performance
-            </p>
-          </div>
+        {/* sBTC Focus Section */}
+        <Card className="gradient-card border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <VaultOverviewCards />
+          </CardContent>
+        </Card>
 
-          {/* sBTC Focus Section */}
-          <Card className="gradient-card border-primary/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <VaultOverviewCards />
-            </CardContent>
-          </Card>
+        {/* Yield Chart */}
+        <YieldChart currentYield={earnedYield} />
 
-          {/* Yield Chart */}
-          <YieldChart currentYield={earnedYield} />
-
-          {/* STX Overview Section */}
-          <Card className="gradient-card border-secondary/20">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Coins className="w-6 h-6 text-secondary" />
-                Stacking STX
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <BalanceCard
-                  title="Total STX in Vault"
-                  balance={formatStx(vaultBalances?.stx ?? 0)}
-                  subBalance={formatEur(vaultStxEur)}
-                  subLabel="EUR value"
-                  icon={<Coins className="h-5 w-5 text-secondary" />}
-                />
-                <BalanceCard
-                  title="Stacked STX"
-                  balance={formatStx(vaultBalances?.lockedStx ?? 0)}
-                  subBalance={formatEur(lockedStxEur)}
-                  subLabel="EUR value"
-                  icon={<Coins className="h-5 w-5 text-secondary" />}
-                />
-              </div>              
-            </CardContent>
-          </Card>
-
-          {/* About Section */}
-          <Card className="gradient-card border-primary/20">
-            <CardHeader>
-              <CardTitle>How the Vault Works</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-muted-foreground">
-              <p>
-                The BXL Vault lets you support the Brussels crypto community by
-                storing securely your Bitcoin. You keep full ownership of your
-                assets while the yield automatically funds community projects.
+        {/* STX Overview Section */}
+        <Card className="gradient-card border-secondary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Coins className="w-6 h-6 text-secondary" />
+              Stacking STX
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <BalanceCard
+                title="Total STX in Vault"
+                balance={formatStx(vaultBalances?.stx ?? 0)}
+                subBalance={formatEur(vaultStxEur)}
+                subLabel="EUR value"
+                icon={<Coins className="h-5 w-5 text-secondary" />}
+              />
+              <BalanceCard
+                title="Locked STX"
+                balance={formatStx(vaultBalances?.lockedStx ?? 0)}
+                subBalance={formatEur(lockedStxEur)}
+                subLabel="EUR value"
+                icon={<Shield className="h-5 w-5 text-secondary" />}
+              />
+            </div>
+            <div className="mt-6 space-y-2">
+              <p className="text-sm text-muted-foreground">
+                Locked STX represents tokens delegated to stacking pools to
+                enhance Dual Stacking yields.
               </p>
+              <p className="text-sm text-muted-foreground">
+                Total wrapped STX (bxlSTX):{" "}
+                <span className="font-semibold text-foreground">
+                  {formatStx(totalBxlSTX ? totalBxlSTX / 1e6 : 0)}
+                </span>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-              <div className="space-y-4">
-                {/* Features Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Protection Feature */}
-                  <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="text-2xl">🔧</div>
-                      <div className="space-y-1">
-                        <h4 className="font-semibold text-foreground">
-                          Protection Against Wrench Attack
-                        </h4>
-                        <p className="text-sm">
-                          1-week withdrawal delay protects you from physical
-                          coercion. You have time to cancel if someone forces
-                          you to withdraw.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+        {/* How the Vault Works */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="w-6 h-6" />
+              How the Vault Works
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <h3 className="font-semibold text-lg mb-3">Key Features</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    <strong className="text-foreground">
+                      1:1 Backed Tokens:
+                    </strong>{" "}
+                    Your deposits are represented by bxlBTC and bxlSTX tokens,
+                    fully backed by sBTC and STX in the vault
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    <strong className="text-foreground">
+                      Wrench Attack Protection:
+                    </strong>{" "}
+                    Withdrawals require a time delay (minimum 1 week) or admin
+                    approval, protecting against forced transfers
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    <strong className="text-foreground">
+                      Community Yield:
+                    </strong>{" "}
+                    All yield generated through Dual Stacking goes directly to
+                    DAO Brussels to fund community initiatives
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-1">•</span>
+                  <span>
+                    <strong className="text-foreground">
+                      Non-Taxable Structure:
+                    </strong>{" "}
+                    By directing yield to the community instead of individual
+                    users, the vault simplifies tax implications
+                  </span>
+                </li>
+              </ul>
+            </div>
 
-                  {/* Community Yield Feature */}
-                  <div className="bg-gradient-to-r from-secondary/5 to-secondary/10 border border-secondary/20 rounded-lg p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="text-2xl">🤝</div>
-                      <div className="space-y-1">
-                        <h4 className="font-semibold text-foreground">
-                          Yield for the Community
-                        </h4>
-                        <p className="text-sm">
-                          No donations needed. You keep your assets while the
-                          community benefits from the yield they generate.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Ownership Feature */}
-                  <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border border-border rounded-lg p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="text-2xl">🪙</div>
-                      <div className="space-y-1">
-                        <h4 className="font-semibold text-foreground">
-                          Your Receipt Tokens
-                        </h4>
-                        <p className="text-sm">
-                          Receive bxlBTC or bxlSTX tokens when you deposit.
-                          These represent your share and can be redeemed
-                          anytime.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Tax Feature */}
-                  <div className="bg-gradient-to-r from-primary/5 to-secondary/5 border border-border rounded-lg p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="text-2xl">💰</div>
-                      <div className="space-y-1">
-                        <h4 className="font-semibold text-foreground">
-                          Non-Taxable Event
-                        </h4>
-                        <p className="text-sm">
-                          Yield goes directly to the community as an endowment
-                          model, keeping your taxes simple.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+            <div>
+              <h3 className="font-semibold text-lg mb-3">Smart Contracts</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex flex-col gap-1">
+                  <span className="font-semibold text-foreground">
+                    Main Vault:
+                  </span>
+                  <code className="text-xs bg-muted px-2 py-1 rounded break-all">
+                    {VAULT_CONTRACT}
+                  </code>
                 </div>
-
-                {/* How It Works Details */}
-                <div className="bg-primary/5 border border-primary/10 rounded-lg p-4">
-                  <h4 className="font-semibold text-foreground mb-2">
-                    How Dual Stacking Works:
-                  </h4>
-                  <ul className="space-y-1 ml-4 list-disc text-sm">
-                    <li>
-                      Your sBTC and some STX are pooled together in the vault
-                    </li>
-                    <li>
-                      The vault participates in Dual Stacking on Stacks to earn
-                      BTC rewards
-                    </li>
-                    <li>
-                      You maintain 100% ownership through your bxlBTC/bxlSTX
-                      tokens
-                    </li>
-                    <li>
-                      All earned yield funds Brussels crypto community projects
-                      and events
-                    </li>
-                    <li>Community stewards allocate rewards transparently</li>
-                  </ul>
-                </div>
-
-                {/* Smart Contract Details */}
-                <div className="bg-secondary/5 border border-secondary/10 rounded-lg p-4">
-                  <h4 className="font-semibold text-foreground mb-2">
-                    Clarity Smart Contract:
-                  </h4>
-                  <p className="text-sm mb-2">
-                    The BXL Vault is powered by Clarity smart contracts on the Stacks blockchain, providing transparent and secure Bitcoin management.
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <code className="text-xs bg-background/50 px-2 py-1 rounded border border-border flex-1 truncate">
-                      {VAULT_CONTRACT}
-                    </code>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      asChild
-                      className="shrink-0"
-                    >
-                      <a
-                        href={`https://explorer.hiro.so/address/${VAULT_CONTRACT}?chain=mainnet`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View Explorer
-                      </a>
-                    </Button>
-                  </div>
+                <div className="flex flex-col gap-1">
+                  <span className="font-semibold text-foreground">
+                    Wrapped STX:
+                  </span>
+                  <code className="text-xs bg-muted px-2 py-1 rounded break-all">
+                    {BXL_STX_CONTRACT}
+                  </code>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Transaction History */}
-          <TransactionHistory userAddress={VAULT_CONTRACT} />
+            <div>
+              <h3 className="font-semibold text-lg mb-3">Dual Stacking</h3>
+              <p className="text-muted-foreground">
+                The vault participates in Dual Stacking, a mechanism on the
+                Stacks blockchain that allows sBTC to generate yield while
+                maintaining its 1:1 Bitcoin backing. STX deposits enhance this
+                yield through PoX stacking.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Supported Projects */}
-          <SupportedProjects />         
-        </div>
-      </main>
+        {/* Transaction History */}
+        <TransactionHistory userAddress={VAULT_CONTRACT} />
 
-      <Footer />
-    </div>
+        {/* Supported Projects */}
+        <SupportedProjects />
+      </div>
+    </main>
   );
 };
+
+const VaultDetails = () => (
+  <Layout>
+    <VaultDetailsContent />
+  </Layout>
+);
 
 export default VaultDetails;

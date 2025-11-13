@@ -1,6 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { clearLocalStorage, getLocalStorage, request, connect } from "@stacks/connect";
-import { Wallet, ChevronDown, Bitcoin, Coins, LogOut, ExternalLink } from "lucide-react";
+import {
+  clearLocalStorage,
+  getLocalStorage,
+  request,
+  connect,
+} from "@stacks/connect";
+import {
+  Wallet,
+  ChevronDown,
+  Bitcoin,
+  Coins,
+  LogOut,
+  ExternalLink,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   DropdownMenu,
@@ -21,12 +33,12 @@ interface WalletConnectProps {
   bxlSTX?: number;
 }
 
-export const WalletConnect = ({ 
+export const WalletConnect = ({
   onAddressChange,
   sBtcBalance = 0,
   stxBalance = 0,
   bxlBTC = 0,
-  bxlSTX = 0
+  bxlSTX = 0,
 }: WalletConnectProps) => {
   const [address, setAddress] = useState<string | null>(() => {
     return getLocalStorage()?.addresses.stx[0]?.address || null;
@@ -34,21 +46,21 @@ export const WalletConnect = ({
 
   useEffect(() => {
     const stxAddress = getLocalStorage()?.addresses.stx[0]?.address || null;
-    if (stxAddress) {      
+    if (stxAddress) {
       setAddress(stxAddress);
       onAddressChange(stxAddress);
     }
   }, [onAddressChange]);
 
   const connectWallet = async () => {
-  const result = await connect();
-  if (result.addresses[0]) {
-    const stxAddress = getLocalStorage()?.addresses.stx[0]?.address || null;
-    if (stxAddress) {      
-      setAddress(stxAddress);
-      onAddressChange(stxAddress);
+    const result = await connect();
+    if (result.addresses[0]) {
+      const stxAddress = getLocalStorage()?.addresses.stx[0]?.address || null;
+      if (stxAddress) {
+        setAddress(stxAddress);
+        onAddressChange(stxAddress);
+      }
     }
-  }
   };
 
   const disconnectWallet = () => {
@@ -69,13 +81,15 @@ export const WalletConnect = ({
             <Button variant="wallet" className="h-10 gap-2 px-4">
               <div className="flex flex-col items-start">
                 <p className="text-xs text-muted-foreground">Connected</p>
-                <p className="font-mono text-sm font-bold text-primary">{formatAddress(address)}</p>
+                <p className="font-mono text-sm font-bold text-primary">
+                  {formatAddress(address)}
+                </p>
               </div>
               <ChevronDown className="w-4 h-4 ml-2" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            align="end" 
+          <DropdownMenuContent
+            align="end"
             className="w-80 bg-card/95 backdrop-blur-sm border-primary/20 z-50"
           >
             <DropdownMenuLabel className="flex items-center justify-between">
@@ -91,7 +105,7 @@ export const WalletConnect = ({
               </a>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            
+
             {/* Balances */}
             <div className="p-2 space-y-3">
               <Card className="p-3 bg-primary/5 border-primary/20">
@@ -106,7 +120,7 @@ export const WalletConnect = ({
                   Wrapped: {formatBtc(bxlBTC)} bxlBTC
                 </p>
               </Card>
-              
+
               <Card className="p-3 bg-secondary/5 border-secondary/20">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
@@ -120,16 +134,15 @@ export const WalletConnect = ({
                 </p>
               </Card>
             </div>
-            
+
             <DropdownMenuSeparator />
-            
-            <DropdownMenuItem 
-              onClick={disconnectWallet}
-              className="cursor-pointer"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Disconnect Wallet
-            </DropdownMenuItem>
+
+            <div className="px-2 flex">
+              <DropdownMenuItem onClick={disconnectWallet} className="w-full cursor-pointer">
+                <LogOut className="w-4 h-4 mr-2" />
+                Disconnect Wallet
+              </DropdownMenuItem>
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (

@@ -5,12 +5,17 @@ import { Layout } from "@/components/Layout";
 import { useLayout } from "@/contexts/LayoutContext";
 import { VaultOverviewCards } from "@/components/VaultOverviewCards";
 import { TransactionHistory } from "@/components/TransactionHistory";
-import { VAULT_CONTRACT, BXL_STX_CONTRACT } from "@/services/blockchain";
+import {
+  VAULT_CONTRACT,
+  BXL_STX_CONTRACT,
+  BXL_BTC_CONTRACT,
+} from "@/services/blockchain";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import { formatEur, formatStx } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Coins, Shield, FileText } from "lucide-react";
+import { Coins, Shield, FileText, ExternalLink } from "lucide-react";
+import VaultHowItWorksCard from "@/components/VaultHowItWorksCard";
 
 const VaultDetailsContent = () => {
   const { vaultBalances, totalBxlBTC } = useLayout();
@@ -81,7 +86,7 @@ const VaultDetailsContent = () => {
               <p className="text-sm text-muted-foreground">
                 Total wrapped STX (bxlSTX):{" "}
                 <span className="font-semibold text-foreground">
-                  {formatStx(totalBxlSTX ? totalBxlSTX / 1e6 : 0)}
+                  {formatStx(totalBxlSTX ? totalBxlSTX : 0)}
                 </span>
               </p>
             </div>
@@ -89,99 +94,13 @@ const VaultDetailsContent = () => {
         </Card>
 
         {/* How the Vault Works */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="w-6 h-6" />
-              How the Vault Works
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <h3 className="font-semibold text-lg mb-3">Key Features</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>
-                    <strong className="text-foreground">
-                      1:1 Backed Tokens:
-                    </strong>{" "}
-                    Your deposits are represented by bxlBTC and bxlSTX tokens,
-                    fully backed by sBTC and STX in the vault
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>
-                    <strong className="text-foreground">
-                      Wrench Attack Protection:
-                    </strong>{" "}
-                    Withdrawals require a time delay (minimum 1 week) or admin
-                    approval, protecting against forced transfers
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>
-                    <strong className="text-foreground">
-                      Community Yield:
-                    </strong>{" "}
-                    All yield generated through Dual Stacking goes directly to
-                    DAO Brussels to fund community initiatives
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary mt-1">•</span>
-                  <span>
-                    <strong className="text-foreground">
-                      Non-Taxable Structure:
-                    </strong>{" "}
-                    By directing yield to the community instead of individual
-                    users, the vault simplifies tax implications
-                  </span>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-lg mb-3">Smart Contracts</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex flex-col gap-1">
-                  <span className="font-semibold text-foreground">
-                    Main Vault:
-                  </span>
-                  <code className="text-xs bg-muted px-2 py-1 rounded break-all">
-                    {VAULT_CONTRACT}
-                  </code>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="font-semibold text-foreground">
-                    Wrapped STX:
-                  </span>
-                  <code className="text-xs bg-muted px-2 py-1 rounded break-all">
-                    {BXL_STX_CONTRACT}
-                  </code>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-lg mb-3">Dual Stacking</h3>
-              <p className="text-muted-foreground">
-                The vault participates in Dual Stacking, a mechanism on the
-                Stacks blockchain that allows sBTC to generate yield while
-                maintaining its 1:1 Bitcoin backing. STX deposits enhance this
-                yield through PoX stacking.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Transaction History */}
-        <TransactionHistory userAddress={VAULT_CONTRACT} />
+        <VaultHowItWorksCard />
 
         {/* Supported Projects */}
         <SupportedProjects />
+
+        {/* Transaction History */}
+        <TransactionHistory userAddress={VAULT_CONTRACT} />
       </div>
     </main>
   );

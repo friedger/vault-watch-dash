@@ -1,4 +1,5 @@
 import { BalanceCard } from "@/components/BalanceCard";
+import { DevelopmentBanner } from "@/components/DevelopmentBanner";
 import { YieldChart } from "@/components/YieldChart";
 import { SupportedProjects } from "@/components/SupportedProjects";
 import { Footer } from "@/components/Footer";
@@ -58,6 +59,8 @@ const VaultDetails = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 space-y-8 animate-fade-in">
         <div className="max-w-5xl mx-auto space-y-8">
+          <DevelopmentBanner />
+          
           {/* Page Header */}
           <div className="text-center space-y-2">
             <h1 className="text-4xl font-bold">Vault Details</h1>

@@ -1,3 +1,4 @@
+import { DevelopmentBanner } from "@/components/DevelopmentBanner";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
@@ -88,7 +89,11 @@ const Index = () => {
       <Navigation userAddress={userAddress} isAdmin={isAdmin} />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 space-y-16">
+      <main className="container mx-auto px-4 py-8 space-y-8">
+        <div className="max-w-5xl mx-auto">
+          <DevelopmentBanner />
+        </div>
+        <div className="space-y-16">
         {!userAddress ? (
           <>
             <MarketingView />
@@ -106,6 +111,7 @@ const Index = () => {
             />
           )
         )}
+        </div>
       </main>
 
       <Footer />

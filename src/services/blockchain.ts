@@ -1,15 +1,16 @@
 import { createClient } from "@stacks/blockchain-api-client";
 import { request } from "@stacks/connect";
-import path from "path";
 import {
+  BufferCV,
   Cl,
   ClarityType,
   fetchCallReadOnlyFunction,
   fetchContractMapEntry,
   hexToCV,
+  ListCV,
+  OptionalCV,
   Pc,
   PrincipalCV,
-  ResponseErrorCV,
   ResponseOkCV,
   TupleCV,
   UIntCV,
@@ -264,7 +265,6 @@ export async function finalizeSbtcWithdraw(
   return result;
 }
 
-
 /**
  * Admin finalize a user's withdrawal request early
  * @param requestId The withdrawal request ID
@@ -479,8 +479,8 @@ export async function fetchUserTransactions(
 
       // Filter for vault-related transactions
       if (
-        !contractId.includes("bxl-vault") &&
-        !contractId.includes("sbtc-token")
+        !contractId.includes(VAULT_CONTRACT) &&
+        !contractId.includes(SBTC_CONTRACT)
       )
         continue;
 
@@ -540,6 +540,37 @@ export async function fetchUserTransactions(
         const amountArg = tx.contract_call.function_args?.[0];
         if (amountArg?.repr) {
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e6;
+        }
+      } else if (functionName === "admin-sbtc-transfer") {
+        type = "transfer";
+        asset = "sBTC";
+        const amountArg = tx.contract_call.function_args?.[0];
+        if (amountArg?.repr) {
+          amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
+        }
+      } else if (functionName === "transfer-many") {
+        type = "transfer";
+        asset = "sBTC";
+        const details = tx.contract_call.function_args?.[0];
+        if (details?.hex) {
+          const detailsCV = hexToCV(details.hex) as ListCV<
+            TupleCV<{
+              amount: UIntCV;
+              memo: OptionalCV<BufferCV>;
+              sender: PrincipalCV;
+              to: PrincipalCV;
+            }>
+          >;
+          let incomingAmount = 0;
+          let outgoingAmount = 0;
+          detailsCV.value.forEach((tupleCV) => {
+            if (tupleCV.value.sender === Cl.principal(VAULT_CONTRACT)) {
+              outgoingAmount += Number(tupleCV.value.amount.value);
+            } else if (tupleCV.value.to === Cl.principal(VAULT_CONTRACT)) {
+              incomingAmount += Number(tupleCV.value.amount.value);
+            }
+          });
+          amount = (incomingAmount - outgoingAmount) / 1e8;
         }
       } else {
         // Skip other function calls

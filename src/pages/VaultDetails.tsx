@@ -214,6 +214,35 @@ const VaultDetails = () => {
                     <li>Community stewards allocate rewards transparently</li>
                   </ul>
                 </div>
+
+                {/* Smart Contract Details */}
+                <div className="bg-secondary/5 border border-secondary/10 rounded-lg p-4">
+                  <h4 className="font-semibold text-foreground mb-2">
+                    Clarity Smart Contract:
+                  </h4>
+                  <p className="text-sm mb-2">
+                    The BXL Vault is powered by Clarity smart contracts on the Stacks blockchain, providing transparent and secure Bitcoin management.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <code className="text-xs bg-background/50 px-2 py-1 rounded border border-border flex-1 truncate">
+                      {VAULT_CONTRACT}
+                    </code>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="shrink-0"
+                    >
+                      <a
+                        href={`https://explorer.hiro.so/address/${VAULT_CONTRACT}?chain=mainnet`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View Explorer
+                      </a>
+                    </Button>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>

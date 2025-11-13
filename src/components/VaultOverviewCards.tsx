@@ -45,8 +45,8 @@ export const VaultOverviewCards = () => {
       />
       <BalanceCard
         title="Monthly Community Budget"
-        balance={formatEur(earnedYieldEur / 12)}
-        subBalance={`${formatBtc(earnedYield / 12)} sBTC`}
+        balance={formatEur(wrappedBtcEur * 0.05 / 12)}
+        subBalance={`${formatBtc((vaultBalances?.sBtc ?? 0) * 0.05 / 12)} sBTC`}
         subLabel="Estimated"
         icon={<Coins className="h-5 w-5 text-primary" />}
       />

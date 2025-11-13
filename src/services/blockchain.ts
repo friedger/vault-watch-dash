@@ -264,6 +264,39 @@ export async function finalizeSbtcWithdraw(
   return result;
 }
 
+
+/**
+ * Admin finalize a user's withdrawal request early
+ * @param requestId The withdrawal request ID
+ * @param user The user who made the request
+ * @param amount The amount to finalize
+ */
+export async function adminFinalizeSbtcWithdraw(
+  requestId: number,
+  user: string,
+  amount: number
+) {
+  const amountInSats = Math.floor(amount * 1e8);
+
+  const result = await request("stx_callContract", {
+    contract: VAULT_CONTRACT,
+    functionName: "withdraw-finalize",
+    functionArgs: [Cl.uint(requestId)],
+    network,
+    postConditionMode: "deny",
+    postConditions: [
+      Pc.principal(user)
+        .willSendEq(amountInSats)
+        .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+      Pc.principal(VAULT_CONTRACT)
+        .willSendEq(amountInSats)
+        .ft(SBTC_CONTRACT, SBTC_ASSET),
+    ],
+  });
+
+  return result;
+}
+
 export async function withdrawStx(amount: number, user: string) {
   const amountInMicroStx = Math.floor(amount * 1e6); // Convert to micro-STX
 
@@ -313,6 +346,12 @@ export async function transferSbtcYield(amount: number, recipient: string) {
     functionName: "admin-sbtc-transfer",
     functionArgs: [Cl.uint(amountInSats), Cl.principal(recipient)],
     network,
+    postConditionMode: "deny",
+    postConditions: [
+      Pc.principal(VAULT_CONTRACT)
+        .willSendEq(amountInSats)
+        .ft(SBTC_CONTRACT, SBTC_ASSET),
+    ],
   });
   return result;
 }
@@ -393,38 +432,6 @@ export async function fetchWithdrawalRequest(
     console.error("Error fetching withdrawal request:", error);
     return null;
   }
-}
-
-/**
- * Admin finalize a user's withdrawal request early
- * @param requestId The withdrawal request ID
- * @param user The user who made the request
- * @param amount The amount to finalize
- */
-export async function adminFinalizeSbtcWithdraw(
-  requestId: number,
-  user: string,
-  amount: number
-) {
-  const amountInSats = Math.floor(amount * 1e8);
-
-  const result = await request("stx_callContract", {
-    contract: VAULT_CONTRACT,
-    functionName: "withdraw-finalize",
-    functionArgs: [Cl.uint(requestId)],
-    network,
-    postConditionMode: "deny",
-    postConditions: [
-      Pc.principal(user)
-        .willSendEq(amountInSats)
-        .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
-      Pc.principal(VAULT_CONTRACT)
-        .willSendEq(amountInSats)
-        .ft(SBTC_CONTRACT, SBTC_ASSET),
-    ],
-  });
-
-  return result;
 }
 
 export interface Transaction {

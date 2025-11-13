@@ -1,6 +1,5 @@
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
-import { Navigation } from "@/components/Navigation";
+import { Layout } from "@/components/Layout";
+import { useLayout } from "@/contexts/LayoutContext";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { useBalances } from "@/hooks/useBalances";
 import { formatBtc } from "@/lib/utils";
 import {
   adminFinalizeSbtcWithdraw,
@@ -27,15 +25,8 @@ import {
 import { AlertCircle, CheckCircle, Coins, Lock, Send, Shield, Unlock } from "lucide-react";
 import { useState } from "react";
 
-// Admin wallet addresses - replace with actual admin addresses
-const ADMIN_ADDRESSES = [
-  "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF",
-  // Add more admin addresses here
-];
-
-const Admin = () => {
-  const [userAddress, setUserAddress] = useState<string | null>(null);
-  const { data: userBalances } = useBalances(userAddress);
+const AdminContent = () => {
+  const { userAddress, userBalances, isAdmin } = useLayout();
   const { toast } = useToast();
 
   // Move sBTC form
@@ -46,12 +37,6 @@ const Admin = () => {
   const [finalizeRequestId, setFinalizeRequestId] = useState("");
   const [withdrawalRequest, setWithdrawalRequest] = useState<WithdrawalRequest | null>(null);
   const [isLoadingRequest, setIsLoadingRequest] = useState(false);
-
-  // Check if user is admin
-  const isAdmin = userAddress && ADMIN_ADDRESSES.includes(userAddress);
-
-  const sBtcBalance = userBalances?.sBtc ?? 0;
-  const stxBalance = userBalances?.stx ?? 0;
 
   const handleEnrollDualStacking = async () => {
     const result = await enrollDualStacking();

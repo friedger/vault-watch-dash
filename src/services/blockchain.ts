@@ -44,6 +44,12 @@ const network = "mainnet";
 export const VAULT_CONTRACT =
   "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-vault";
 
+// Admin wallet addresses - replace with actual admin addresses
+export const ADMIN_ADDRESSES = [
+  "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF",
+  // Add more admin addresses here
+];
+
 const client = createClient({
   baseUrl: "https://api.mainnet.hiro.so",
 });

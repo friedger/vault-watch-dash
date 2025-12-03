@@ -1,21 +1,20 @@
 import { BalanceCard } from "@/components/BalanceCard";
-import { YieldChart } from "@/components/YieldChart";
-import { SupportedProjects } from "@/components/SupportedProjects";
 import { Layout } from "@/components/Layout";
-import { useLayout } from "@/contexts/LayoutContext";
-import { VaultOverviewCards } from "@/components/VaultOverviewCards";
+import { SupportedProjects } from "@/components/SupportedProjects";
 import { TransactionHistory } from "@/components/TransactionHistory";
-import {
-  VAULT_CONTRACT,
-  BXL_STX_CONTRACT,
-  BXL_BTC_CONTRACT,
-} from "@/services/blockchain";
-import { useTotalSupply } from "@/hooks/useTotalSupply";
-import { useCryptoPrices } from "@/hooks/useCryptoPrices";
-import { formatEur, formatStx } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Coins, Shield, FileText, ExternalLink } from "lucide-react";
 import VaultHowItWorksCard from "@/components/VaultHowItWorksCard";
+import { VaultOverviewCards } from "@/components/VaultOverviewCards";
+import { YieldChart } from "@/components/YieldChart";
+import { useLayout } from "@/contexts/LayoutContext";
+import { useCryptoPrices } from "@/hooks/useCryptoPrices";
+import { useTotalSupply } from "@/hooks/useTotalSupply";
+import { formatEur, formatStx } from "@/lib/utils";
+import {
+  BXL_STX_CONTRACT,
+  VAULT_CONTRACT,
+} from "@/services/blockchain";
+import { Coins, Shield } from "lucide-react";
 
 const VaultDetailsContent = () => {
   const { vaultBalances, totalBxlBTC } = useLayout();

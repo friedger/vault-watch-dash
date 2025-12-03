@@ -1,9 +1,6 @@
-import { useState } from "react";
 import { DepositCard } from "@/components/DepositCard";
-import { QuickActionCards } from "@/components/home/QuickActionCards";
-import { PortfolioDialog } from "@/components/PortfolioDialog";
-import { VaultPreviewDialog } from "@/components/VaultPreviewDialog";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
+import { useState } from "react";
 
 interface DashboardViewProps {
   userAddress: string;
@@ -63,22 +60,7 @@ export const DashboardView = ({
           sBtcBalance={balances.sBtc}
           stxBalance={balances.stx}
         />
-      </div>
-
-      {/* Dialogs */}
-      <PortfolioDialog
-        open={portfolioOpen}
-        onOpenChange={setPortfolioOpen}
-        userAddress={userAddress}
-        balances={balances}
-      />
-
-      <VaultPreviewDialog
-        open={vaultOpen}
-        onOpenChange={setVaultOpen}
-        vaultSbtc={vaultSbtc}
-        earnedYield={earnedYield}
-      />
+      </div>     
     </div>
   );
 };

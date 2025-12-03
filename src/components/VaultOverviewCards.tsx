@@ -36,7 +36,7 @@ export const VaultOverviewCards = () => {
         icon={<Bitcoin className="h-5 w-5 text-primary" />}
       />
       <BalanceCard
-        title="Usable Bitcoin"
+        title="Claimable yield"
         balance={`${formatBtc(earnedYield)} sBTC`}
         subBalance={formatEur(earnedYieldEur)}
         subLabel="Yield + BxlBTC in transit"

@@ -17,12 +17,9 @@ import {
 import { Coins, Shield } from "lucide-react";
 
 const VaultDetailsContent = () => {
-  const { vaultBalances, totalBxlBTC } = useLayout();
+  const { vaultBalances } = useLayout();
   const { data: prices } = useCryptoPrices();
   const { data: totalBxlSTX } = useTotalSupply(BXL_STX_CONTRACT);
-
-  const earnedYield =
-    (vaultBalances?.sBtc ?? 0) - (totalBxlBTC ? totalBxlBTC / 1e8 : 0);
 
   // Calculate EUR values for STX section only
   const vaultStxEur = (vaultBalances?.stx ?? 0) * (prices?.stxEur ?? 0);
@@ -50,7 +47,7 @@ const VaultDetailsContent = () => {
         </Card>
 
         {/* Yield Chart */}
-        <YieldChart currentYield={earnedYield} />
+        <YieldChart />
 
         {/* STX Overview Section */}
         <Card className="gradient-card border-secondary/20">

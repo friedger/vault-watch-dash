@@ -462,26 +462,50 @@ export interface TransactionResult {
 }
 
 export const transactionsLimit = 20;
+
+interface V2TransactionResult {
+  tx: {
+    tx_id: string;
+    tx_type: string;
+    tx_status: string;
+    burn_block_time: number;
+    contract_call?: {
+      contract_id: string;
+      function_name: string;
+      function_args?: Array<{ repr: string; hex: string }>;
+    };
+    tx_result?: { hex: string };
+  };
+}
+
+interface V2TransactionsResponse {
+  limit: number;
+  offset: number;
+  total: number;
+  results: V2TransactionResult[];
+}
+
 export async function fetchUserTransactions(
   address: string,
   offset: number = 0
 ): Promise<TransactionResult> {
   try {
     const response = await fetch(
-      `${STACKS_API}/extended/v1/address/${address}/transactions?limit=${transactionsLimit}&offset=${offset}`
+      `${STACKS_API}/extended/v2/addresses/${address}/transactions?limit=${transactionsLimit}&offset=${offset}`
     );
     if (!response.ok) throw new Error("Failed to fetch transactions");
-    const data = await response.json();
+    const data: V2TransactionsResponse = await response.json();
 
     const transactions: Transaction[] = [];
 
-    for (const tx of data.results) {
+    for (const result of data.results) {
+      const tx = result.tx;
       // Only process contract calls that are relevant to our vault
       if (tx.tx_type !== "contract_call") continue;
       if (tx.tx_status !== "success" && tx.tx_status !== "pending") continue;
 
-      const contractId = `${tx.contract_call.contract_id}`;
-      const functionName = tx.contract_call.function_name;
+      const contractId = tx.contract_call?.contract_id ?? "";
+      const functionName = tx.contract_call?.function_name ?? "";
 
       // Filter for vault-related transactions
       if (
@@ -499,65 +523,68 @@ export async function fetchUserTransactions(
       if (functionName === "deposit") {
         type = "deposit";
         asset = "sBTC";
-        // Parse amount from function args
-        const amountArg = tx.contract_call.function_args?.[0];
+        const amountArg = tx.contract_call?.function_args?.[0];
         if (amountArg?.repr) {
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
         }
       } else if (functionName === "withdraw-request") {
         type = "withdraw";
         asset = "sBTC";
-        const amountArg = tx.contract_call.function_args?.[0];
+        const amountArg = tx.contract_call?.function_args?.[0];
         if (amountArg?.repr) {
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
         }
-        const requestIdCV = hexToCV(tx.tx_result.hex) as ResponseOkCV<UIntCV>;
-        requestId = Number(requestIdCV.value.value);
+        if (tx.tx_result?.hex) {
+          const requestIdCV = hexToCV(tx.tx_result.hex) as ResponseOkCV<UIntCV>;
+          requestId = Number(requestIdCV.value.value);
+        }
       } else if (functionName === "withdraw-update") {
         type = "withdraw-update";
         asset = "sBTC";
-        const requestIdArg = tx.contract_call.function_args?.[0];
+        const requestIdArg = tx.contract_call?.function_args?.[0];
         if (requestIdArg?.hex) {
           requestId = Number((hexToCV(requestIdArg.hex) as UIntCV).value);
         }
-        const amountArg = tx.contract_call.function_args?.[1];
+        const amountArg = tx.contract_call?.function_args?.[1];
         if (amountArg?.repr) {
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
         }
       } else if (functionName === "withdraw-finalize") {
         type = "withdraw-finalize";
         asset = "sBTC";
-        const requestIdArg = tx.contract_call.function_args?.[0];
+        const requestIdArg = tx.contract_call?.function_args?.[0];
         if (requestIdArg?.hex) {
           requestId = Number((hexToCV(requestIdArg.hex) as UIntCV).value);
         }
-        const amountCV = hexToCV(tx.tx_result.hex) as ResponseOkCV<UIntCV>;
-        amount = Number(amountCV.value.value);
+        if (tx.tx_result?.hex) {
+          const amountCV = hexToCV(tx.tx_result.hex) as ResponseOkCV<UIntCV>;
+          amount = Number(amountCV.value.value);
+        }
       } else if (functionName === "deposit-stx") {
         type = "deposit";
         asset = "STX";
-        const amountArg = tx.contract_call.function_args?.[0];
+        const amountArg = tx.contract_call?.function_args?.[0];
         if (amountArg?.repr) {
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e6;
         }
       } else if (functionName === "withdraw-stx") {
         type = "withdraw";
         asset = "STX";
-        const amountArg = tx.contract_call.function_args?.[0];
+        const amountArg = tx.contract_call?.function_args?.[0];
         if (amountArg?.repr) {
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e6;
         }
       } else if (functionName === "admin-sbtc-transfer") {
         type = "transfer";
         asset = "sBTC";
-        const amountArg = tx.contract_call.function_args?.[0];
+        const amountArg = tx.contract_call?.function_args?.[0];
         if (amountArg?.repr) {
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
         }
       } else if (functionName === "transfer-many") {
         type = "transfer";
         asset = "sBTC";
-        const details = tx.contract_call.function_args?.[0];
+        const details = tx.contract_call?.function_args?.[0];
         if (details?.hex) {
           const detailsCV = hexToCV(details.hex) as ListCV<
             TupleCV<{
@@ -604,5 +631,66 @@ export async function fetchUserTransactions(
   } catch (error) {
     console.error("Error fetching transactions:", error);
     return { transactions: [], total: -1 };
+  }
+}
+
+export interface YieldData {
+  month: string;
+  yield: number;
+  timestamp: Date;
+}
+
+export async function fetchYieldTransactions(): Promise<YieldData[]> {
+  try {
+    // Fetch all transactions to find yield transfers (admin-sbtc-transfer)
+    const response = await fetch(
+      `${STACKS_API}/extended/v2/addresses/${VAULT_CONTRACT}/transactions?limit=50`
+    );
+    if (!response.ok) throw new Error("Failed to fetch yield transactions");
+    const data: V2TransactionsResponse = await response.json();
+
+    const yieldByMonth = new Map<string, { yield: number; timestamp: Date }>();
+
+    for (const result of data.results) {
+      const tx = result.tx;
+      if (tx.tx_type !== "contract_call") continue;
+      if (tx.tx_status !== "success") continue;
+
+      const functionName = tx.contract_call?.function_name ?? "";
+      
+      // Only count admin-sbtc-transfer as yield distribution
+      if (functionName === "admin-sbtc-transfer") {
+        const amountArg = tx.contract_call?.function_args?.[0];
+        if (amountArg?.repr) {
+          const amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
+          const timestamp = new Date(tx.burn_block_time * 1000);
+          const monthKey = `${timestamp.getFullYear()}-${String(timestamp.getMonth() + 1).padStart(2, '0')}`;
+          const monthLabel = timestamp.toLocaleDateString('en-US', { month: 'short' }) + ' ' + timestamp.getFullYear();
+
+          const existing = yieldByMonth.get(monthKey);
+          if (existing) {
+            existing.yield += amount;
+          } else {
+            yieldByMonth.set(monthKey, { yield: amount, timestamp });
+          }
+        }
+      }
+    }
+
+    // Convert to array and sort by date
+    return Array.from(yieldByMonth.entries())
+      .map(([key, value]) => {
+        const [year, month] = key.split('-');
+        const date = new Date(parseInt(year), parseInt(month) - 1, 1);
+        return {
+          month: date.toLocaleDateString('en-US', { month: 'short' }) + ' ' + year,
+          yield: value.yield,
+          timestamp: value.timestamp,
+        };
+      })
+      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+  } catch (error) {
+    console.error("Error fetching yield transactions:", error);
+    return [];
   }
 }

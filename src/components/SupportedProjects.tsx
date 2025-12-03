@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import commonsHubLogo from "@/assets/commons-hub-logo.png";
 import cryptoWednesdayLogo from "@/assets/crypto-wednesday-logo.png";
-import blockchainWeekLogo from "@/assets/blockchain-week-logo.png";
+import block26Logo from "@/assets/block-26-logo.jpg";
 
 const projects = [
   {
@@ -22,8 +22,8 @@ const projects = [
     id: 3,
     name: "Block 26",
     description: "Web3 New Year's Reception",
-    logo: blockchainWeekLogo,
-    url: "https://dao.brussels/",
+    logo: block26Logo,
+    url: "https://blockfest.be",
   },
 ];
 

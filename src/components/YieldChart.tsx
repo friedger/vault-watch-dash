@@ -3,7 +3,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useTransactions } from "@/hooks/useTransactions";
 import { formatBtc } from "@/lib/utils";
 import { VAULT_CONTRACT } from "@/services/blockchain";
+import { format } from "date-fns";
 import { TrendingUp } from "lucide-react";
+import { useMemo } from "react";
 import {
   Area,
   AreaChart,
@@ -14,17 +16,34 @@ import {
   YAxis,
 } from "recharts";
 
+interface ChartDataPoint {
+  month: string;
+  yield: number;
+  timestamp: Date;
+}
+
 export const YieldChart = () => {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useTransactions(VAULT_CONTRACT);
+  const { data, isLoading } = useTransactions(VAULT_CONTRACT);
 
   // Flatten all pages into a single array
   const transactions = data?.pages.flatMap((page) => page.transactions) ?? [];
   const yieldTxs = transactions.filter((tx) => tx.type === "yield");
+
+  // Transform yield transactions for chart display
+  const chartData = useMemo<ChartDataPoint[]>(() => {
+    return yieldTxs
+      .map((tx) => ({
+        month: format(new Date(tx.timestamp), "MMM yyyy"),
+        yield: tx.amount,
+        timestamp: new Date(tx.timestamp),
+      }))
+      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+  }, [yieldTxs]);
+
   const totalYield = yieldTxs.reduce((sum, item) => sum + item.amount, 0) ?? 0;
   const averageYield = yieldTxs.length > 0 ? totalYield / yieldTxs.length : 0;
   const currentMonthYield =
-    yieldTxs.length > 0 ? yieldTxs[yieldTxs.length - 1]?.amount ?? 0 : 0;
+    chartData.length > 0 ? chartData[chartData.length - 1]?.yield ?? 0 : 0;
 
   if (isLoading) {
     return (
@@ -54,9 +73,9 @@ export const YieldChart = () => {
         <div className="space-y-6">
           {/* Chart */}
           <div className="h-[300px] w-full">
-            {yieldTxs && yieldTxs.length > 0 ? (
+            {chartData && chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={yieldTxs}>
+                <AreaChart data={chartData}>
                   <defs>
                     <linearGradient
                       id="yieldGradient"

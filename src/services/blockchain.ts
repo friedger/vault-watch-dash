@@ -50,6 +50,9 @@ export const ADMIN_ADDRESSES = [
   // Add more admin addresses here
 ];
 
+export const YIELD_DISTRIBUTOR_CONTRACT =
+  "SP1HFCRKEJ8BYW4D0E3FAWHFDX8A25PPAA83HWWZ9.dual-stacking-v1";
+
 const client = createClient({
   baseUrl: "https://api.mainnet.hiro.so",
 });
@@ -447,7 +450,8 @@ export interface Transaction {
     | "withdraw"
     | "withdraw-update"
     | "withdraw-finalize"
-    | "transfer";
+    | "transfer"
+    | "yield";
   asset: "sBTC" | "STX" | "bxlBTC" | "bxlSTX";
   amount: number;
   requestId?: number;
@@ -463,46 +467,34 @@ export interface TransactionResult {
 
 export const transactionsLimit = 20;
 
-interface V2TransactionResult {
-  tx: {
-    tx_id: string;
-    tx_type: string;
-    tx_status: string;
-    burn_block_time: number;
-    contract_call?: {
-      contract_id: string;
-      function_name: string;
-      function_args?: Array<{ repr: string; hex: string }>;
-    };
-    tx_result?: { hex: string };
-  };
-}
-
-interface V2TransactionsResponse {
-  limit: number;
-  offset: number;
-  total: number;
-  results: V2TransactionResult[];
-}
-
 export async function fetchUserTransactions(
   address: string,
   offset: number = 0
 ): Promise<TransactionResult> {
   try {
-    const response = await fetch(
-      `${STACKS_API}/extended/v2/addresses/${address}/transactions?limit=${transactionsLimit}&offset=${offset}`
+    const response = await await client.GET(
+      "/extended/v2/addresses/{address}/transactions",
+      {
+        params: {
+          path: {
+            address,
+          },
+          query: {
+            limit: transactionsLimit,
+            offset,
+          },
+        },
+      }
     );
-    if (!response.ok) throw new Error("Failed to fetch transactions");
-    const data: V2TransactionsResponse = await response.json();
-
+    if (!response.data) throw new Error("Failed to fetch transactions");
+    const data = response.data;
     const transactions: Transaction[] = [];
 
     for (const result of data.results) {
       const tx = result.tx;
       // Only process contract calls that are relevant to our vault
       if (tx.tx_type !== "contract_call") continue;
-      if (tx.tx_status !== "success" && tx.tx_status !== "pending") continue;
+      if (tx.tx_status !== "success") continue;
 
       const contractId = tx.contract_call?.contract_id ?? "";
       const functionName = tx.contract_call?.function_name ?? "";
@@ -510,7 +502,8 @@ export async function fetchUserTransactions(
       // Filter for vault-related transactions
       if (
         !contractId.includes(VAULT_CONTRACT) &&
-        !contractId.includes(SBTC_CONTRACT)
+        !contractId.includes(SBTC_CONTRACT) &&
+        !contractId.includes(YIELD_DISTRIBUTOR_CONTRACT)
       )
         continue;
 
@@ -605,6 +598,29 @@ export async function fetchUserTransactions(
           });
           amount = (incomingAmount - outgoingAmount) / 1e8;
         }
+      } else if (functionName === "distribute-rewards") {
+        type = "yield";
+        asset = "sBTC";
+        const events = await client.GET(
+          "/extended/v2/addresses/{address}/transactions/{tx_id}/events",
+          {
+            params: {
+              path: {
+                address: VAULT_CONTRACT,
+                tx_id: tx.tx_id,
+              },
+            },
+          }
+        );
+        if (!events.data) {
+          amount = 0;
+        }
+        amount =
+          events.data.results[0].type === "ft" &&
+          events.data.results[0].data.asset_identifier ===
+            `${SBTC_CONTRACT}::${SBTC_ASSET}`
+            ? Number(events.data.results[0].data.amount) / 1e8
+            : 0;
       } else {
         // Skip other function calls
         continue;
@@ -631,66 +647,5 @@ export async function fetchUserTransactions(
   } catch (error) {
     console.error("Error fetching transactions:", error);
     return { transactions: [], total: -1 };
-  }
-}
-
-export interface YieldData {
-  month: string;
-  yield: number;
-  timestamp: Date;
-}
-
-export async function fetchYieldTransactions(): Promise<YieldData[]> {
-  try {
-    // Fetch all transactions to find yield transfers (admin-sbtc-transfer)
-    const response = await fetch(
-      `${STACKS_API}/extended/v2/addresses/${VAULT_CONTRACT}/transactions?limit=50`
-    );
-    if (!response.ok) throw new Error("Failed to fetch yield transactions");
-    const data: V2TransactionsResponse = await response.json();
-
-    const yieldByMonth = new Map<string, { yield: number; timestamp: Date }>();
-
-    for (const result of data.results) {
-      const tx = result.tx;
-      if (tx.tx_type !== "contract_call") continue;
-      if (tx.tx_status !== "success") continue;
-
-      const functionName = tx.contract_call?.function_name ?? "";
-      
-      // Only count admin-sbtc-transfer as yield distribution
-      if (functionName === "admin-sbtc-transfer") {
-        const amountArg = tx.contract_call?.function_args?.[0];
-        if (amountArg?.repr) {
-          const amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
-          const timestamp = new Date(tx.burn_block_time * 1000);
-          const monthKey = `${timestamp.getFullYear()}-${String(timestamp.getMonth() + 1).padStart(2, '0')}`;
-          const monthLabel = timestamp.toLocaleDateString('en-US', { month: 'short' }) + ' ' + timestamp.getFullYear();
-
-          const existing = yieldByMonth.get(monthKey);
-          if (existing) {
-            existing.yield += amount;
-          } else {
-            yieldByMonth.set(monthKey, { yield: amount, timestamp });
-          }
-        }
-      }
-    }
-
-    // Convert to array and sort by date
-    return Array.from(yieldByMonth.entries())
-      .map(([key, value]) => {
-        const [year, month] = key.split('-');
-        const date = new Date(parseInt(year), parseInt(month) - 1, 1);
-        return {
-          month: date.toLocaleDateString('en-US', { month: 'short' }) + ' ' + year,
-          yield: value.yield,
-          timestamp: value.timestamp,
-        };
-      })
-      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-  } catch (error) {
-    console.error("Error fetching yield transactions:", error);
-    return [];
   }
 }

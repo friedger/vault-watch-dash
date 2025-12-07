@@ -575,7 +575,15 @@ export async function fetchUserTransactions(
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
         }
       } else if (functionName === "transfer-many") {
-        type = "transfer";
+        // Check if this is incoming yield from the yield distributor
+        const YIELD_SENDER = "SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP";
+        const senderAddress = tx.sender_address;
+        
+        if (senderAddress === YIELD_SENDER && contractId.includes(SBTC_CONTRACT)) {
+          type = "yield";
+        } else {
+          type = "transfer";
+        }
         asset = "sBTC";
         const details = tx.contract_call?.function_args?.[0];
         if (details?.hex) {

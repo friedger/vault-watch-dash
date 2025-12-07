@@ -17,7 +17,8 @@ import {
 } from "recharts";
 
 interface ChartDataPoint {
-  month: string;
+  date: string;
+  displayDate: string;
   yield: number;
   timestamp: Date;
 }
@@ -29,13 +30,27 @@ export const YieldChart = () => {
   const transactions = data?.pages.flatMap((page) => page.transactions) ?? [];
   const yieldTxs = transactions.filter((tx) => tx.type === "yield");
 
-  // Transform yield transactions for chart display
+  // Transform yield transactions for chart display, grouping by day
   const chartData = useMemo<ChartDataPoint[]>(() => {
-    return yieldTxs
-      .map((tx) => ({
-        month: format(new Date(tx.timestamp), "MMM yyyy"),
-        yield: tx.amount,
-        timestamp: new Date(tx.timestamp),
+    const groupedByDay: Record<string, { total: number; timestamp: Date }> = {};
+    
+    yieldTxs.forEach((tx) => {
+      const date = new Date(tx.timestamp);
+      const dayKey = format(date, "yyyy-MM-dd");
+      
+      if (groupedByDay[dayKey]) {
+        groupedByDay[dayKey].total += tx.amount;
+      } else {
+        groupedByDay[dayKey] = { total: tx.amount, timestamp: date };
+      }
+    });
+    
+    return Object.entries(groupedByDay)
+      .map(([dayKey, data]) => ({
+        date: format(data.timestamp, "dd MMM"),
+        displayDate: format(data.timestamp, "dd MMMM yyyy"),
+        yield: data.total,
+        timestamp: data.timestamp,
       }))
       .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
   }, [yieldTxs]);
@@ -101,7 +116,7 @@ export const YieldChart = () => {
                     className="stroke-muted"
                   />
                   <XAxis
-                    dataKey="month"
+                    dataKey="date"
                     className="text-xs"
                     tick={{
                       fill: "hsl(var(--muted-foreground))",
@@ -120,7 +135,7 @@ export const YieldChart = () => {
                         return (
                           <div className="bg-card border border-primary/20 rounded-lg p-3 shadow-lg">
                             <p className="text-sm font-semibold">
-                              {payload[0].payload.month}
+                              {payload[0].payload.displayDate}
                             </p>
                             <p className="text-sm text-primary">
                               Yield: {formatBtc(Number(payload[0].value))} sBTC

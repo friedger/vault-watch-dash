@@ -575,36 +575,43 @@ export async function fetchUserTransactions(
           amount = parseInt(amountArg.repr.replace("u", "")) / 1e8;
         }
       } else if (functionName === "transfer-many") {
-        // Check if this is incoming yield from the yield distributor
-        const YIELD_SENDER = "SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP";
-        const senderAddress = tx.sender_address;
-        
-        if (senderAddress === YIELD_SENDER && contractId.includes(SBTC_CONTRACT)) {
-          type = "yield";
-        } else {
-          type = "transfer";
-        }
-        asset = "sBTC";
-        const details = tx.contract_call?.function_args?.[0];
-        if (details?.hex) {
-          const detailsCV = hexToCV(details.hex) as ListCV<
-            TupleCV<{
-              amount: UIntCV;
-              memo: OptionalCV<BufferCV>;
-              sender: PrincipalCV;
-              to: PrincipalCV;
-            }>
-          >;
-          let incomingAmount = 0;
-          let outgoingAmount = 0;
-          detailsCV.value.forEach((tupleCV) => {
-            if (tupleCV.value.sender === Cl.principal(VAULT_CONTRACT)) {
-              outgoingAmount += Number(tupleCV.value.amount.value);
-            } else if (tupleCV.value.to === Cl.principal(VAULT_CONTRACT)) {
-              incomingAmount += Number(tupleCV.value.amount.value);
-            }
-          });
-          amount = (incomingAmount - outgoingAmount) / 1e8;
+        if (contractId.includes(SBTC_CONTRACT)) {
+          // Check if this is incoming yield from the yield distributor
+          const YIELD_SENDER = "SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP";
+          const senderAddress = tx.sender_address;
+
+          if (senderAddress === YIELD_SENDER) {
+            type = "yield";
+          } else {
+            type = "transfer";
+          }
+          asset = "sBTC";
+          const details = tx.contract_call?.function_args?.[0];
+          if (details?.hex) {
+            const detailsCV = hexToCV(details.hex) as ListCV<
+              TupleCV<{
+                amount: UIntCV;
+                memo: OptionalCV<BufferCV>;
+                sender: PrincipalCV;
+                to: PrincipalCV;
+              }>
+            >;
+            let incomingAmount = 0;
+            let outgoingAmount = 0;
+            detailsCV.value.forEach((tupleCV) => {
+              if (
+                tupleCV.value.sender.value ===
+                Cl.principal(VAULT_CONTRACT).value
+              ) {
+                outgoingAmount += Number(tupleCV.value.amount.value);
+              } else if (
+                tupleCV.value.to.value === Cl.principal(VAULT_CONTRACT).value
+              ) {
+                incomingAmount += Number(tupleCV.value.amount.value);
+              }
+            });
+            amount = (incomingAmount - outgoingAmount) / 1e8;
+          }
         }
       } else if (functionName === "distribute-rewards") {
         type = "yield";

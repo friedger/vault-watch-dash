@@ -1,10 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 interface BalanceCardProps {
   title: string;
   balance: string;
   subBalance?: string;
+  subBalanceLink?: string;
   subLabel?: string;
   icon?: React.ReactNode;
   isYield?: boolean;
@@ -14,6 +15,7 @@ export const BalanceCard = ({
   title, 
   balance, 
   subBalance, 
+  subBalanceLink,
   subLabel, 
   icon,
   isYield = false 
@@ -33,7 +35,20 @@ export const BalanceCard = ({
           </p>
           {subBalance && (
             <p className="text-sm text-muted-foreground">
-              {subLabel}: <span className="text-foreground">{subBalance}</span>
+              {subLabel}:{" "}
+              {subBalanceLink ? (
+                <a 
+                  href={subBalanceLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
+                >
+                  {subBalance}
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              ) : (
+                <span className="text-foreground">{subBalance}</span>
+              )}
             </p>
           )}
         </div>

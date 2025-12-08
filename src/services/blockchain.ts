@@ -451,7 +451,9 @@ export interface Transaction {
     | "withdraw-update"
     | "withdraw-finalize"
     | "transfer"
-    | "yield";
+    | "yield"
+    | "other-in"
+    | "other-out";
   asset: "sBTC" | "STX" | "bxlBTC" | "bxlSTX";
   amount: number;
   requestId?: number;
@@ -580,13 +582,10 @@ export async function fetchUserTransactions(
           const YIELD_SENDER = "SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP";
           const senderAddress = tx.sender_address;
 
-          if (senderAddress === YIELD_SENDER) {
-            type = "yield";
-          } else {
-            type = "transfer";
-          }
           asset = "sBTC";
           const details = tx.contract_call?.function_args?.[0];
+          let incomingAmount = 0;
+          let outgoingAmount = 0;
           if (details?.hex) {
             const detailsCV = hexToCV(details.hex) as ListCV<
               TupleCV<{
@@ -596,8 +595,6 @@ export async function fetchUserTransactions(
                 to: PrincipalCV;
               }>
             >;
-            let incomingAmount = 0;
-            let outgoingAmount = 0;
             detailsCV.value.forEach((tupleCV) => {
               if (
                 tupleCV.value.sender.value ===
@@ -611,6 +608,14 @@ export async function fetchUserTransactions(
               }
             });
             amount = (incomingAmount - outgoingAmount) / 1e8;
+          }
+
+          if (senderAddress === YIELD_SENDER) {
+            type = "yield";
+          } else if (incomingAmount > outgoingAmount) {
+            type = "other-in";
+          } else {
+            type = "other-out";
           }
         }
       } else if (functionName === "distribute-rewards") {

@@ -94,12 +94,14 @@ export const TransactionHistory = ({
                 <TableRow key={tx.txId}>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {tx.type === "deposit" || tx.type === "yield" ? (
+                      {tx.type === "deposit" || tx.type === "yield" || tx.type === "other-in" ? (
                         <ArrowDownToLine className="w-4 h-4 text-primary" />
                       ) : (
                         <ArrowUpFromLine className="w-4 h-4 text-secondary" />
                       )}
-                      <span className="capitalize">{tx.type}</span>
+                      <span className="capitalize">
+                        {tx.type === "other-in" ? "Other In" : tx.type === "other-out" ? "Other Out" : tx.type}
+                      </span>
                       {tx.requestId ? ` (#${tx.requestId})` : null}
                     </div>
                   </TableCell>

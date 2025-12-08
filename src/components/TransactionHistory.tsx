@@ -10,13 +10,42 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ArrowDownToLine, ArrowUpFromLine, ExternalLink } from "lucide-react";
 import { formatBtc, formatStx } from "@/lib/utils";
 import { useTransactions } from "@/hooks/useTransactions";
+import { useState, useMemo } from "react";
+import { Transaction } from "@/services/blockchain";
 
 interface TransactionHistoryProps {
   userAddress: string | null;
 }
+
+const TYPE_OPTIONS: { value: Transaction["type"] | "all"; label: string }[] = [
+  { value: "all", label: "All Types" },
+  { value: "deposit", label: "Deposit" },
+  { value: "withdraw", label: "Withdraw" },
+  { value: "withdraw-update", label: "Withdraw Update" },
+  { value: "withdraw-finalize", label: "Withdraw Finalize" },
+  { value: "yield", label: "Yield" },
+  { value: "other-in", label: "Other In" },
+  { value: "other-out", label: "Other Out" },
+  { value: "transfer", label: "Transfer" },
+];
+
+const ASSET_OPTIONS: { value: Transaction["asset"] | "all"; label: string }[] = [
+  { value: "all", label: "All Assets" },
+  { value: "sBTC", label: "sBTC" },
+  { value: "STX", label: "STX" },
+  { value: "bxlBTC", label: "bxlBTC" },
+  { value: "bxlSTX", label: "bxlSTX" },
+];
 
 export const TransactionHistory = ({
   userAddress,
@@ -24,8 +53,21 @@ export const TransactionHistory = ({
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useTransactions(userAddress ?? undefined);
 
+  const [typeFilter, setTypeFilter] = useState<Transaction["type"] | "all">("all");
+  const [assetFilter, setAssetFilter] = useState<Transaction["asset"] | "all">("all");
+
   // Flatten all pages into a single array
-  const transactions = data?.pages.flatMap((page) => page.transactions) ?? [];
+  const allTransactions = data?.pages.flatMap((page) => page.transactions) ?? [];
+
+  // Apply filters
+  const transactions = useMemo(() => {
+    return allTransactions.filter((tx) => {
+      if (typeFilter !== "all" && tx.type !== typeFilter) return false;
+      if (assetFilter !== "all" && tx.asset !== assetFilter) return false;
+      return true;
+    });
+  }, [allTransactions, typeFilter, assetFilter]);
+
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
@@ -54,8 +96,34 @@ export const TransactionHistory = ({
 
   return (
     <Card className="gradient-card border-primary/10">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-4">
         <CardTitle>Transaction History</CardTitle>
+        <div className="flex gap-2">
+          <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as Transaction["type"] | "all")}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Type" />
+            </SelectTrigger>
+            <SelectContent>
+              {TYPE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={assetFilter} onValueChange={(v) => setAssetFilter(v as Transaction["asset"] | "all")}>
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Asset" />
+            </SelectTrigger>
+            <SelectContent>
+              {ASSET_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
       <CardContent>
         <Table>

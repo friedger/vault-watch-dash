@@ -32,6 +32,7 @@ export const VaultOverviewCards = () => {
         title="Total Bitcoin in Vault"
         balance={formatEur(wrappedBtcEur)}
         subBalance={`${formatBtc(vaultBalances?.sBtc ?? 0)} sBTC`}
+        subBalanceLink="https://explorer.hiro.so/token/SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-btc?chain=mainnet"
         subLabel="Securing"
         icon={<Bitcoin className="h-5 w-5 text-primary" />}
       />

@@ -551,7 +551,7 @@ export async function fetchUserTransactions(
         }
         if (tx.tx_result?.hex) {
           const amountCV = hexToCV(tx.tx_result.hex) as ResponseOkCV<UIntCV>;
-          amount = Number(amountCV.value.value);
+          amount = Number(amountCV.value.value) / 1e8;
         }
       } else if (functionName === "deposit-stx") {
         type = "deposit";

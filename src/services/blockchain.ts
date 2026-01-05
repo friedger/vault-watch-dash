@@ -50,8 +50,15 @@ export const ADMIN_ADDRESSES = [
   // Add more admin addresses here
 ];
 
-export const YIELD_DISTRIBUTOR_CONTRACT =
-  "SP1HFCRKEJ8BYW4D0E3FAWHFDX8A25PPAA83HWWZ9.dual-stacking-v1";
+export const YIELD_DISTRIBUTOR_CONTRACTS = [
+  "SP1HFCRKEJ8BYW4D0E3FAWHFDX8A25PPAA83HWWZ9.dual-stacking-v1",
+  "SP1HFCRKEJ8BYW4D0E3FAWHFDX8A25PPAA83HWWZ9.dual-stacking-v2_0_2",
+];
+
+export const YIELD_SENDERS = [
+  "SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP",
+  "SP1HFCRKEJ8BYW4D0E3FAWHFDX8A25PWAA83HWWZ9",
+];
 
 const client = createClient({
   baseUrl: "https://api.mainnet.hiro.so",
@@ -502,10 +509,13 @@ export async function fetchUserTransactions(
       const functionName = tx.contract_call?.function_name ?? "";
 
       // Filter for vault-related transactions
+      const isYieldDistributor = YIELD_DISTRIBUTOR_CONTRACTS.some((c) =>
+        contractId.includes(c)
+      );
       if (
         !contractId.includes(VAULT_CONTRACT) &&
         !contractId.includes(SBTC_CONTRACT) &&
-        !contractId.includes(YIELD_DISTRIBUTOR_CONTRACT)
+        !isYieldDistributor
       )
         continue;
 
@@ -579,7 +589,6 @@ export async function fetchUserTransactions(
       } else if (functionName === "transfer-many") {
         if (contractId.includes(SBTC_CONTRACT)) {
           // Check if this is incoming yield from the yield distributor
-          const YIELD_SENDER = "SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP";
           const senderAddress = tx.sender_address;
 
           asset = "sBTC";
@@ -610,7 +619,7 @@ export async function fetchUserTransactions(
             amount = (incomingAmount - outgoingAmount) / 1e8;
           }
 
-          if (senderAddress === YIELD_SENDER) {
+          if (YIELD_SENDERS.includes(senderAddress)) {
             type = "yield";
           } else if (incomingAmount > outgoingAmount) {
             type = "other-in";

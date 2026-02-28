@@ -7,8 +7,8 @@ import { format } from "date-fns";
 import { TrendingUp } from "lucide-react";
 import { useMemo } from "react";
 import {
-  Area,
-  AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
@@ -88,27 +88,7 @@ export const YieldChart = () => {
           <div className="h-[300px] w-full">
             {chartData && chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient
-                      id="yieldGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop
-                        offset="5%"
-                        stopColor="hsl(var(--primary))"
-                        stopOpacity={0.3}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor="hsl(var(--primary))"
-                        stopOpacity={0}
-                      />
-                    </linearGradient>
-                  </defs>
+                <BarChart data={chartData}>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     className="stroke-muted"
@@ -148,14 +128,12 @@ export const YieldChart = () => {
                       return null;
                     }}
                   />
-                  <Area
-                    type="monotone"
+                  <Bar
                     dataKey="yield"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2}
-                    fill="url(#yieldGradient)"
+                    fill="hsl(var(--primary))"
+                    maxBarSize={4}
                   />
-                </AreaChart>
+                </BarChart>
               </ResponsiveContainer>
             ) : (
               <div className="flex items-center justify-center h-full text-muted-foreground">

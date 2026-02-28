@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import VaultHowItWorksCard from "@/components/VaultHowItWorksCard";
 import { VaultOverviewCards } from "@/components/VaultOverviewCards";
 import { YieldChart } from "@/components/YieldChart";
+import { AccumulatedYieldChart } from "@/components/AccumulatedYieldChart";
 import { useLayout } from "@/contexts/LayoutContext";
 import { useCryptoPrices } from "@/hooks/useCryptoPrices";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
@@ -48,6 +49,9 @@ const VaultDetailsContent = () => {
 
         {/* Yield Chart */}
         <YieldChart />
+
+        {/* Accumulated Yield Chart */}
+        <AccumulatedYieldChart />
 
         {/* STX Overview Section */}
         <Card className="gradient-card border-secondary/20">

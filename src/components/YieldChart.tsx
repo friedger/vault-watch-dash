@@ -17,10 +17,9 @@ import {
 } from "recharts";
 
 interface ChartDataPoint {
-  date: string;
+  time: number; // timestamp in ms for time-based axis
   displayDate: string;
   yield: number;
-  timestamp: Date;
 }
 
 export const YieldChart = () => {
@@ -46,13 +45,12 @@ export const YieldChart = () => {
     });
     
     return Object.entries(groupedByDay)
-      .map(([dayKey, data]) => ({
-        date: format(data.timestamp, "dd MMM"),
+      .map(([, data]) => ({
+        time: data.timestamp.getTime(),
         displayDate: format(data.timestamp, "dd MMMM yyyy"),
         yield: data.total,
-        timestamp: data.timestamp,
       }))
-      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+      .sort((a, b) => a.time - b.time);
   }, [yieldTxs]);
 
   const totalYield = yieldTxs.reduce((sum, item) => sum + item.amount, 0) ?? 0;
@@ -116,11 +114,15 @@ export const YieldChart = () => {
                     className="stroke-muted"
                   />
                   <XAxis
-                    dataKey="date"
+                    dataKey="time"
+                    type="number"
+                    scale="time"
+                    domain={["dataMin", "dataMax"]}
                     className="text-xs"
                     tick={{
                       fill: "hsl(var(--muted-foreground))",
                     }}
+                    tickFormatter={(value) => format(new Date(value), "dd MMM")}
                   />
                   <YAxis
                     className="text-xs"

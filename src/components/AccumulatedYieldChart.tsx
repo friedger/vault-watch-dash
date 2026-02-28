@@ -33,13 +33,13 @@ export const AccumulatedYieldChart = () => {
   const chartData = useMemo<AccumulatedDataPoint[]>(() => {
     // Collect yield (incoming) and transfer/payout (outgoing) transactions
     const relevantTxs = transactions
-      .filter((tx) => tx.type === "yield" || tx.type === "transfer")
+      .filter((tx) => tx.type === "yield" || tx.type === "transfer" || tx.type === "other-in")
       .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
     let accumulated = 0;
     return relevantTxs.map((tx) => {
       const date = new Date(tx.timestamp);
-      const isYield = tx.type === "yield";
+      const isYield = tx.type === "yield" || tx.type === "other-in";
       accumulated += isYield ? tx.amount : -tx.amount;
 
       return {

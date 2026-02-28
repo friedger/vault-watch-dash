@@ -97,7 +97,7 @@ export const YieldChart = () => {
                     dataKey="time"
                     type="number"
                     scale="time"
-                    domain={["dataMin", "dataMax"]}
+                    domain={["dataMin", () => Date.now()]}
                     className="text-xs"
                     tick={{
                       fill: "hsl(var(--muted-foreground))",

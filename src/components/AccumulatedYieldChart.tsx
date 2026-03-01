@@ -5,7 +5,7 @@ import { formatBtc } from "@/lib/utils";
 import { VAULT_CONTRACT } from "@/services/blockchain";
 import { format } from "date-fns";
 import { Wallet } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
   Area,
   AreaChart,
@@ -31,7 +31,14 @@ interface AccumulatedYieldChartProps {
 }
 
 export const AccumulatedYieldChart = ({ startDate, endDate }: AccumulatedYieldChartProps) => {
-  const { data, isLoading } = useTransactions(VAULT_CONTRACT);
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useTransactions(VAULT_CONTRACT);
+
+  // Auto-fetch all pages so we have the full transaction history for accurate accumulation
+  useEffect(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const transactions = data?.pages.flatMap((page) => page.transactions) ?? [];
 

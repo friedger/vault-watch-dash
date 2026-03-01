@@ -1,11 +1,12 @@
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTransactions } from "@/hooks/useTransactions";
 import { formatBtc } from "@/lib/utils";
 import { VAULT_CONTRACT } from "@/services/blockchain";
 import { format } from "date-fns";
-import { Wallet } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { Loader2, Wallet } from "lucide-react";
+import { useMemo } from "react";
 import {
   Area,
   AreaChart,
@@ -33,14 +34,9 @@ interface AccumulatedYieldChartProps {
 export const AccumulatedYieldChart = ({ startDate, endDate }: AccumulatedYieldChartProps) => {
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useTransactions(VAULT_CONTRACT);
 
-  // Auto-fetch all pages so we have the full transaction history for accurate accumulation
-  useEffect(() => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-
+  const allPagesLoaded = !hasNextPage;
   const transactions = data?.pages.flatMap((page) => page.transactions) ?? [];
+
 
   const chartData = useMemo<AccumulatedDataPoint[]>(() => {
     const relevantTxs = transactions
@@ -212,16 +208,33 @@ export const AccumulatedYieldChart = ({ startDate, endDate }: AccumulatedYieldCh
             )}
           </div>
 
-          {/* Legend */}
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-accent" />
-              <span>Yield received</span>
+          {/* Legend + Load More */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-accent" />
+                <span>Yield received</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-destructive" />
+                <span>Payout to community</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-destructive" />
-              <span>Payout to community</span>
-            </div>
+            {hasNextPage && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+              >
+                {isFetchingNextPage ? (
+                  <><Loader2 className="h-4 w-4 animate-spin mr-2" />Loading...</>
+                ) : (
+                  "Load More Transactions"
+                )}
+              </Button>
+            )}
+            {!allPagesLoaded && !hasNextPage && null}
           </div>
         </div>
       </CardContent>

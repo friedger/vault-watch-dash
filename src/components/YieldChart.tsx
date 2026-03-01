@@ -4,8 +4,9 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { formatBtc } from "@/lib/utils";
 import { VAULT_CONTRACT } from "@/services/blockchain";
 import { format } from "date-fns";
-import { TrendingUp } from "lucide-react";
+import { ExternalLink, TrendingUp } from "lucide-react";
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Bar,
   BarChart,
@@ -29,6 +30,7 @@ interface YieldChartProps {
 
 export const YieldChart = ({ startDate, endDate }: YieldChartProps) => {
   const { data, isLoading } = useTransactions(VAULT_CONTRACT);
+  const navigate = useNavigate();
 
   // Flatten all pages into a single array
   const transactions = data?.pages.flatMap((page) => page.transactions) ?? [];
@@ -160,13 +162,16 @@ export const YieldChart = ({ startDate, endDate }: YieldChartProps) => {
                 sBTC distributed
               </p>
             </div>
-            <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg">
+            <div
+              className="p-4 bg-primary/5 border border-primary/10 rounded-lg cursor-pointer hover:border-primary/30 transition-colors"
+              onClick={() => navigate("/vault/yield")}
+            >
               <p className="text-sm text-muted-foreground">Total Distributed</p>
               <p className="text-2xl font-bold text-primary">
                 {formatBtc(totalYield)}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                All-time sBTC
+              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                All-time sBTC <ExternalLink className="h-3 w-3" />
               </p>
             </div>
             <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg">

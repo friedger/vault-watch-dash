@@ -25,32 +25,68 @@ interface AccumulatedDataPoint {
   amount: number;
 }
 
-export const AccumulatedYieldChart = () => {
+interface AccumulatedYieldChartProps {
+  startDate: number;
+  endDate: number;
+}
+
+export const AccumulatedYieldChart = ({ startDate, endDate }: AccumulatedYieldChartProps) => {
   const { data, isLoading } = useTransactions(VAULT_CONTRACT);
 
   const transactions = data?.pages.flatMap((page) => page.transactions) ?? [];
 
   const chartData = useMemo<AccumulatedDataPoint[]>(() => {
-    // Collect yield (incoming) and transfer/payout (outgoing) transactions
     const relevantTxs = transactions
       .filter((tx) => tx.type === "yield" || tx.type === "transfer" || tx.type === "other-in")
       .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
+    // Compute full accumulated history
     let accumulated = 0;
-    return relevantTxs.map((tx) => {
+    const allPoints = relevantTxs.map((tx) => {
       const date = new Date(tx.timestamp);
       const isYield = tx.type === "yield" || tx.type === "other-in";
       accumulated += isYield ? tx.amount : -tx.amount;
-
       return {
         time: date.getTime(),
         displayDate: format(date, "dd MMMM yyyy"),
         accumulated,
-        event: isYield ? "yield" : "payout",
+        event: (isYield ? "yield" : "payout") as "yield" | "payout",
         amount: tx.amount,
       };
     });
-  }, [transactions]);
+
+    // Filter to date range, but carry forward the accumulated value from before startDate
+    const visiblePoints = allPoints.filter((p) => p.time >= startDate && p.time <= endDate);
+
+    // If there are pre-start transactions, add an initial point at startDate with the pre-accumulated value
+    const preStartPoints = allPoints.filter((p) => p.time < startDate);
+    if (preStartPoints.length > 0) {
+      const lastPreStart = preStartPoints[preStartPoints.length - 1];
+      visiblePoints.unshift({
+        time: startDate,
+        displayDate: format(new Date(startDate), "dd MMMM yyyy"),
+        accumulated: lastPreStart.accumulated,
+        event: "yield",
+        amount: 0,
+      });
+    }
+
+    // Add a point at endDate carrying the last accumulated value to extend the line to today
+    if (visiblePoints.length > 0) {
+      const lastPoint = visiblePoints[visiblePoints.length - 1];
+      if (lastPoint.time < endDate) {
+        visiblePoints.push({
+          time: endDate,
+          displayDate: format(new Date(endDate), "dd MMMM yyyy"),
+          accumulated: lastPoint.accumulated,
+          event: "yield",
+          amount: 0,
+        });
+      }
+    }
+
+    return visiblePoints;
+  }, [transactions, startDate, endDate]);
 
   const payoutPoints = chartData.filter((d) => d.event === "payout");
 
@@ -112,7 +148,7 @@ export const AccumulatedYieldChart = () => {
                     dataKey="time"
                     type="number"
                     scale="time"
-                    domain={["dataMin", () => Date.now()]}
+                    domain={[startDate, endDate]}
                     className="text-xs"
                     tick={{ fill: "hsl(var(--muted-foreground))" }}
                     tickFormatter={(value) => format(new Date(value), "dd MMM")}

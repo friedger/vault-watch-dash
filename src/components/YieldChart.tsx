@@ -17,12 +17,17 @@ import {
 } from "recharts";
 
 interface ChartDataPoint {
-  time: number; // timestamp in ms for time-based axis
+  time: number;
   displayDate: string;
   yield: number;
 }
 
-export const YieldChart = () => {
+interface YieldChartProps {
+  startDate: number;
+  endDate: number;
+}
+
+export const YieldChart = ({ startDate, endDate }: YieldChartProps) => {
   const { data, isLoading } = useTransactions(VAULT_CONTRACT);
 
   // Flatten all pages into a single array
@@ -35,6 +40,8 @@ export const YieldChart = () => {
     
     yieldTxs.forEach((tx) => {
       const date = new Date(tx.timestamp);
+      const time = date.getTime();
+      if (time < startDate || time > endDate) return;
       const dayKey = format(date, "yyyy-MM-dd");
       
       if (groupedByDay[dayKey]) {
@@ -51,7 +58,7 @@ export const YieldChart = () => {
         yield: data.total,
       }))
       .sort((a, b) => a.time - b.time);
-  }, [yieldTxs]);
+  }, [yieldTxs, startDate, endDate]);
 
   const totalYield = yieldTxs.reduce((sum, item) => sum + item.amount, 0) ?? 0;
   const averageYield = yieldTxs.length > 0 ? totalYield / yieldTxs.length : 0;
@@ -97,7 +104,7 @@ export const YieldChart = () => {
                     dataKey="time"
                     type="number"
                     scale="time"
-                    domain={["dataMin", () => Date.now()]}
+                    domain={[startDate, endDate]}
                     className="text-xs"
                     tick={{
                       fill: "hsl(var(--muted-foreground))",

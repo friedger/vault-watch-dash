@@ -16,8 +16,15 @@ import {
   VAULT_CONTRACT,
 } from "@/services/blockchain";
 import { Coins, Shield } from "lucide-react";
+import { useState } from "react";
+
+// Default chart date range - change these to adjust both charts
+const DEFAULT_START = new Date("2025-03-01").getTime();
+const DEFAULT_END = Date.now();
 
 const VaultDetailsContent = () => {
+  const [startDate] = useState(DEFAULT_START);
+  const [endDate] = useState(DEFAULT_END);
   const { vaultBalances } = useLayout();
   const { data: prices } = useCryptoPrices();
   const { data: totalBxlSTX } = useTotalSupply(BXL_STX_CONTRACT);
@@ -48,10 +55,10 @@ const VaultDetailsContent = () => {
         </Card>
 
         {/* Yield Chart */}
-        <YieldChart />
+        <YieldChart startDate={startDate} endDate={endDate} />
 
         {/* Accumulated Yield Chart */}
-        <AccumulatedYieldChart />
+        <AccumulatedYieldChart startDate={startDate} endDate={endDate} />
 
         {/* STX Overview Section */}
         <Card className="gradient-card border-secondary/20">

@@ -19,7 +19,7 @@ import { Coins, Shield } from "lucide-react";
 import { useState } from "react";
 
 // Default chart date range - change these to adjust both charts
-const DEFAULT_START = new Date("2025-03-01").getTime();
+const DEFAULT_START = new Date("2025-12-02").getTime();
 const DEFAULT_END = Date.now();
 
 const VaultDetailsContent = () => {

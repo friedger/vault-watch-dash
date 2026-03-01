@@ -11,6 +11,7 @@ import { TutorialDialog } from "@/components/tutorial/TutorialDialog";
 const Index = lazy(() => import("./pages/Index"));
 const Withdraw = lazy(() => import("./pages/Withdraw"));
 const VaultDetails = lazy(() => import("./pages/VaultDetails"));
+const AccumulatedYield = lazy(() => import("./pages/AccumulatedYield"));
 const WalletPage = lazy(() => import("./pages/Wallet"));
 const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -36,6 +37,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/vault" element={<VaultDetails />} />
+              <Route path="/vault/yield" element={<AccumulatedYield />} />
               <Route path="/wallet" element={<WalletPage />} />
               <Route path="/withdraw" element={<Withdraw />} />
               <Route path="/withdraw/:requestId" element={<Withdraw />} />

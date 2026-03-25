@@ -4,7 +4,7 @@ import {
     BXL_STX_CONTRACT,
     VAULT_CONTRACT,
 } from "@/services/blockchain";
-import { ExternalLink, FileText } from "lucide-react";
+import { Coins, ExternalLink, FileText } from "lucide-react";
 
 const VaultHowItWorksCard = () => {
   return (

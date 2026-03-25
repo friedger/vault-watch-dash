@@ -84,8 +84,18 @@ const VaultHowItWorksCard = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex text-primary hover:text-primary/80"
+                  title="Contract"
                 >
                   <ExternalLink className="w-3 h-3" />
+                </a>{" "}
+                <a
+                  href={`https://explorer.hiro.so/token/${BXL_BTC_CONTRACT}?chain=mainnet`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex text-primary hover:text-primary/80"
+                  title="Token page"
+                >
+                  <Coins className="w-3 h-3" />
                 </a>
                 <br />
                 {BXL_STX_CONTRACT}{" "}
@@ -94,8 +104,18 @@ const VaultHowItWorksCard = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex text-primary hover:text-primary/80"
+                  title="Contract"
                 >
                   <ExternalLink className="w-3 h-3" />
+                </a>{" "}
+                <a
+                  href={`https://explorer.hiro.so/token/${BXL_STX_CONTRACT}?chain=mainnet`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex text-primary hover:text-primary/80"
+                  title="Token page"
+                >
+                  <Coins className="w-3 h-3" />
                 </a>
               </code>
             </div>

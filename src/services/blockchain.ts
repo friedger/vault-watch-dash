@@ -30,19 +30,16 @@ declare global {
 const STACKS_API = "https://api.mainnet.hiro.so";
 const SBTC_CONTRACT = "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token";
 const SBTC_ASSET = "sbtc-token";
-export const BXL_BTC_CONTRACT =
-  "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-btc";
+export const BXL_BTC_CONTRACT = "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-btc";
 const BXL_BTC_ASSET = "bxl-btc";
 const BXL_BTC_TRANSIT_ASSET = "bxl-btc-transit";
 
-export const BXL_STX_CONTRACT =
-  "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-stx";
+export const BXL_STX_CONTRACT = "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-stx";
 const BXL_STX_ASSET = "bxl-stx";
 const network = "mainnet";
 
 // Vault contract - replace with actual deployed vault contract
-export const VAULT_CONTRACT =
-  "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-vault";
+export const VAULT_CONTRACT = "SPBX1F9B4G87C3R6H4N82RRHBS2Q5523QMDV38QF.bxl-vault";
 
 // Admin wallet addresses - replace with actual admin addresses
 export const ADMIN_ADDRESSES = [
@@ -55,11 +52,11 @@ export const YIELD_DISTRIBUTOR_CONTRACTS = [
   "SP1HFCRKEJ8BYW4D0E3FAWHFDX8A25PPAA83HWWZ9.dual-stacking-v2_0_2",
   "SP1HFCRKEJ8BYW4D0E3FAWHFDX8A25PPAA83HWWZ9.dual-stacking-v2_0_4",
   "SP1HFCRKEJ8BYW4D0E3FAWHFDX8A25PPAA83HWWZ9.dual-stacking-v2_0_5",
+  "SP1HFCRKEJ8BYW4D0E3FAWHFDX8A25PPAA83HWWZ9.dual-stacking-v2_1_0",
+  "SP1HFCRKEJ8BYW4D0E3FAWHFDX8A25PPAA83HWWZ9.dual-stacking-v3_0_0",
 ];
 
-export const YIELD_SENDERS = [
-  "SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP",
-];
+export const YIELD_SENDERS = ["SP21YTSM60CAY6D011EZVEVNKXVW8FVZE198XEFFP"];
 
 const client = createClient({
   baseUrl: "https://api.mainnet.hiro.so",
@@ -84,10 +81,9 @@ export interface Balance {
 export async function fetchAllBalances(address: string): Promise<Balance> {
   try {
     // Make a single API call to get all balances
-    const response = await client.GET(
-      `/extended/v1/address/{principal}/balances`,
-      { params: { path: { principal: address } } }
-    );
+    const response = await client.GET(`/extended/v1/address/{principal}/balances`, {
+      params: { path: { principal: address } },
+    });
     const { data, error } = response;
     if (error) throw new Error("Failed to fetch balances");
 
@@ -99,19 +95,14 @@ export async function fetchAllBalances(address: string): Promise<Balance> {
     const sbtcToken = data.fungible_tokens?.[`${SBTC_CONTRACT}::${SBTC_ASSET}`];
     const sBtc = sbtcToken ? parseInt(sbtcToken.balance) / 1e8 : 0; // sBTC has 8 decimals
     // Parse wrapped BTC balance (bxlBTC)
-    const bxlBtcToken =
-      data.fungible_tokens?.[`${BXL_BTC_CONTRACT}::${BXL_BTC_ASSET}`];
+    const bxlBtcToken = data.fungible_tokens?.[`${BXL_BTC_CONTRACT}::${BXL_BTC_ASSET}`];
     const bxlBTC = bxlBtcToken ? parseInt(bxlBtcToken.balance) / 1e8 : 0; // 8 decimals
 
-    const bxlBtcTransitToken =
-      data.fungible_tokens?.[`${BXL_BTC_CONTRACT}::${BXL_BTC_TRANSIT_ASSET}`];
-    const bxlBTCTransit = bxlBtcTransitToken
-      ? parseInt(bxlBtcTransitToken.balance) / 1e8
-      : 0; // 8 decimals
+    const bxlBtcTransitToken = data.fungible_tokens?.[`${BXL_BTC_CONTRACT}::${BXL_BTC_TRANSIT_ASSET}`];
+    const bxlBTCTransit = bxlBtcTransitToken ? parseInt(bxlBtcTransitToken.balance) / 1e8 : 0; // 8 decimals
 
     // Parse wrapped STX balance (bxlSTX)
-    const bxlStxToken =
-      data.fungible_tokens?.[`${BXL_STX_CONTRACT}::${BXL_STX_ASSET}`];
+    const bxlStxToken = data.fungible_tokens?.[`${BXL_STX_CONTRACT}::${BXL_STX_ASSET}`];
     const bxlSTX = bxlStxToken ? parseInt(bxlStxToken.balance) / 1e6 : 0; // 6 decimals
 
     return { stx, sBtc, lockedStx, bxlBTC, bxlBTCTransit, bxlSTX };
@@ -128,10 +119,7 @@ export async function fetchAllBalances(address: string): Promise<Balance> {
   }
 }
 
-export async function fetchTokenTotalSupply(
-  contractAddress: string,
-  contractName: string
-): Promise<number> {
+export async function fetchTokenTotalSupply(contractAddress: string, contractName: string): Promise<number> {
   try {
     const response = (await fetchCallReadOnlyFunction({
       contractAddress,
@@ -143,8 +131,7 @@ export async function fetchTokenTotalSupply(
     })) as ResponseOkCV<UIntCV>;
 
     const supply = response.value.value;
-    const factor =
-      contractName === "bxl-btc" ? 1e8 : contractName === "bxl-stx" ? 1e6 : 0;
+    const factor = contractName === "bxl-btc" ? 1e8 : contractName === "bxl-stx" ? 1e6 : 0;
     return Number(supply) / factor;
   } catch (error) {
     console.error("Error fetching total supply:", error);
@@ -164,9 +151,7 @@ export async function depositSBtc(amount: number, user: string) {
     functionArgs: [Cl.uint(amountInSats)],
     network,
     postConditionMode: "deny",
-    postConditions: [
-      Pc.principal(user).willSendEq(amountInSats).ft(SBTC_CONTRACT, SBTC_ASSET),
-    ],
+    postConditions: [Pc.principal(user).willSendEq(amountInSats).ft(SBTC_CONTRACT, SBTC_ASSET)],
   });
 
   return result;
@@ -199,12 +184,8 @@ export async function withdrawSBtc(amount: number, user: string) {
     network,
     postConditionMode: "deny",
     postConditions: [
-      Pc.principal(user)
-        .willSendEq(amountInSats)
-        .ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
-      Pc.principal(BXL_BTC_CONTRACT)
-        .willSendEq(amountInSats)
-        .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+      Pc.principal(user).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
+      Pc.principal(BXL_BTC_CONTRACT).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
     ],
   });
 
@@ -212,34 +193,21 @@ export async function withdrawSBtc(amount: number, user: string) {
 }
 
 // user updates Sbtc withdrawal request
-export async function withdrawSBtcUpdate(
-  requestId: number,
-  oldAmount: number,
-  newAmount: number,
-  user: string
-) {
+export async function withdrawSBtcUpdate(requestId: number, oldAmount: number, newAmount: number, user: string) {
   const oldAmountInSats = Math.floor(oldAmount * 1e8);
   const newAmountInSats = Math.floor(newAmount * 1e8);
 
   // post conditions for unlock
   const postConditions = [
-    Pc.principal(user)
-      .willSendEq(oldAmountInSats)
-      .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
-    Pc.principal(BXL_BTC_CONTRACT)
-      .willSendEq(oldAmountInSats)
-      .ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
+    Pc.principal(user).willSendEq(oldAmountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+    Pc.principal(BXL_BTC_CONTRACT).willSendEq(oldAmountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
   ];
 
   // post conditions for locking new amount
   if (newAmountInSats > 0) {
     postConditions.push(
-      Pc.principal(user)
-        .willSendEq(newAmountInSats)
-        .ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
-      Pc.principal(BXL_BTC_CONTRACT)
-        .willSendEq(newAmountInSats)
-        .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET)
+      Pc.principal(user).willSendEq(newAmountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_ASSET),
+      Pc.principal(BXL_BTC_CONTRACT).willSendEq(newAmountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
     );
   }
 
@@ -256,11 +224,7 @@ export async function withdrawSBtcUpdate(
 }
 
 // finalize sBTC withdrawal after waiting period
-export async function finalizeSbtcWithdraw(
-  requestId: number,
-  amount: number,
-  user: string
-) {
+export async function finalizeSbtcWithdraw(requestId: number, amount: number, user: string) {
   const amountInSats = Math.floor(amount * 1e8); // Convert to sats
 
   const result = await request("stx_callContract", {
@@ -270,12 +234,8 @@ export async function finalizeSbtcWithdraw(
     network,
     postConditionMode: "deny",
     postConditions: [
-      Pc.principal(user)
-        .willSendEq(amountInSats)
-        .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
-      Pc.principal(VAULT_CONTRACT)
-        .willSendEq(amountInSats)
-        .ft(SBTC_CONTRACT, SBTC_ASSET),
+      Pc.principal(user).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+      Pc.principal(VAULT_CONTRACT).willSendEq(amountInSats).ft(SBTC_CONTRACT, SBTC_ASSET),
     ],
   });
 
@@ -288,11 +248,7 @@ export async function finalizeSbtcWithdraw(
  * @param user The user who made the request
  * @param amount The amount to finalize
  */
-export async function adminFinalizeSbtcWithdraw(
-  requestId: number,
-  user: string,
-  amount: number
-) {
+export async function adminFinalizeSbtcWithdraw(requestId: number, user: string, amount: number) {
   const amountInSats = Math.floor(amount * 1e8);
 
   const result = await request("stx_callContract", {
@@ -302,12 +258,8 @@ export async function adminFinalizeSbtcWithdraw(
     network,
     postConditionMode: "deny",
     postConditions: [
-      Pc.principal(user)
-        .willSendEq(amountInSats)
-        .ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
-      Pc.principal(VAULT_CONTRACT)
-        .willSendEq(amountInSats)
-        .ft(SBTC_CONTRACT, SBTC_ASSET),
+      Pc.principal(user).willSendEq(amountInSats).ft(BXL_BTC_CONTRACT, BXL_BTC_TRANSIT_ASSET),
+      Pc.principal(VAULT_CONTRACT).willSendEq(amountInSats).ft(SBTC_CONTRACT, SBTC_ASSET),
     ],
   });
 
@@ -324,9 +276,7 @@ export async function withdrawStx(amount: number, user: string) {
     network,
     postConditionMode: "deny",
     postConditions: [
-      Pc.principal(user)
-        .willSendEq(amountInMicroStx)
-        .ft(BXL_STX_CONTRACT, BXL_STX_ASSET),
+      Pc.principal(user).willSendEq(amountInMicroStx).ft(BXL_STX_CONTRACT, BXL_STX_ASSET),
       Pc.principal(VAULT_CONTRACT).willSendEq(amountInMicroStx).ustx(),
     ],
   });
@@ -364,11 +314,7 @@ export async function transferSbtcYield(amount: number, recipient: string) {
     functionArgs: [Cl.uint(amountInSats), Cl.principal(recipient)],
     network,
     postConditionMode: "deny",
-    postConditions: [
-      Pc.principal(VAULT_CONTRACT)
-        .willSendEq(amountInSats)
-        .ft(SBTC_CONTRACT, SBTC_ASSET),
-    ],
+    postConditions: [Pc.principal(VAULT_CONTRACT).willSendEq(amountInSats).ft(SBTC_CONTRACT, SBTC_ASSET)],
   });
   return result;
 }
@@ -411,9 +357,7 @@ export interface WithdrawalRequest {
  * @param requestId The withdrawal request ID
  * @returns Withdrawal request details or null if not found
  */
-export async function fetchWithdrawalRequest(
-  requestId: number
-): Promise<WithdrawalRequest | null> {
+export async function fetchWithdrawalRequest(requestId: number): Promise<WithdrawalRequest | null> {
   try {
     const [contractAddress, contractName] = VAULT_CONTRACT.split(".");
     const resultCV = await fetchContractMapEntry({
@@ -477,25 +421,19 @@ export interface TransactionResult {
 
 export const transactionsLimit = 20;
 
-export async function fetchUserTransactions(
-  address: string,
-  offset: number = 0
-): Promise<TransactionResult> {
+export async function fetchUserTransactions(address: string, offset: number = 0): Promise<TransactionResult> {
   try {
-    const response = await await client.GET(
-      "/extended/v2/addresses/{address}/transactions",
-      {
-        params: {
-          path: {
-            address,
-          },
-          query: {
-            limit: transactionsLimit,
-            offset,
-          },
+    const response = await await client.GET("/extended/v2/addresses/{address}/transactions", {
+      params: {
+        path: {
+          address,
         },
-      }
-    );
+        query: {
+          limit: transactionsLimit,
+          offset,
+        },
+      },
+    });
     if (!response.data) throw new Error("Failed to fetch transactions");
     const data = response.data;
     const transactions: Transaction[] = [];
@@ -510,15 +448,8 @@ export async function fetchUserTransactions(
       const functionName = tx.contract_call?.function_name ?? "";
 
       // Filter for vault-related transactions
-      const isYieldDistributor = YIELD_DISTRIBUTOR_CONTRACTS.some((c) =>
-        contractId.includes(c)
-      );
-      if (
-        !contractId.includes(VAULT_CONTRACT) &&
-        !contractId.includes(SBTC_CONTRACT) &&
-        !isYieldDistributor
-      )
-        continue;
+      const isYieldDistributor = YIELD_DISTRIBUTOR_CONTRACTS.some((c) => contractId.includes(c));
+      if (!contractId.includes(VAULT_CONTRACT) && !contractId.includes(SBTC_CONTRACT) && !isYieldDistributor) continue;
 
       let type: Transaction["type"] = "transfer";
       let asset: Transaction["asset"] = "sBTC";
@@ -606,14 +537,9 @@ export async function fetchUserTransactions(
               }>
             >;
             detailsCV.value.forEach((tupleCV) => {
-              if (
-                tupleCV.value.sender.value ===
-                Cl.principal(VAULT_CONTRACT).value
-              ) {
+              if (tupleCV.value.sender.value === Cl.principal(VAULT_CONTRACT).value) {
                 outgoingAmount += Number(tupleCV.value.amount.value);
-              } else if (
-                tupleCV.value.to.value === Cl.principal(VAULT_CONTRACT).value
-              ) {
+              } else if (tupleCV.value.to.value === Cl.principal(VAULT_CONTRACT).value) {
                 incomingAmount += Number(tupleCV.value.amount.value);
               }
             });
@@ -631,24 +557,20 @@ export async function fetchUserTransactions(
       } else if (functionName === "distribute-rewards") {
         type = "yield";
         asset = "sBTC";
-        const events = await client.GET(
-          "/extended/v2/addresses/{address}/transactions/{tx_id}/events",
-          {
-            params: {
-              path: {
-                address: VAULT_CONTRACT,
-                tx_id: tx.tx_id,
-              },
+        const events = await client.GET("/extended/v2/addresses/{address}/transactions/{tx_id}/events", {
+          params: {
+            path: {
+              address: VAULT_CONTRACT,
+              tx_id: tx.tx_id,
             },
-          }
-        );
+          },
+        });
         if (!events.data) {
           amount = 0;
         }
         amount =
           events.data.results[0].type === "ft" &&
-          events.data.results[0].data.asset_identifier ===
-            `${SBTC_CONTRACT}::${SBTC_ASSET}`
+          events.data.results[0].data.asset_identifier === `${SBTC_CONTRACT}::${SBTC_ASSET}`
             ? Number(events.data.results[0].data.amount) / 1e8
             : 0;
       } else {
@@ -669,9 +591,7 @@ export async function fetchUserTransactions(
     }
 
     return {
-      transactions: transactions.sort(
-        (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
-      ),
+      transactions: transactions.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()),
       total: data.total,
     };
   } catch (error) {

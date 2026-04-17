@@ -395,7 +395,7 @@
 
     "@socket.io/component-emitter": ["@socket.io/component-emitter@3.1.2", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@socket.io/component-emitter/-/component-emitter-3.1.2.tgz", {}, "sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA=="],
 
-    "@stacks/blockchain-api-client": ["@stacks/blockchain-api-client@8.15.0", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@stacks/blockchain-api-client/-/blockchain-api-client-8.15.0.tgz", { "dependencies": { "@types/node": "20.14.14", "eventemitter3": "^4.0.7", "jsonrpc-lite": "^2.2.0", "openapi-fetch": "^0.10.5", "socket.io-client": "^4.7.5" } }, "sha512-ay2Czh6YwAITTDiOLM/UNue2IJI0LL6djVw1o30tmrLEGnlNzR4fK1GMfX03GYLurP6vpEAhe2MN2tUSSfa/pw=="],
+    "@stacks/blockchain-api-client": ["@stacks/blockchain-api-client@8.15.2", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@stacks/blockchain-api-client/-/blockchain-api-client-8.15.2.tgz", { "dependencies": { "@types/node": "20.14.14", "eventemitter3": "^4.0.7", "jsonrpc-lite": "^2.2.0", "openapi-fetch": "^0.10.5", "socket.io-client": "^4.7.5" } }, "sha512-e1rYme3mhfW8daaZ/u8apR90V6CXQ4eIFhhYPCknQB3d6exUXW2HQ3ntFvJMkmuV2r2AFkJuaANGwZETXF307A=="],
 
     "@stacks/common": ["@stacks/common@7.0.2", "", {}, "sha512-+RSecHdkxOtswmE4tDDoZlYEuULpnTQVeDIG5eZ32opK8cFxf4EugAcK9CsIsHx/Se1yTEaQ21WGATmJGK84lQ=="],
 

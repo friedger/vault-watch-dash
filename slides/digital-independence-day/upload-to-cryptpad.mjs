@@ -7,6 +7,13 @@
 //
 // Usage:
 //   node upload-to-cryptpad.mjs [--url <cryptpad edit url>] [--file slides.md] [--headed] [--dry-run]
+//   node upload-to-cryptpad.mjs --login   # log in once so "safe links" (#/3/...) can be opened
+//
+// Links of the form #/2/<app>/edit/<key>/ carry the encryption key and work
+// as they are. Links of the form #/3/<app>/edit/<channel>/ ("safe links") only
+// carry the pad's channel id; the keys come from the CryptDrive of a logged-in
+// user. For those, run --login once: the browser profile (and thus the login)
+// is kept in --profile (default: .cryptpad-profile next to this script).
 //
 // Requires Playwright: `npm install playwright` (or `npx playwright install chromium`).
 
@@ -20,15 +27,26 @@ const DEFAULT_URL =
 const here = dirname(fileURLToPath(import.meta.url));
 
 function parseArgs(argv) {
-  const args = { url: DEFAULT_URL, file: resolve(here, "slides.md"), headed: false, dryRun: false };
+  const args = {
+    url: DEFAULT_URL,
+    file: resolve(here, "slides.md"),
+    profile: resolve(here, ".cryptpad-profile"),
+    headed: false,
+    dryRun: false,
+    login: false,
+  };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--url") args.url = argv[++i];
     else if (a === "--file") args.file = resolve(argv[++i]);
+    else if (a === "--profile") args.profile = resolve(argv[++i]);
     else if (a === "--headed") args.headed = true;
+    else if (a === "--login") args.login = true;
     else if (a === "--dry-run") args.dryRun = true;
     else if (a === "-h" || a === "--help") {
-      console.log("node upload-to-cryptpad.mjs [--url <url>] [--file <md>] [--headed] [--dry-run]");
+      console.log(
+        "node upload-to-cryptpad.mjs [--url <url>] [--file <md>] [--profile <dir>] [--headed] [--dry-run] [--login]",
+      );
       process.exit(0);
     } else {
       console.error(`Unknown argument: ${a}`);
@@ -38,19 +56,31 @@ function parseArgs(argv) {
   return args;
 }
 
-async function findEditorFrame(page, timeoutMs = 60_000) {
+const isSafeLink = (url) => /#\/3\//.test(url);
+
+async function findEditorFrame(page, url, timeoutMs = 60_000) {
   // CryptPad renders the app inside a sandboxed iframe (#sbox-iframe) on a
   // separate origin; look for the CodeMirror instance in any frame.
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     for (const frame of page.frames()) {
-      const found = await frame
+      const state = await frame
         .evaluate(() => {
           const el = document.querySelector(".CodeMirror");
-          return Boolean(el && el.CodeMirror);
+          if (el && el.CodeMirror) return "editor";
+          return /does not provide access to the document/.test(document.body?.innerText ?? "") ? "no-access" : "";
         })
-        .catch(() => false);
-      if (found) return frame;
+        .catch(() => "");
+      if (state === "editor") return frame;
+      if (state === "no-access") {
+        throw new Error(
+          isSafeLink(url)
+            ? "CryptPad refused the link: it is a safe link (#/3/…) without the encryption key.\n" +
+                "Either run `node upload-to-cryptpad.mjs --login` once and log in with an account that has\n" +
+                "the pad in its CryptDrive, or pass the full edit link (#/2/…) from Share → Link with --url."
+            : "CryptPad refused the link: it does not provide access to the document.",
+        );
+      }
     }
     await page.waitForTimeout(1000);
   }
@@ -69,14 +99,23 @@ async function main() {
   }
 
   const { chromium } = await import("playwright");
-  const browser = await chromium.launch({ headless: !args.headed });
-  const page = await browser.newPage();
+  // A persistent profile keeps the CryptPad login (and its CryptDrive) between runs.
+  const context = await chromium.launchPersistentContext(args.profile, { headless: !(args.headed || args.login) });
+  const page = context.pages()[0] ?? (await context.newPage());
+
+  if (args.login) {
+    await page.goto(new URL("/login/", args.url).href);
+    console.log(`Log in to CryptPad in the browser window, then close it. Profile: ${args.profile}`);
+    await context.waitForEvent("close", { timeout: 0 });
+    console.log("Login saved. Now run the script without --login.");
+    return;
+  }
 
   try {
     console.log("Opening CryptPad…");
     await page.goto(args.url, { waitUntil: "domcontentloaded" });
 
-    const frame = await findEditorFrame(page);
+    const frame = await findEditorFrame(page, args.url);
     console.log("Editor ready, waiting for the pad to finish loading…");
 
     // Wait until the editor is writable (CryptPad keeps it read-only while
@@ -110,7 +149,7 @@ async function main() {
     await page.waitForTimeout(10_000);
     console.log(`Done. Open ${args.url} to view the presentation.`);
   } finally {
-    await browser.close();
+    await context.close();
   }
 }
 

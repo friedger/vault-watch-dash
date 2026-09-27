@@ -1,0 +1,14 @@
+{
+  "name": "digital-independence-day-slides",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build-pptx.mjs",
+    "upload": "node upload-to-cryptpad.mjs",
+    "login": "node upload-to-cryptpad.mjs --login"
+  },
+  "dependencies": {
+    "playwright": "^1.56.1",
+    "pptxgenjs": "^4.0.1"
+  }
+}

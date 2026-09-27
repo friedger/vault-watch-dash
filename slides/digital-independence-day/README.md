@@ -2,40 +2,35 @@
 
 Talk by Friedger at the Open Commons Day, Commons Hub Brussels, Sunday 4 October 2026.
 
-- `slides.md`: the deck, in CryptPad presentation Markdown (slides are separated by `---`)
-- `upload-to-cryptpad.mjs`: writes `slides.md` into the CryptPad presentation at
+- `slides.md`: the deck in Markdown (slides are separated by `---`)
+- `build-pptx.mjs`: converts `slides.md` into `slides.pptx`
+- `upload-to-cryptpad.mjs`: uploads the deck to the CryptPad presentation at
   <https://cryptpad.fr/presentation/#/3/presentation/edit/353589968926067f9255e7bbcfb9fd1d/>
 
 ## Upload
 
 ```sh
 cd slides/digital-independence-day
-npm install --no-save playwright
+npm install
 npx playwright install chromium
-node upload-to-cryptpad.mjs            # headless
-node upload-to-cryptpad.mjs --headed   # watch it happen
-node upload-to-cryptpad.mjs --dry-run  # just print the deck
+npm run login    # once: log in to cryptpad.fr in the window that opens, then close it
+npm run upload   # builds slides.pptx and imports it (add --headed to watch)
+npm run build    # only build slides.pptx
 ```
 
-### Safe links (`#/3/…`)
+**Close the pad in all other tabs and devices first.** Importing replaces the whole
+presentation, so CryptPad refuses with "Uploading is not allowed while other users are
+present" while anyone else, including your own browser, has the pad open. Earlier versions
+remain in the pad's history.
 
-The default URL is a CryptPad *safe link*: it holds only the pad's ID, not its key, so it
-opens only for a logged-in account that has the pad in its CryptDrive. Either:
+## Details
 
-- log in once; the browser profile is kept in `.cryptpad-profile/` (git-ignored):
-  ```sh
-  node upload-to-cryptpad.mjs --login   # log in, then close the window
-  node upload-to-cryptpad.mjs
-  ```
-- or pass the full edit link (`#/2/presentation/edit/<key>/`) from Share → Link:
-  ```sh
-  node upload-to-cryptpad.mjs --url 'https://cryptpad.fr/presentation/#/2/presentation/edit/…/'
-  ```
-
-### How it works
-
-CryptPad pads are end-to-end encrypted and the key sits in the URL fragment, so there is
-no upload API. The script opens the pad in Chromium, waits until the editor is writable,
-replaces the content with `slides.md`, then waits for CryptPad to sync.
-**It overwrites whatever is already in the pad**, but earlier versions remain in the pad's history.
-Use `--url` to target a different pad.
+- `/presentation/` pads on CryptPad are OnlyOffice (PowerPoint-style) documents, so the
+  script converts the Markdown to `.pptx` and uses CryptPad's File → Import.
+  For a Markdown slides pad (`/slide/…`), it writes `slides.md` into the editor instead.
+- CryptPad is end-to-end encrypted and has no upload API, so the script drives the web
+  app with Playwright.
+- The default URL is a *safe link* (`#/3/…`): it contains only the pad's ID, and the key
+  comes from the CryptDrive of a logged-in account. `npm run login` stores that login in
+  `.cryptpad-profile/` (git-ignored). Alternatively pass the full edit link (`#/2/…`, from
+  Share → Link): `node upload-to-cryptpad.mjs --url '<link>'`.
